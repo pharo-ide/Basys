@@ -4,13 +4,13 @@ baseline: spec
 	spec for: #'common' do: [
 		spec 
 			baseline: 'TCPServer' with: [ 
-				spec repository: 'github://dionisiydk/StateSpecs:v2.4.x' ];
+				spec repository: 'github://dionisiydk/TCPServer:v0.1.x' ];
 			project: 'TCPServerCore' copyFrom: 'TCPServer' with: [
 				spec loads: 'Core'];
 			project: 'TCPServerTests' copyFrom: 'TCPServer' with: [
 				spec loads: 'Tests'];
 			baseline: 'ObjectPool' with: [ 
-				spec repository: 'github://dionisiydk/ObjectPool:v2.4.x' ];
+				spec repository: 'github://dionisiydk/ObjectPool:v0.3.x' ];
 			project: 'ObjectPoolCore' copyFrom: 'ObjectPool' with: [
 				spec loads: 'Core'];
 			project: 'ObjectPoolTests' copyFrom: 'ObjectPool' with: [
