@@ -1,0 +1,3 @@
+accessing
+connectionsCount
+	^connectionPool numberOfAvailableObjects 

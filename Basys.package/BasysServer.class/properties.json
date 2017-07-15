@@ -1,0 +1,13 @@
+{
+	"commentStamp" : "DenisKudryashov 1/26/2016 12:01",
+	"super" : "TCPServer",
+	"category" : "Basys",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"network"
+	],
+	"name" : "BasysServer",
+	"type" : "normal"
+}

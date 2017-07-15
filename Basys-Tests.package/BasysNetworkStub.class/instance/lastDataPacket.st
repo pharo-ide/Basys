@@ -1,0 +1,3 @@
+accessing
+lastDataPacket
+	^lastDataPacket

@@ -1,0 +1,15 @@
+{
+	"commentStamp" : "",
+	"super" : "TCPServerTestCase",
+	"category" : "Basys-Tests",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"forkedProcesses",
+		"serverSideNetwork",
+		"clientSideNetwork"
+	],
+	"name" : "BasysRealCommunicationTestCase",
+	"type" : "normal"
+}

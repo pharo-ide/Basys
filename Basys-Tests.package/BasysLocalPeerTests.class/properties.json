@@ -1,0 +1,11 @@
+{
+	"commentStamp" : "",
+	"super" : "BasysPeerTestCase",
+	"category" : "Basys-Tests",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [ ],
+	"name" : "BasysLocalPeerTests",
+	"type" : "normal"
+}

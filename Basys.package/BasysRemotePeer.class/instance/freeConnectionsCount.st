@@ -1,0 +1,3 @@
+accessing
+freeConnectionsCount
+	^connectionPool numberOfIdleObjects

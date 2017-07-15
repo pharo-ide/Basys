@@ -1,0 +1,4 @@
+testing
+isIdentified
+
+	^id notNil

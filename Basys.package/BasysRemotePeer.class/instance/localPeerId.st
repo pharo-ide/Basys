@@ -1,0 +1,3 @@
+accessing
+localPeerId
+	^network localPeerId

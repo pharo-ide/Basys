@@ -1,0 +1,11 @@
+{
+	"commentStamp" : "DenisKudryashov 6/9/2016 16:03",
+	"super" : "Error",
+	"category" : "Basys",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [ ],
+	"name" : "BasysRemotePeerClosed",
+	"type" : "normal"
+}

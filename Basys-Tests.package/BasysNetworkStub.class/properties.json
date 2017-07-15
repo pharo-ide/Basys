@@ -1,0 +1,14 @@
+{
+	"commentStamp" : "",
+	"super" : "BasysNetwork",
+	"category" : "Basys-Tests",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"lastDataPacket",
+		"waitingDataTimeout"
+	],
+	"name" : "BasysNetworkStub",
+	"type" : "normal"
+}

@@ -1,0 +1,16 @@
+{
+	"commentStamp" : "",
+	"super" : "TestCase",
+	"category" : "Basys-Tests",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"connection",
+		"remotePeer",
+		"socket",
+		"network"
+	],
+	"name" : "BasysConnectionTests",
+	"type" : "normal"
+}
