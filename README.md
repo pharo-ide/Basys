@@ -7,4 +7,4 @@ Each Basys connection runs its own incoming data loop which processes received d
 
 Basys is network foundation for [Seamless](http://smalltalkhub.com/#!/~Pharo/Seamless). 
 
-You can find documentation [here](https://ci.inria.fr/pharo-contribution/view/Books/job/PharoBookWorkInProgress/lastBuild/artifact/book-result/BasysNetwork/BasysNetwork.pdf)
+You can find documentation [here](https://ci.inria.fr/pharo-contribution/view/Books/job/PharoBookWorkInProgress/lastSuccessfulBuild/artifact/book-result/BasysNetwork/BasysNetwork.pdf)
