@@ -6,6 +6,6 @@ testProcessingWrongProtocolError
 			should strictly satisfy: 
 		[ (network receiveIncomingDataPacketFrom: remotePeer by: connection) 
 				willRaise: BasysWrongProtocolError.
-		socket close; destroy]
+		socket closeAndDestroy]
 
 	] runWithMocks 
