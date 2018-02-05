@@ -1,4 +1,4 @@
 controlling
 closeSocketSafely
 
-	[socket close; destroy] ifError: [ ]
+	[socket closeAndDestroy] ifError: [ ]
