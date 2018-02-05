@@ -1,7 +1,7 @@
 tests
 testConvertingPassivePeerToActive
  
-	| passivePeer activePeer secondDataWasSent firstDataWasSentLast |
+	| passivePeer activePeer secondDataWasSent firstDataWasSentLast syncSemaphore waitSemaphore |
 	"producing passive peer on server"
 	self connectToServerPeer establishNewConnection.
 	passivePeer := self waitServerSidePeer.
@@ -19,14 +19,16 @@ testConvertingPassivePeerToActive
 	passivePeer connectionsCount should be: 1.
 	
 	"now we checking that converted peer is really active and establish new connections by demand"
+	syncSemaphore := Semaphore new.
+	waitSemaphore := Semaphore new.
 	secondDataWasSent := false.
 	self fork: [	passivePeer execute: [ :connection | 
-				10 milliSeconds wait. connection sendDataPacket: 'first'.
+				syncSemaphore signal. waitSemaphore wait. connection sendDataPacket: 'first'.
 				firstDataWasSentLast := secondDataWasSent. ]].
-	5 milliSecond wait.
+	syncSemaphore wait.
 	passivePeer execute: [ :connection | connection sendDataPacket: 'second'.
 		secondDataWasSent := true].
-	
+	waitSemaphore signal.
 	self waitUntil: [secondDataWasSent & firstDataWasSentLast notNil].
 	secondDataWasSent should be: true.
 	firstDataWasSentLast should be: true.
