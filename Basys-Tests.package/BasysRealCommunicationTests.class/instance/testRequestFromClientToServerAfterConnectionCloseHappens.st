@@ -1,5 +1,5 @@
 tests
-testRequestFromServerToClientAfterConnectionCloseHappens
+testRequestFromClientToServerAfterConnectionCloseHappens
  
 	| remotePeer |
 	remotePeer := self connectToServerPeer.

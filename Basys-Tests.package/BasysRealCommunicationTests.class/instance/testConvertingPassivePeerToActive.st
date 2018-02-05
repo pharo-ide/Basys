@@ -4,14 +4,14 @@ testConvertingPassivePeerToActive
 	| passivePeer activePeer secondDataWasSent firstDataWasSentLast |
 	"producing passive peer on server"
 	self connectToServerPeer establishNewConnection.
-	
+	passivePeer := self waitServerSidePeer.
+	passivePeer should beInstanceOf: BasysPassiveRemotePeer.	
+
 	"producing active peer on server"
 	server network: clientSideNetwork.
 	activePeer := serverSideNetwork remotePeerAt: self serverAddress.
 	activePeer establishNewConnection.
-	
-	passivePeer := serverSideNetwork remotePeers anyOne.
-	passivePeer should beInstanceOf: BasysPassiveRemotePeer.	
+	self waitUntil: [clientSideNetwork remotePeers size = 2].
 		
 	"converting existed passive peer to existed active peer"
 	passivePeer becomeActiveToReplaceSamePeer: activePeer.	
@@ -27,7 +27,7 @@ testConvertingPassivePeerToActive
 	passivePeer execute: [ :connection | connection sendDataPacket: 'second'.
 		secondDataWasSent := true].
 	
-	20 milliSeconds wait.	
+	self waitUntil: [secondDataWasSent & firstDataWasSentLast notNil].
 	secondDataWasSent should be: true.
 	firstDataWasSentLast should be: true.
 	passivePeer connectionsCount should be: 2.
