@@ -5,7 +5,7 @@ testFirstConnectionEstablishing
 	remotePeer := self connectToServerPeer.
 	remotePeer establishNewConnection.
 	
-	10 milliSeconds wait.
+	self waitServerSidePeer.
 	
 	serverSideNetwork connectionsCount should be: 1.
 	clientSideNetwork connectionsCount should be: 1

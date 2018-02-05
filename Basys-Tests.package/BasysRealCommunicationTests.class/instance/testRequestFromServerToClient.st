@@ -5,7 +5,7 @@ testRequestFromServerToClient
 	remotePeer := self connectToServerPeer.
 	remotePeer establishNewConnection.
 	
-	serverSideClientPeer := serverSideNetwork remotePeers anyOne.
+	serverSideClientPeer := self waitServerSidePeer.
 	serverSideClientPeer execute: [ :connection | connection sendDataPacket: 'server to client' ].
 	
 	10 milliSeconds wait.
