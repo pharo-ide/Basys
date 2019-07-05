@@ -1,4 +1,0 @@
-communication
-establishNewConnection
-
-	^BasysRemotePeerClosed signal

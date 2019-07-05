@@ -1,3 +1,0 @@
-running
-networkClass
-	^BasysNetworkStub

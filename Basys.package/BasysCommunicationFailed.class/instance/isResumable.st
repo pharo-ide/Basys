@@ -1,3 +1,0 @@
-controlling
-isResumable
-	^true

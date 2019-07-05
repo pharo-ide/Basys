@@ -1,4 +1,0 @@
-tests
-testHasProcessingPriorityByDefault
-	
-	connection processingPriority should be: Processor userBackgroundPriority

@@ -1,3 +1,0 @@
-accessing
-nativeError
-	^ nativeError

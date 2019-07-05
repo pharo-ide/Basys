@@ -1,4 +1,0 @@
-initialization
-prepareConnectionPool
-
-	self subclassResponsibility 

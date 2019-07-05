@@ -1,3 +1,0 @@
-running
-peerClass
-	self subclassResponsibility 

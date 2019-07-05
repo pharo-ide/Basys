@@ -1,2 +1,0 @@
-operations
-identifyLocalPeerOn: aConnection

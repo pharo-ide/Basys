@@ -1,3 +1,0 @@
-running
-networkClass
-	self subclassResponsibility 

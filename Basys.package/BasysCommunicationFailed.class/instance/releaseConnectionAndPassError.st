@@ -1,3 +1,0 @@
-controlling
-releaseConnectionAndPassError
-	self resume
