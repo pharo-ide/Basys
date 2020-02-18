@@ -22,7 +22,7 @@ BaselineOfBasys >> baseline: spec [
 			project: 'ObjectPoolTests' copyFrom: 'ObjectPool' with: [
 				spec loads: 'Tests'];
 			baseline: 'Mocketry' with: [
-				spec repository: 'github://dionisiydk/Mocketry:v5.0.0' ].
+				spec repository: 'github://dionisiydk/Mocketry:v6.0.0' ].
 		spec 
 			package: 'Basys' with: [ spec requires: #('TCPServerCore' 'ObjectPoolCore')];
 			package: 'Basys-Tests' with: [ spec requires: #('TCPServerTests' 'Basys' 'ObjectPoolTests' 'Mocketry')].
