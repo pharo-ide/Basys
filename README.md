@@ -1,4 +1,6 @@
 # Basys
+[![Build Status](https://travis-ci.org/pharo-ide/Basys.svg?branch=master)](https://travis-ci.org/pharo-ide/Basys)
+
 ## <b>B</b>idirectional <b>asy</b>nchronou<b>s</b> network. </br>
 
 Basys implements an abstract layer for networks which require bidirectional communication between clients and servers. Basys manages connections in such a way that sending and receiving data can be performed independently and simultaneously.
