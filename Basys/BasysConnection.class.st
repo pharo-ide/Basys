@@ -65,7 +65,7 @@ BasysConnection >> close [
 { #category : #controlling }
 BasysConnection >> closeSocketSafely [
 
-	[socket closeAndDestroy] ifError: [ ]
+	[socket closeAndDestroy] on: Error do: [ ]
 ]
 
 { #category : #controlling }
