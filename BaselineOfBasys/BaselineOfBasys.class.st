@@ -31,3 +31,10 @@ BaselineOfBasys >> baseline: spec [
 			group: 'Tests' with: #('Basys-Tests'). ].
 
 ]
+
+{ #category : #accessing }
+BaselineOfBasys >> projectClass [
+	^ [ self class environment at: #MetacelloCypressBaselineProject ]
+		on: NotFound
+		do: [ super projectClass ]
+]
