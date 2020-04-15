@@ -70,10 +70,13 @@ BasysRealCommunicationTestCase >> setUp [
 	forkedProcesses := OrderedCollection new.
 	
 	serverSideNetwork := self networkClass new. 	
-	server network: serverSideNetwork .	
+	serverSideNetwork connectionTimeout: 50 milliSeconds. "fail faster during tests"
+	server network: serverSideNetwork.	
 	server start	.
 		
-	clientSideNetwork := self networkClass new
+	clientSideNetwork := self networkClass new.
+	clientSideNetwork connectionTimeout: 50 milliSeconds "fail faster during tests"
+	
 ]
 
 { #category : #running }

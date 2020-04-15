@@ -136,6 +136,13 @@ BasysNetworkTests >> testGettingPeerWithIdWhenItNotExists [
 ]
 
 { #category : #tests }
+BasysNetworkTests >> testHasDefaultConnectionTimeoutByDefault [
+
+	network connectionTimeout should equal: BasysNetwork defaultConnectionTimeout.
+	BasysNetwork defaultConnectionTimeout should not be: nil
+]
+
+{ #category : #tests }
 BasysNetworkTests >> testHasEmptyRemotePeersByDefault [
 	
 	| actual |
