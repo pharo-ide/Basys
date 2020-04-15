@@ -1,7 +1,7 @@
 Class {
 	#name : #BaselineOfBasys,
 	#superclass : #BaselineOf,
-	#category : 'BaselineOfBasys'
+	#category : #BaselineOfBasys
 }
 
 { #category : #baselines }
@@ -10,7 +10,7 @@ BaselineOfBasys >> baseline: spec [
 	spec for: #'common' do: [
 		spec 
 			baseline: 'TCPServer' with: [ 
-				spec repository: 'github://pharo-ide/TCPServer:v1.0.0' ];
+				spec repository: 'github://pharo-ide/TCPServer:v1.0.1' ];
 			project: 'TCPServerCore' copyFrom: 'TCPServer' with: [
 				spec loads: 'Core'];
 			project: 'TCPServerTests' copyFrom: 'TCPServer' with: [
