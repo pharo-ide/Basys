@@ -21,7 +21,9 @@ You can ask me for remote peer at IP address:
 It will create new active peer if it is not exists yet. Then you can perform requests with peer (remotePeer execute: aBlock). If no connections exist yet or all connections are busy then new connection will be established and added to peer connection pool.
 
 To accept connections from clients BasysServer should be started:
-	network startServerOn: portNumber
+	server := network startServer.
+By default OS will assign the free port for server. Or concrete port can be specified:
+	server := network startServerOn: portNumber
 For every new connection BasysServer asks network for new passive peer and sends incoming connection to it. Then connection runs incoming data process to start interaction with client.
 When physical connection is established client should identify it: all connections from same client should be bound to single peer instance on server.
 During identification server can detect that new connection belongs to existed peer. In that case connection will be migrated to it and anonymous peer wil be removed. Otherwise anonymous peer become identified: It will have same id as connected local peer from remote side.
@@ -59,8 +61,21 @@ Class {
 		'localPeer',
 		'remotePeers'
 	],
-	#category : 'Basys'
+	#classInstVars : [
+		'defaultConnectionTimeout'
+	],
+	#category : #Basys
 }
+
+{ #category : #accessing }
+BasysNetwork class >> defaultConnectionTimeout [
+	^defaultConnectionTimeout ifNil: [ 10 seconds ]
+]
+
+{ #category : #accessing }
+BasysNetwork class >> defaultConnectionTimeout: aDuration [
+	defaultConnectionTimeout := aDuration
+]
 
 { #category : #accessing }
 BasysNetwork >> addNewPeerForAcceptingConnections [
@@ -107,8 +122,8 @@ BasysNetwork >> connectionTimeout [
 ]
 
 { #category : #accessing }
-BasysNetwork >> connectionTimeout: anObject [
-	connectionTimeout := anObject
+BasysNetwork >> connectionTimeout: aDuration [
+	connectionTimeout := aDuration
 ]
 
 { #category : #accessing }
@@ -144,7 +159,7 @@ BasysNetwork >> initialize [
 	super initialize.
 	
 	communicationLibrary := TCPPharoNetworkLibrary.
-	connectionTimeout := 45 milliSeconds.
+	connectionTimeout := self class defaultConnectionTimeout.
 	processingPriority := Processor userBackgroundPriority.
 	localPeer := BasysLocalPeer inside: self.
 	remotePeers := OrderedCollection new.
@@ -227,6 +242,14 @@ BasysNetwork >> removeRemotePeer: aRemotePeer [
 BasysNetwork >> sendDataPacket: dataObject by: aBasysConnection [
 
 	self subclassResponsibility 
+]
+
+{ #category : #controlling }
+BasysNetwork >> startServer [
+	| server |
+	server := BasysServer for: self.
+	server start.
+	^server
 ]
 
 { #category : #controlling }
