@@ -118,7 +118,7 @@ BasysNetwork >> communicationLibrary: anObject [
 
 { #category : #accessing }
 BasysNetwork >> connectionTimeout [
-	^ connectionTimeout
+	^ connectionTimeout ifNil: [ self class defaultConnectionTimeout ]
 ]
 
 { #category : #accessing }
@@ -143,7 +143,7 @@ BasysNetwork >> createConnectionOn: aSocket [
 BasysNetwork >> establishNewConnectionTo: anAddress [
 
 	| socket |
-	socket := communicationLibrary openConnectionTo: anAddress timeout: connectionTimeout.
+	socket := communicationLibrary openConnectionTo: anAddress timeout: self connectionTimeout.
 	 
 	^self createConnectionOn: socket
 ]
@@ -159,7 +159,6 @@ BasysNetwork >> initialize [
 	super initialize.
 	
 	communicationLibrary := TCPPharoNetworkLibrary.
-	connectionTimeout := self class defaultConnectionTimeout.
 	processingPriority := Processor userBackgroundPriority.
 	localPeer := BasysLocalPeer inside: self.
 	remotePeers := OrderedCollection new.

@@ -170,3 +170,15 @@ BasysNetworkTests >> testRemoveRemotePeer [
 	
 	network remotePeers should not include: #remotePeer
 ]
+
+{ #category : #tests }
+BasysNetworkTests >> testShouldFollowDefaultConnectionTimeoutChangesWhenInstanceIsNotConfigured [
+
+	| current |
+	network connectionTimeout should equal: BasysNetwork defaultConnectionTimeout.
+	current := BasysNetwork defaultConnectionTimeout.
+	[ 
+		BasysNetwork defaultConnectionTimeout: 1000 seconds.
+		network connectionTimeout should equal: BasysNetwork defaultConnectionTimeout.
+	] ensure: [ BasysNetwork defaultConnectionTimeout: current ]
+]
