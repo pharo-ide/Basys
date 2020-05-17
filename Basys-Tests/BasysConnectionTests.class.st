@@ -24,18 +24,41 @@ BasysConnectionTests >> setUp [
 ]
 
 { #category : #tests }
+BasysConnectionTests >> testBecomeClosedWhenIncomingDataProcessIsTerminated [
+	
+	connection stub incomingDataLoop 
+		will: [ 10 seconds asDelay wait].
+	connection startIncomingDataProcess.
+	connection should takeAWhile to receive incomingDataLoop.
+
+	connection incomingDataProcess terminate.
+
+	connection should takeAWhile to receive closeSocketSafely.
+	connection incomingDataProcess should be: nil
+]
+
+{ #category : #tests }
 BasysConnectionTests >> testClosing [
 	
 	connection stub incomingDataLoop 
 		will: [ 10 seconds asDelay wait. #done].
 	
 	connection startIncomingDataProcess.
-	20 milliSecond wait.
+	connection incomingDataProcess should takeAWhile to not be: nil.
+	
 	connection close.
-	20 milliSecond wait.
-
-	connection incomingDataProcess should be isTerminated.
 	connection should receive closeSocketSafely.
+]
+
+{ #category : #tests }
+BasysConnectionTests >> testClosingWhenItWasNotOpened [
+	
+	connection stub.
+	connection incomingDataProcess should be: nil.
+	
+	connection close.
+	
+	connection should receive closeSocketSafely
 ]
 
 { #category : #tests }
@@ -56,6 +79,28 @@ BasysConnectionTests >> testIsNotOpenedWhenNoSocketIsAssigned [
 BasysConnectionTests >> testIsOpenedWhenSocketIsConnected [
 	
 	connection isOpened should beReturnedFrom: [socket isConnected] 
+]
+
+{ #category : #tests }
+BasysConnectionTests >> testOpeningShouldAssignSocket [
+	
+	remotePeer stub address willReturn: #peerAddress.
+
+	connection open.
+	
+	connection socket should beReturnedFrom: [
+		network establishNewConnectionTo: #peerAddress]
+]
+
+{ #category : #tests }
+BasysConnectionTests >> testOpeningShouldStartIncompingDataProcessBeforeIdentification [
+	
+	connection stub.
+	
+	connection open.
+	
+	[connection startIncomingDataProcess.
+	remotePeer identifyConnection: connection] should beDoneInOrder
 ]
 
 { #category : #tests }
@@ -106,29 +151,22 @@ BasysConnectionTests >> testSendingDataPacket [
 ]
 
 { #category : #tests }
-BasysConnectionTests >> testStartingIncomingDataProcess [
+BasysConnectionTests >> testSendingDataPacketWhenConnectionIsNotOpened [
 	
-	connection stub incomingDataLoop 
-		shouldBeSentInAnotherProcess;
-		will: [ 
-			Processor activeProcess should be: connection incomingDataProcess.
-			Processor activeProcess terminate ].
+	connection stub isOpened willReturn: false.
 	
-	connection startIncomingDataProcess.
-	20 milliSecond wait.
+	connection sendDataPacket: #dataPacket.
 	
-	connection incomingDataProcess should be isTerminated
+	connection should receive open
 ]
 
 { #category : #tests }
-BasysConnectionTests >> testTerminatedIncomingDataProcessShouldCloseSocket [
+BasysConnectionTests >> testStartingIncomingDataProcess [
 	
-	connection stub incomingDataLoop 
-		will: [ 10 seconds asDelay wait. #done].
+	connection stub incomingDataLoop will: [ 10 seconds wait ].
 	
 	connection startIncomingDataProcess.
-	20 milliSecond wait.
-	connection incomingDataProcess terminate.
-
-	connection should receive closeSocketSafely 
+	
+	connection should takeAWhile to receive incomingDataLoop 
+		inProcessWhich should be: connection incomingDataProcess
 ]

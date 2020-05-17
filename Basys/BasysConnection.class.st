@@ -49,18 +49,27 @@ BasysConnection class >> inside: aBasysNetwork on: aSocket [
 
 { #category : #controlling }
 BasysConnection >> close [
-	"repeated process termination signals ProcessAlreadyTerminating exception which could stop image quit process with emergency screen. So we check here explicitly that process is not yet terminating"
-	incomingDataProcess isTerminating ifFalse: [ incomingDataProcess terminate].
+	incomingDataProcess ifNotNil: [
+		incomingDataProcess terminate.
+		incomingDataProcess := nil].
+	
 	self closeSocketSafely 
 ]
 
-{ #category : #controlling }
+{ #category : #private }
 BasysConnection >> closeSocketSafely [
 
 	[socket closeAndDestroy] on: Error do: [ ]
 ]
 
-{ #category : #controlling }
+{ #category : #private }
+BasysConnection >> closeYourself [	
+	"When incoming data process is terminated by any reason the connection closes itself here"
+	self closeSocketSafely.
+	incomingDataProcess := nil
+]
+
+{ #category : #private }
 BasysConnection >> incomingDataLoop [
 
 	[
@@ -68,7 +77,7 @@ BasysConnection >> incomingDataLoop [
 			[
 				[self processIncomingDataPacket] on: ConnectionTimedOut, PrimitiveFailed do: [ :err | ]
 		 	] repeat
-		] on: BasysWrongProtocolError do: [ :err | self closeSocketSafely ]
+		] on: BasysWrongProtocolError do: [ :err | self closeYourself ]
 	] on: ConnectionClosed do: [ :err |  ]
 ]
 
@@ -116,20 +125,29 @@ BasysConnection >> network: anObject [
 ]
 
 { #category : #controlling }
+BasysConnection >> open [
+	
+	socket := network establishNewConnectionTo: remotePeer address.
+	
+	self startIncomingDataProcess.
+	
+	remotePeer identifyConnection: self
+]
+
+{ #category : #controlling }
 BasysConnection >> outputStream [
 	^outputStream ifNil: [ outputStream := network transferOutputStreamOn: socket]
 ]
 
-{ #category : #controlling }
+{ #category : #private }
 BasysConnection >> processIncomingDataPacket [
 
 	| dataPacket |
 	
 	dataPacket := network receiveIncomingDataPacketFrom: remotePeer by: self.
 	
-	[ network process: dataPacket receivedFrom: remotePeer ]
-		forkAt: processingPriority 
-		named: network printString
+	[ network process: dataPacket receivedFrom: remotePeer ] 
+		forkAt: processingPriority named: network printString
 ]
 
 { #category : #accessing }
@@ -154,6 +172,8 @@ BasysConnection >> remotePeer: anObject [
 
 { #category : #controlling }
 BasysConnection >> sendDataPacket: dataObject [
+	self isOpened ifFalse: [ self open ].
+	
 	network sendDataPacket: dataObject by: self
 ]
 
@@ -167,10 +187,10 @@ BasysConnection >> socket: anObject [
 	socket := anObject
 ]
 
-{ #category : #controlling }
+{ #category : #private }
 BasysConnection >> startIncomingDataProcess [
 
 	incomingDataProcess := [
-		[self incomingDataLoop] ifCurtailed: [ self closeSocketSafely ]		
+		[self incomingDataLoop] ifCurtailed: [ self closeYourself ]		
 	] forkAt: processingPriority named: self printString.
 ]
