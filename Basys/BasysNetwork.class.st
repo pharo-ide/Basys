@@ -142,10 +142,7 @@ BasysNetwork >> createConnectionOn: aSocket [
 { #category : #operations }
 BasysNetwork >> establishNewConnectionTo: anAddress [
 
-	| socket |
-	socket := communicationLibrary openConnectionTo: anAddress timeout: self connectionTimeout.
-	 
-	^self createConnectionOn: socket
+	^communicationLibrary openConnectionTo: anAddress timeout: self connectionTimeout
 ]
 
 { #category : #operations }

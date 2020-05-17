@@ -23,46 +23,13 @@ BasysActiveRemotePeer class >> inside: aBasysNatwork at: anAddress [
 		
 ]
 
-{ #category : #private }
-BasysActiveRemotePeer >> assignId: peerId receivedFrom: aBasysConnection [
-
-	| registeredPeer |
-	self isIdentified ifTrue: [ 
-		id = peerId ifFalse: [BasysIdentificationFailed signal].
-		^self 
-	].
-
-	registeredPeer := network remotePeerWithId: peerId ifAbsent: [^id := peerId ]. 
-
-	registeredPeer addNewConnection: aBasysConnection.
-	registeredPeer becomeActiveToReplaceSamePeer: self.
-	"It will replace all my references by registeredPeer. And it will change the class of registeredPeer to be active"
-]
-
 { #category : #communication }
 BasysActiveRemotePeer >> establishNewConnection [
 
 	| connection |
-	connection := self establishNewConnectionWithoutPooling.
+	connection := self newConnection.
+	connection open.
 	connectionPool objectToPool: connection
-]
-
-{ #category : #private }
-BasysActiveRemotePeer >> establishNewConnectionWithoutPooling [
-"
-	First I establish new connection to server. Then I should identify localPeer on server side. So server can add new connection to peer which represents it. With identification server will have single remote peer with many pooled connections which points to my (client) localPeer. But without identification server will always has separate peer for any connection.
-"
-	
-	| connection receivedRemotePeerId |
-	connection := network establishNewConnectionTo: address.
-	connection remotePeer: self.
-	connection startIncomingDataProcess.
-	[receivedRemotePeerId := network identifyLocalPeerOn: connection.
-	self assignId: receivedRemotePeerId receivedFrom: connection] on: Error do: [:err | 
-		connection close.
-		err pass].
-			
-	^connection
 ]
 
 { #category : #private }
@@ -81,10 +48,15 @@ BasysActiveRemotePeer >> identifyConnection: aConnection [
 	"It will replace all my references by registeredPeer. And it will change the class of registeredPeer to be active"
 ]
 
+{ #category : #private }
+BasysActiveRemotePeer >> newConnection [
+	^BasysConnection with: self inside: network
+]
+
 { #category : #initialization }
 BasysActiveRemotePeer >> prepareConnectionPool [
 "
 	connections will be established by demand
 "
-	connectionPool creator: [ self establishNewConnectionWithoutPooling ].
+	connectionPool creator: [ self newConnection ].
 ]

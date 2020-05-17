@@ -19,8 +19,8 @@ BasysConnectionTests >> setUp [
 	network := Mock new.
 	remotePeer := Mock new.
 	
-	connection := BasysConnection inside: network on: socket.
-	connection remotePeer: remotePeer
+	connection := BasysConnection with: remotePeer inside: network.
+	connection socket: socket
 ]
 
 { #category : #tests }
@@ -90,6 +90,19 @@ BasysConnectionTests >> testOpeningShouldAssignSocket [
 	
 	connection socket should beReturnedFrom: [
 		network establishNewConnectionTo: #peerAddress]
+]
+
+{ #category : #tests }
+BasysConnectionTests >> testOpeningShouldCloseWhenIdentificationFails [
+	
+	| error |
+	connection stub.
+	error := Error new.
+	(remotePeer stub identifyConnection: connection) willRaise: error.
+	
+	[connection open] should raise: error.
+	connection should receive close
+	
 ]
 
 { #category : #tests }

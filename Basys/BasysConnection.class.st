@@ -40,11 +40,11 @@ Class {
 }
 
 { #category : #'instance creation' }
-BasysConnection class >> inside: aBasysNetwork on: aSocket [
+BasysConnection class >> with: aBasysRemotePeer inside: aBasysNetwork [
 
 	^self new
 		network: aBasysNetwork;
-		socket: aSocket
+		remotePeer: aBasysRemotePeer
 ]
 
 { #category : #controlling }
@@ -126,12 +126,19 @@ BasysConnection >> network: anObject [
 
 { #category : #controlling }
 BasysConnection >> open [
-	
+	"First I establish new connection with a server and start incoming data process. 
+	Then I should identify the local peer on server:
+		- the server will add new connection to the peer which represents it. 
+	With identification the server will have single remote peer with many pooled connections 
+	which points to my (client) local peer. 
+	Without identification server would always have separate peers for every connection"
 	socket := network establishNewConnectionTo: remotePeer address.
 	
 	self startIncomingDataProcess.
 	
-	remotePeer identifyConnection: self
+	[remotePeer identifyConnection: self] on: Error do: [ :err |
+		self close.
+		err pass ]
 ]
 
 { #category : #controlling }
