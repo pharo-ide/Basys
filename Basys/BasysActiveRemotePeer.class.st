@@ -36,7 +36,7 @@ BasysActiveRemotePeer >> assignId: peerId receivedFrom: aBasysConnection [
 
 	registeredPeer addNewConnection: aBasysConnection.
 	registeredPeer becomeActiveToReplaceSamePeer: self.
-	"it will replace all my references by registeredPeer. And it change registeredPeer class to be active"
+	"It will replace all my references by registeredPeer. And it will change the class of registeredPeer to be active"
 ]
 
 { #category : #communication }
@@ -56,7 +56,7 @@ BasysActiveRemotePeer >> establishNewConnectionWithoutPooling [
 	| connection receivedRemotePeerId |
 	connection := network establishNewConnectionTo: address.
 	connection remotePeer: self.
-	connection acceptIncomingData.
+	connection startIncomingDataProcess.
 	[receivedRemotePeerId := network identifyLocalPeerOn: connection.
 	self assignId: receivedRemotePeerId receivedFrom: connection] on: Error do: [:err | 
 		connection close.

@@ -48,14 +48,6 @@ BasysConnection class >> inside: aBasysNetwork on: aSocket [
 ]
 
 { #category : #controlling }
-BasysConnection >> acceptIncomingData [
-
-	incomingDataProcess := [
-		[self incomingDataLoop] ifCurtailed: [ self closeSocketSafely ]		
-	] forkAt: processingPriority named: self printString.
-]
-
-{ #category : #controlling }
 BasysConnection >> close [
 	"repeated process termination signals ProcessAlreadyTerminating exception which could stop image quit process with emergency screen. So we check here explicitly that process is not yet terminating"
 	incomingDataProcess isTerminating ifFalse: [ incomingDataProcess terminate].
@@ -104,6 +96,11 @@ BasysConnection >> inputStream [
 ]
 
 { #category : #testing }
+BasysConnection >> isOpened [
+	^socket notNil and: [ self isValid ]
+]
+
+{ #category : #testing }
 BasysConnection >> isValid [
 	^socket isConnected
 ]
@@ -126,12 +123,13 @@ BasysConnection >> outputStream [
 { #category : #controlling }
 BasysConnection >> processIncomingDataPacket [
 
-	| dataPacket process |
+	| dataPacket |
 	
 	dataPacket := network receiveIncomingDataPacketFrom: remotePeer by: self.
-	process := remotePeer prepareProcessingOf: dataPacket.
 	
-	process run.
+	[ network process: dataPacket receivedFrom: remotePeer ]
+		forkAt: processingPriority 
+		named: network printString
 ]
 
 { #category : #accessing }
@@ -167,4 +165,12 @@ BasysConnection >> socket [
 { #category : #accessing }
 BasysConnection >> socket: anObject [
 	socket := anObject
+]
+
+{ #category : #controlling }
+BasysConnection >> startIncomingDataProcess [
+
+	incomingDataProcess := [
+		[self incomingDataLoop] ifCurtailed: [ self closeSocketSafely ]		
+	] forkAt: processingPriority named: self printString.
 ]

@@ -27,7 +27,7 @@ BasysPassiveRemotePeerTests >> testAcceptingNewConnectionWithSocket [
 		connection remotePeer: peer.
 		connectionPool objectToPool: connection.
 		connectionPool fixMaxActiveObjects.
-		connection acceptIncomingData].
+		connection startIncomingDataProcess].
 
 	] runWithMocks 
 ]

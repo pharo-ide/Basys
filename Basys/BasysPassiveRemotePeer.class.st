@@ -33,7 +33,7 @@ BasysPassiveRemotePeer >> acceptNewConnectionEstablishedBy: aSocket [
 	
 	self addNewConnection: connection.
 	
-	connection acceptIncomingData
+	connection startIncomingDataProcess
 ]
 
 { #category : #private }

@@ -15,6 +15,7 @@ BasysConnectionTests >> setUp [
 	super setUp.
 	
 	socket := Mock new.
+	socket stub isConnected willReturn: true. "by default we are testing opened connection"
 	network := Mock new.
 	remotePeer := Mock new.
 	
@@ -28,7 +29,7 @@ BasysConnectionTests >> testClosing [
 	connection stub incomingDataLoop 
 		will: [ 10 seconds asDelay wait. #done].
 	
-	connection acceptIncomingData.
+	connection startIncomingDataProcess.
 	20 milliSecond wait.
 	connection close.
 	20 milliSecond wait.
@@ -44,40 +45,64 @@ BasysConnectionTests >> testHasProcessingPriorityByDefault [
 ]
 
 { #category : #tests }
+BasysConnectionTests >> testIsNotOpenedWhenNoSocketIsAssigned [
+	
+	connection socket: nil.
+	
+	connection should not be isOpened
+]
+
+{ #category : #tests }
+BasysConnectionTests >> testIsOpenedWhenSocketIsConnected [
+	
+	connection isOpened should beReturnedFrom: [socket isConnected] 
+]
+
+{ #category : #tests }
 BasysConnectionTests >> testProcessingIncomingDataPacket [
 	
-	[:process |
-		[ connection processIncomingDataPacket ]
-			should strictly satisfy: 
-		[ (network receiveIncomingDataPacketFrom: remotePeer by: connection) willReturn: #dataPacket.
-		(remotePeer prepareProcessingOf: #dataPacket) willReturn: process.
-		process run ]
+	(network stub receiveIncomingDataPacketFrom: remotePeer by: connection) willReturn: #dataPacket.
+	
+	connection processIncomingDataPacket.
+	
+	network should takeAWhile to receive process: #dataPacket receivedFrom: remotePeer
+]
 
-	] runWithMocks 
+{ #category : #tests }
+BasysConnectionTests >> testProcessingIncomingDataPacketShouldBeAsync [
+	
+	connection processIncomingDataPacket.
+	
+	(network should takeAWhile to receive process: Any receivedFrom: remotePeer)
+		inAnotherProcess
+]
+
+{ #category : #tests }
+BasysConnectionTests >> testProcessingIncomingDataPacketShouldDoneWithProcessingPriority [
+	
+	connection processIncomingDataPacket.
+	
+	(network should takeAWhile to receive process: Any receivedFrom: remotePeer) 
+		inProcessWhich 	priority should be: connection processingPriority
 ]
 
 { #category : #tests }
 BasysConnectionTests >> testProcessingWrongProtocolError [
 	
-	[
-		[ connection incomingDataLoop ]
-			should strictly satisfy: 
-		[ (network receiveIncomingDataPacketFrom: remotePeer by: connection) 
+	(network stub receiveIncomingDataPacketFrom: remotePeer by: connection) 
 				willRaise: BasysWrongProtocolError.
-		socket closeAndDestroy]
-
-	] runWithMocks 
+				
+	connection incomingDataLoop.
+	
+	socket should receive closeAndDestroy
 ]
 
 { #category : #tests }
 BasysConnectionTests >> testSendingDataPacket [
 	
-	[
-		[ connection sendDataPacket: #dataPacket ]
-			should strictly satisfy: 
-		[ network sendDataPacket: #dataPacket by: connection ]
-
-	] runWithMocks 
+	connection sendDataPacket: #dataPacket.
+	
+	network should receive sendDataPacket: #dataPacket by: connection
 ]
 
 { #category : #tests }
@@ -89,7 +114,7 @@ BasysConnectionTests >> testStartingIncomingDataProcess [
 			Processor activeProcess should be: connection incomingDataProcess.
 			Processor activeProcess terminate ].
 	
-	connection acceptIncomingData.
+	connection startIncomingDataProcess.
 	20 milliSecond wait.
 	
 	connection incomingDataProcess should be isTerminated
@@ -101,7 +126,7 @@ BasysConnectionTests >> testTerminatedIncomingDataProcessShouldCloseSocket [
 	connection stub incomingDataLoop 
 		will: [ 10 seconds asDelay wait. #done].
 	
-	connection acceptIncomingData.
+	connection startIncomingDataProcess.
 	20 milliSecond wait.
 	connection incomingDataProcess terminate.
 

@@ -181,11 +181,6 @@ BasysNetwork >> localPeerId [
 ]
 
 { #category : #operations }
-BasysNetwork >> prepareProcessingOf: incomingData receivedFrom: aRemotePeer [
-	^BasysProcess for: self with: incomingData receivedFrom: aRemotePeer
-]
-
-{ #category : #operations }
 BasysNetwork >> process: dataObject receivedFrom: aRemotePeer [
 
 	self subclassResponsibility 

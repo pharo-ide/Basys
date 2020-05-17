@@ -170,12 +170,6 @@ BasysRemotePeer >> prepareConnectionPool [
 	self subclassResponsibility 
 ]
 
-{ #category : #operations }
-BasysRemotePeer >> prepareProcessingOf: dataObject [
-
-	^BasysProcess for: network with: dataObject receivedFrom: self
-]
-
 { #category : #communication }
 BasysRemotePeer >> receiveIncomingDataPacketBy: aSocket [
 	
