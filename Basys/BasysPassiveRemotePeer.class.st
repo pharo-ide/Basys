@@ -25,23 +25,23 @@ Class {
 	#category : 'Basys'
 }
 
-{ #category : #communication }
-BasysPassiveRemotePeer >> acceptNewConnectionEstablishedBy: aSocket [
-
-	| connection |
-	connection := network createConnectionOn: aSocket.
-	
-	self addNewConnection: connection.
-	
-	connection startIncomingDataProcess
-]
-
 { #category : #private }
 BasysPassiveRemotePeer >> addNewConnection: aBasysConnection [
 
 	aBasysConnection remotePeer: self.
 	
 	connectionPool objectToPool: aBasysConnection.
+	connectionPool fixMaxActiveObjects
+]
+
+{ #category : #communication }
+BasysPassiveRemotePeer >> addNewConnectionOpenedUsing: aSocket [
+
+	| connection |
+	connection := self newConnection.
+	connection completeRemoteOpeningUsing: aSocket.
+	
+	connectionPool objectToPool: connection.
 	connectionPool fixMaxActiveObjects
 ]
 

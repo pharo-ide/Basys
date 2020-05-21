@@ -69,6 +69,13 @@ BasysConnection >> closeYourself [
 	incomingDataProcess := nil
 ]
 
+{ #category : #controlling }
+BasysConnection >> completeRemoteOpeningUsing: clientSocket [
+
+	socket := clientSocket.
+	self startIncomingDataProcess 
+]
+
 { #category : #private }
 BasysConnection >> incomingDataLoop [
 

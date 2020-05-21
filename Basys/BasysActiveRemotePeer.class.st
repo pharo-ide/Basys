@@ -48,11 +48,6 @@ BasysActiveRemotePeer >> identifyConnection: aConnection [
 	"It will replace all my references by registeredPeer. And it will change the class of registeredPeer to be active"
 ]
 
-{ #category : #private }
-BasysActiveRemotePeer >> newConnection [
-	^BasysConnection with: self inside: network
-]
-
 { #category : #initialization }
 BasysActiveRemotePeer >> prepareConnectionPool [
 "

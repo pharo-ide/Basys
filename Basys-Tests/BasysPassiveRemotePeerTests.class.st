@@ -16,35 +16,26 @@ BasysPassiveRemotePeerTests >> setUp [
 ]
 
 { #category : #tests }
-BasysPassiveRemotePeerTests >> testAcceptingNewConnectionWithSocket [
+BasysPassiveRemotePeerTests >> testAddingNewOpenedConnection [
 
-	[:connection :connectionPool |
-		peer connectionPool: connectionPool.
-		
-		[ peer acceptNewConnectionEstablishedBy: #socket ]
-			should strictly satisfy: 
-		[(network createConnectionOn: #socket) willReturn: connection.
-		connection remotePeer: peer.
-		connectionPool objectToPool: connection.
-		connectionPool fixMaxActiveObjects.
-		connection startIncomingDataProcess].
+	| connection |
+	peer addNewConnectionOpenedUsing: #socket.
 
-	] runWithMocks 
+	connection := peer connectionPool unsafeBorrow.
+	connection close.
+	
+	connection should beInstanceOf: BasysConnection.
+	connection network should be: network.
+	connection remotePeer should be: peer.
+	connection socket should be: #socket.
 ]
 
 { #category : #tests }
-BasysPassiveRemotePeerTests >> testAddingNewConnection [
+BasysPassiveRemotePeerTests >> testAddingNewOpenedConnectionShouldGrowConnectionPool [
 
-	[:connection :connectionPool |
-		peer connectionPool: connectionPool.
-		
-		[ peer addNewConnection: connection ]
-			should strictly satisfy: 
-		[connection remotePeer: peer.
-		connectionPool objectToPool: connection.
-		connectionPool fixMaxActiveObjects].
-
-	] runWithMocks 
+	peer addNewConnectionOpenedUsing: #socket.
+	
+	peer connectionPool maxActiveObjects should equal: 1
 ]
 
 { #category : #tests }

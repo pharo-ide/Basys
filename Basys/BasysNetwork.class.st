@@ -78,7 +78,7 @@ BasysNetwork class >> defaultConnectionTimeout: aDuration [
 ]
 
 { #category : #accessing }
-BasysNetwork >> addNewPeerForAcceptingConnections [
+BasysNetwork >> addNewPassivePeer [
 
 	| newPeer |
 	newPeer := BasysPassiveRemotePeer inside: self.
@@ -131,12 +131,6 @@ BasysNetwork >> connectionsCount [
 	remotePeers ifEmpty: [ ^0 ].
 	
 	^remotePeers sum: [ :each | each connectionsCount ]
-]
-
-{ #category : #operations }
-BasysNetwork >> createConnectionOn: aSocket [
- 
-	^BasysConnection inside: self on: aSocket
 ]
 
 { #category : #operations }

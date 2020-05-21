@@ -15,11 +15,11 @@ BasysNetworkTests >> setUp [
 ]
 
 { #category : #tests }
-BasysNetworkTests >> testAddingNewPeerForAcceptingConnections [
+BasysNetworkTests >> testAddingNewPassivePeer [
 
 	| remotePeer |
 	
-	remotePeer := network addNewPeerForAcceptingConnections.
+	remotePeer := network addNewPassivePeer.
 	
 	remotePeer should beInstanceOf: BasysPassiveRemotePeer.
 	remotePeer network should be: network.
@@ -73,17 +73,6 @@ BasysNetworkTests >> testConnectionsCount [
 BasysNetworkTests >> testConnectionsCountWhenNoRemotePeers [
 
 	network connectionsCount should be: 0
-]
-
-{ #category : #tests }
-BasysNetworkTests >> testCreationNewConnection [
-	
-	| actual |
-	actual := network createConnectionOn: #socket.
-	
-	actual should beInstanceOf: BasysConnection.
-	actual network should be: network.
-	actual socket should be: #socket
 ]
 
 { #category : #tests }

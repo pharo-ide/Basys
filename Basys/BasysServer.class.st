@@ -62,9 +62,9 @@ BasysServer >> network: aBasysNetwork [
 BasysServer >> processNewConnection: clientSocket [
 
 	| newPeer |
-	newPeer := network addNewPeerForAcceptingConnections.
+	newPeer := network addNewPassivePeer.
 	
-	newPeer acceptNewConnectionEstablishedBy: clientSocket
+	newPeer addNewConnectionOpenedUsing: clientSocket
 ]
 
 { #category : #controlling }

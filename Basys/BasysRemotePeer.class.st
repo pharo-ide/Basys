@@ -164,6 +164,11 @@ BasysRemotePeer >> network: aBasysNetwork [
 	connectionPool maxWaitForBorrow: (network connectionTimeout * 2) asMilliSeconds.
 ]
 
+{ #category : #private }
+BasysRemotePeer >> newConnection [
+	^BasysConnection with: self inside: network
+]
+
 { #category : #initialization }
 BasysRemotePeer >> prepareConnectionPool [
 

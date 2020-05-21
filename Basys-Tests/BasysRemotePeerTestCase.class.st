@@ -48,6 +48,17 @@ BasysRemotePeerTestCase >> testConnectionsCountWhenNothingExists [
 ]
 
 { #category : #tests }
+BasysRemotePeerTestCase >> testCreatingNewConnection [
+
+	| connection |
+	connection := peer newConnection.
+	
+	connection should beInstanceOf: BasysConnection.
+	connection network should be: network.
+	connection remotePeer should be: peer
+]
+
+{ #category : #tests }
 BasysRemotePeerTestCase >> testGettingLocalPeerId [
 
 	network stub localPeerId willReturn: #localPeerId.
