@@ -13,6 +13,16 @@ BasysConnectionPool class >> of: aBasysRemotePeer [
 		remotePeer: aBasysRemotePeer
 ]
 
+{ #category : #private }
+BasysConnectionPool >> destroyObject: aConnection [
+	aConnection close
+]
+
+{ #category : #private }
+BasysConnectionPool >> objectGoingToBeBorrowed: aConnection [
+	aConnection isValid ifFalse: [OPAbortOperation signal]
+]
+
 { #category : #accessing }
 BasysConnectionPool >> remotePeer [
 	^ remotePeer

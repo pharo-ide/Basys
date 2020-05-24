@@ -4,19 +4,9 @@ Class {
 	#category : #Basys
 }
 
-{ #category : #private }
-BasysActiveConnectionPool >> destroyObject: aConnection [
-	aConnection close
-]
-
 { #category : #'object-lifecycle' }
 BasysActiveConnectionPool >> makeObject [
 	^remotePeer newConnection
-]
-
-{ #category : #private }
-BasysActiveConnectionPool >> objectGoingToBeBorrowed: aConnection [
-	aConnection isValid ifFalse: [OPAbortOperation signal]
 ]
 
 { #category : #private }

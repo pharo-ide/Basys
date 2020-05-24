@@ -10,6 +10,19 @@ BasysActiveConnectionPoolTests >> createConnectionPool [
 ]
 
 { #category : #tests }
+BasysActiveConnectionPoolTests >> testClosesInvalidConnection [
+
+	| invalidConnection |
+	invalidConnection := connectionPool borrow.
+	connectionPool return: invalidConnection.	
+	invalidConnection stub isValid willReturn: false.
+	
+	connectionPool borrow.
+	
+	invalidConnection should receive close
+]
+
+{ #category : #tests }
 BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenAllBusyButMoreConnectionAreAllowed [
 
 	| connection1 connection2 |
@@ -28,19 +41,6 @@ BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenNothingExists [
 	
 	connection should beReturnedFrom: [ remotePeer newConnection ].
 	connectionPool numberOfActiveObjects should be: 1
-]
-
-{ #category : #tests }
-BasysActiveConnectionPoolTests >> testDistroysInvalidConnection [
-
-	| invalidConnection |
-	invalidConnection := connectionPool borrow.
-	connectionPool return: invalidConnection.	
-	invalidConnection stub isValid willReturn: false.
-	
-	connectionPool borrow.
-	
-	invalidConnection should receive close
 ]
 
 { #category : #tests }
