@@ -32,6 +32,13 @@ Class {
 	#category : 'Basys'
 }
 
+{ #category : #'instance creation' }
+BasysRemotePeer class >> inside: aBasysNetwork at: anAddress [
+
+	^(self inside: aBasysNetwork)
+		beActiveWith: anAddress
+]
+
 { #category : #accessing }
 BasysRemotePeer >> address [
 	^ address
@@ -48,6 +55,19 @@ BasysRemotePeer >> addressString [
 	address ifNil: [ ^'Unknown address' ].
 	
 	^String streamContents: [ :s | address printSimpleStringOn: s ]
+]
+
+{ #category : #initialization }
+BasysRemotePeer >> beActiveWith: anAddress [
+
+	address := anAddress.
+	connectionPool beActive
+]
+
+{ #category : #initialization }
+BasysRemotePeer >> bePassive [
+
+	connectionPool bePassive
 ]
 
 { #category : #controlling }
@@ -127,7 +147,7 @@ BasysRemotePeer >> importConnectionsFrom: anotherConnectionsPool [
 BasysRemotePeer >> initialize [
 	super initialize.
 	
-	self createNewConnectionPool
+	connectionPool := BasysPassiveConnectionPool of: self
 ]
 
 { #category : #testing }
@@ -160,8 +180,7 @@ BasysRemotePeer >> localPeerId [
 
 { #category : #accessing }
 BasysRemotePeer >> network: aBasysNetwork [
-	super network: aBasysNetwork.
-	connectionPool maxWaitForBorrow: (network connectionTimeout * 2) asMilliSeconds.
+	super network: aBasysNetwork
 ]
 
 { #category : #private }

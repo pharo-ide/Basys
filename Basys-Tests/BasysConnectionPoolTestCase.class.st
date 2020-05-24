@@ -28,3 +28,19 @@ BasysConnectionPoolTestCase >> setUp [
 		
 	connectionPool := self createConnectionPool
 ]
+
+{ #category : #tests }
+BasysConnectionPoolTestCase >> testConvertingToActivePool [
+
+	connectionPool beActive.
+	
+	connectionPool should beInstanceOf: BasysActiveConnectionPool
+]
+
+{ #category : #tests }
+BasysConnectionPoolTestCase >> testConvertingToPassivePool [
+
+	connectionPool bePassive.
+	
+	connectionPool should beInstanceOf: BasysPassiveConnectionPool
+]

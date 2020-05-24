@@ -22,7 +22,7 @@ BasysRemotePeerTestCase >> setUp [
 ]
 
 { #category : #tests }
-BasysRemotePeerTestCase >> testBelongsToItAddress [
+BasysRemotePeerTestCase >> testBelongsToOwnAddress [
 
 	| actual |
 	peer address: 'some address object' copy.

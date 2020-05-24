@@ -15,14 +15,6 @@ Class {
 	#category : 'Basys'
 }
 
-{ #category : #'instance creation' }
-BasysActiveRemotePeer class >> inside: aBasysNatwork at: anAddress [
-
-	^(self inside: aBasysNatwork)
-		address: anAddress
-		
-]
-
 { #category : #communication }
 BasysActiveRemotePeer >> establishNewConnection [
 

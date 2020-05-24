@@ -10,6 +10,17 @@ BasysActiveRemotePeerTests >> peerClass [
 ]
 
 { #category : #tests }
+BasysActiveRemotePeerTests >> testCreationActivePeerUsingAddress [
+	
+	peer := BasysRemotePeer inside: network at: #address.
+	
+	peer network should be: network.
+	peer address should be: #address.
+	peer connectionPool should beInstanceOf: BasysActiveConnectionPool.
+	peer connectionPool remotePeer should be: peer
+]
+
+{ #category : #tests }
 BasysActiveRemotePeerTests >> testEstablishingNewConnection [
 
 	[:connection :connectionPool |
@@ -79,6 +90,13 @@ BasysActiveRemotePeerTests >> testEstablishingNewConnectionWhenSamePeerIsAlready
 ]
 
 { #category : #tests }
+BasysActiveRemotePeerTests >> testHasPassiveConnectionPoolByDefault [
+
+	peer connectionPool should beInstanceOf: BasysPassiveConnectionPool.
+	peer connectionPool remotePeer should be: peer
+]
+
+{ #category : #tests }
 BasysActiveRemotePeerTests >> testIdentifyingFirstConnection [
 	(network stub identifyLocalPeerOn: #connection) willReturn: #peerId.
 	(network stub remotePeerWithId: #peerId ifAbsent: Any) will: [ :id :block | block value ].
@@ -121,4 +139,25 @@ BasysActiveRemotePeerTests >> testIdentifyingNewConnectionWhenItIsFromAnotherPee
 	[peer identifyConnection: #connection] should raise: BasysIdentificationFailed.
 	network should not receive remotePeerWithId: Any ifAbsent: Any
 	
+]
+
+{ #category : #tests }
+BasysActiveRemotePeerTests >> testMakingActivePeer [
+	
+	peer connectionPool stub.
+	
+	peer beActiveWith: #address.
+	
+	peer address should be: #address.
+	peer connectionPool should receive beActive
+]
+
+{ #category : #tests }
+BasysActiveRemotePeerTests >> testMakingPassivePeer [
+	
+	peer connectionPool stub.
+	
+	peer bePassive.
+	
+	peer connectionPool should receive bePassive
 ]

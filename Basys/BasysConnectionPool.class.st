@@ -13,6 +13,16 @@ BasysConnectionPool class >> of: aBasysRemotePeer [
 		remotePeer: aBasysRemotePeer
 ]
 
+{ #category : #controlling }
+BasysConnectionPool >> beActive [ 
+	MirrorPrimitives setClass: BasysActiveConnectionPool to: self
+]
+
+{ #category : #controlling }
+BasysConnectionPool >> bePassive [ 
+	MirrorPrimitives setClass: BasysPassiveConnectionPool to: self
+]
+
 { #category : #private }
 BasysConnectionPool >> destroyObject: aConnection [
 	aConnection close
