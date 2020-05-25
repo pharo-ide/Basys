@@ -44,6 +44,18 @@ BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenNothingExists [
 ]
 
 { #category : #tests }
+BasysActiveConnectionPoolTests >> testIsActive [ 
+
+	connectionPool should be isActive
+]
+
+{ #category : #tests }
+BasysActiveConnectionPoolTests >> testIsNotPassive [ 
+
+	connectionPool should not be isPassive
+]
+
+{ #category : #tests }
 BasysActiveConnectionPoolTests >> testRaisesErrorWhenZeroConnectionsAreAllowed [
 
 	remotePeer stub maxConnectionsCount willReturn: 0.

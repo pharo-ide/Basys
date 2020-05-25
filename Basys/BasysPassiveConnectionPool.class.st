@@ -4,6 +4,11 @@ Class {
 	#category : #Basys
 }
 
+{ #category : #testing }
+BasysPassiveConnectionPool >> isActive [
+	^false
+]
+
 { #category : #'object-lifecycle' }
 BasysPassiveConnectionPool >> makeObject [
 	"Passive connection pool should never attempt to create connection by itself"

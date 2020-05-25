@@ -27,9 +27,10 @@ Class {
 	#superclass : #BasysPeer,
 	#instVars : [
 		'address',
-		'connectionPool'
+		'connectionPool',
+		'maxConnectionsCount'
 	],
-	#category : 'Basys'
+	#category : #Basys
 }
 
 { #category : #'instance creation' }
@@ -151,6 +152,11 @@ BasysRemotePeer >> initialize [
 ]
 
 { #category : #testing }
+BasysRemotePeer >> isActive [ 
+	^connectionPool isActive
+]
+
+{ #category : #testing }
 BasysRemotePeer >> isBelongsTo: anAddress [
 	^address = anAddress
 ]
@@ -173,9 +179,24 @@ BasysRemotePeer >> isIdentified [
 	^id notNil
 ]
 
+{ #category : #testing }
+BasysRemotePeer >> isPassive [ 
+	^connectionPool isPassive
+]
+
 { #category : #accessing }
 BasysRemotePeer >> localPeerId [
 	^network localPeerId
+]
+
+{ #category : #accessing }
+BasysRemotePeer >> maxConnectionsCount [
+	^maxConnectionsCount ifNil: [ network maxConnectionsCountPerPeer ]
+]
+
+{ #category : #accessing }
+BasysRemotePeer >> maxConnectionsCount: anObject [
+	maxConnectionsCount := anObject
 ]
 
 { #category : #accessing }

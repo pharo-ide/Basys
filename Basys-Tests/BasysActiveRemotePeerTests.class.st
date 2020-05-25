@@ -6,7 +6,15 @@ Class {
 
 { #category : #running }
 BasysActiveRemotePeerTests >> peerClass [ 
-	^BasysActiveRemotePeer 
+	^BasysRemotePeer 
+]
+
+{ #category : #tests }
+BasysActiveRemotePeerTests >> testCanBeConfiguredWithMaxConnectionsCount [
+	
+	peer maxConnectionsCount: 100.
+	
+	peer maxConnectionsCount should be: 100
 ]
 
 { #category : #tests }
@@ -90,6 +98,12 @@ BasysActiveRemotePeerTests >> testEstablishingNewConnectionWhenSamePeerIsAlready
 ]
 
 { #category : #tests }
+BasysActiveRemotePeerTests >> testHasDefaultMaxConnectionsCount [
+	
+	peer maxConnectionsCount should beReturnedFrom: [ network maxConnectionsCountPerPeer ]
+]
+
+{ #category : #tests }
 BasysActiveRemotePeerTests >> testHasPassiveConnectionPoolByDefault [
 
 	peer connectionPool should beInstanceOf: BasysPassiveConnectionPool.
@@ -149,7 +163,8 @@ BasysActiveRemotePeerTests >> testMakingActivePeer [
 	peer beActiveWith: #address.
 	
 	peer address should be: #address.
-	peer connectionPool should receive beActive
+	peer connectionPool should receive beActive.
+	peer should be isActive
 ]
 
 { #category : #tests }
@@ -159,5 +174,6 @@ BasysActiveRemotePeerTests >> testMakingPassivePeer [
 	
 	peer bePassive.
 	
-	peer connectionPool should receive bePassive
+	peer connectionPool should receive bePassive.
+	peer should be isPassive
 ]

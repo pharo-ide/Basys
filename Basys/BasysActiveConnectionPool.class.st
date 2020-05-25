@@ -4,6 +4,11 @@ Class {
 	#category : #Basys
 }
 
+{ #category : #testing }
+BasysActiveConnectionPool >> isActive [ 
+	^true
+]
+
 { #category : #'object-lifecycle' }
 BasysActiveConnectionPool >> makeObject [
 	^remotePeer newConnection

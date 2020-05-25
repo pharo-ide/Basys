@@ -28,6 +28,16 @@ BasysConnectionPool >> destroyObject: aConnection [
 	aConnection close
 ]
 
+{ #category : #testing }
+BasysConnectionPool >> isActive [ 
+	self subclassResponsibility 
+]
+
+{ #category : #testing }
+BasysConnectionPool >> isPassive [ 
+	^self isActive not
+]
+
 { #category : #private }
 BasysConnectionPool >> objectGoingToBeBorrowed: aConnection [
 	aConnection isValid ifFalse: [OPAbortOperation signal]

@@ -10,6 +10,18 @@ BasysPassiveConnectionPoolTests >> createConnectionPool [
 ]
 
 { #category : #tests }
+BasysPassiveConnectionPoolTests >> testIsNotActive [ 
+
+	connectionPool should not be isActive
+]
+
+{ #category : #tests }
+BasysPassiveConnectionPoolTests >> testIsPassive [ 
+
+	connectionPool should be isPassive
+]
+
+{ #category : #tests }
 BasysPassiveConnectionPoolTests >> testRaisesErrorWhenAllAvailableConnectionsAreInvalid [
 
 	| invalidConnection |

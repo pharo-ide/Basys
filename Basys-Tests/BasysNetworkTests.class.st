@@ -79,7 +79,7 @@ BasysNetworkTests >> testConnectionsCountWhenNoRemotePeers [
 BasysNetworkTests >> testGettingExistedRemotePeerAtAddress [
 
 	| existedPeer remotePeer |
-	existedPeer := BasysActiveRemotePeer inside: network at: #address.
+	existedPeer := BasysRemotePeer inside: network at: #address.
 	network addRemotePeer: existedPeer.
 
 	remotePeer := network remotePeerAt: #address.
@@ -90,13 +90,13 @@ BasysNetworkTests >> testGettingExistedRemotePeerAtAddress [
 { #category : #tests }
 BasysNetworkTests >> testGettingNewRemotePeerAtAddress [
 
-	| existedPeer remotePeer |
-	existedPeer := BasysActiveRemotePeer inside: network at: #address.
-	network addRemotePeer: existedPeer.
+	| existingPeer remotePeer |
+	existingPeer := BasysRemotePeer inside: network at: #address.
+	network addRemotePeer: existingPeer.
 
 	remotePeer := network remotePeerAt: #newAddress.
 	
-	remotePeer should beInstanceOf: BasysActiveRemotePeer.
+	remotePeer should beInstanceOf: BasysRemotePeer.
 	remotePeer network should be: network.
 	remotePeer address should be: #newAddress.
 	network remotePeers should include: remotePeer
@@ -129,6 +129,13 @@ BasysNetworkTests >> testHasDefaultConnectionTimeoutByDefault [
 
 	network connectionTimeout should equal: BasysNetwork defaultConnectionTimeout.
 	BasysNetwork defaultConnectionTimeout should not be: nil
+]
+
+{ #category : #tests }
+BasysNetworkTests >> testHasDefaultMaxConnectionsCountPerPeerByDefault [
+
+	network maxConnectionsCountPerPeer should equal: BasysNetwork defaultMaxConnectionsCountPerPeer.
+	BasysNetwork defaultMaxConnectionsCountPerPeer should not be: nil
 ]
 
 { #category : #tests }

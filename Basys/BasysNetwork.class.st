@@ -59,10 +59,12 @@ Class {
 		'connectionTimeout',
 		'processingPriority',
 		'localPeer',
-		'remotePeers'
+		'remotePeers',
+		'maxConnectionsCountPerPeer'
 	],
 	#classInstVars : [
-		'defaultConnectionTimeout'
+		'defaultConnectionTimeout',
+		'defaultMaxConnectionsCountPerPeer'
 	],
 	#category : #Basys
 }
@@ -75,6 +77,16 @@ BasysNetwork class >> defaultConnectionTimeout [
 { #category : #accessing }
 BasysNetwork class >> defaultConnectionTimeout: aDuration [
 	defaultConnectionTimeout := aDuration
+]
+
+{ #category : #accessing }
+BasysNetwork class >> defaultMaxConnectionsCountPerPeer [
+	^defaultMaxConnectionsCountPerPeer ifNil: [ 10 ]
+]
+
+{ #category : #accessing }
+BasysNetwork class >> defaultMaxConnectionsCountPerPeer: anObject [
+	defaultMaxConnectionsCountPerPeer := anObject
 ]
 
 { #category : #accessing }
@@ -171,6 +183,16 @@ BasysNetwork >> localPeerId [
 	^ localPeer id
 ]
 
+{ #category : #accessing }
+BasysNetwork >> maxConnectionsCountPerPeer [
+	^ maxConnectionsCountPerPeer ifNil: [ self class defaultMaxConnectionsCountPerPeer ]
+]
+
+{ #category : #accessing }
+BasysNetwork >> maxConnectionsCountPerPeer: anInteger [
+	maxConnectionsCountPerPeer := anInteger
+]
+
 { #category : #operations }
 BasysNetwork >> process: dataObject receivedFrom: aRemotePeer [
 
@@ -197,7 +219,7 @@ BasysNetwork >> receiveIncomingDataPacketFrom: aRemotePeer by: aBasysConnection 
 BasysNetwork >> remotePeerAt: anAddress [ 
 	| peer |
 	^remotePeers detect: [ :each | each isBelongsTo: anAddress ] ifNone: [ 
-		peer := BasysActiveRemotePeer inside: self at: anAddress.
+		peer := BasysRemotePeer inside: self at: anAddress.
 		remotePeers add: peer.
 		peer]
 ]
