@@ -34,17 +34,6 @@ BasysPassiveRemotePeer >> addNewConnection: aBasysConnection [
 	connectionPool fixMaxActiveObjects
 ]
 
-{ #category : #communication }
-BasysPassiveRemotePeer >> addNewConnectionOpenedUsing: aSocket [
-
-	| connection |
-	connection := self newConnection.
-	connection completeRemoteOpeningUsing: aSocket.
-	
-	connectionPool objectToPool: connection.
-	connectionPool fixMaxActiveObjects
-]
-
 { #category : #controlling }
 BasysPassiveRemotePeer >> beIdentifiedAs: peerId [
 	
@@ -72,15 +61,4 @@ BasysPassiveRemotePeer >> becomeActiveToReplaceSamePeer: aBasysActivePeer [
 	connectionPool maxActiveObjects: nil.
 	
 	aBasysActivePeer becomeForward: self
-]
-
-{ #category : #initialization }
-BasysPassiveRemotePeer >> prepareConnectionPool [
-"
-	no connections by default
-"
-	connectionPool maxActiveObjects: 0.
-	connectionPool destroyer: [ :connection | 
-		connectionPool fixMaxActiveObjects.
-		connection close].
 ]

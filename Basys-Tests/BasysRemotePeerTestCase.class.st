@@ -34,7 +34,8 @@ BasysRemotePeerTestCase >> testBelongsToOwnAddress [
 
 { #category : #tests }
 BasysRemotePeerTestCase >> testConnectionsCount [
-
+	
+	peer maxConnectionsCount: 10.
 	peer connectionPool objectToPool: #connection1.
 	peer connectionPool objectToPool: #connection2.	 
 	
@@ -64,13 +65,6 @@ BasysRemotePeerTestCase >> testGettingLocalPeerId [
 	network stub localPeerId willReturn: #localPeerId.
 	
 	peer localPeerId should be: #localPeerId
-]
-
-{ #category : #tests }
-BasysRemotePeerTestCase >> testHasConnectionPoolByDefault [
-
-	peer connectionPool should beInstanceOf: OPBasicPool.
-	
 ]
 
 { #category : #tests }

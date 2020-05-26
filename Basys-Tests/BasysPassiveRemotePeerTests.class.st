@@ -6,7 +6,7 @@ Class {
 
 { #category : #running }
 BasysPassiveRemotePeerTests >> peerClass [ 
-	^BasysPassiveRemotePeer 
+	^BasysRemotePeer 
 ]
 
 { #category : #running }
@@ -18,24 +18,17 @@ BasysPassiveRemotePeerTests >> setUp [
 { #category : #tests }
 BasysPassiveRemotePeerTests >> testAddingNewOpenedConnection [
 
-	| connection |
-	peer addNewConnectionOpenedUsing: #socket.
-
-	connection := peer connectionPool unsafeBorrow.
-	connection close.
+	| connection pool |
+	connection := Mock new.
+	pool := Mock new.
+	peer connectionPool: pool.
+	peer stub newConnection willReturn: connection.
 	
-	connection should beInstanceOf: BasysConnection.
-	connection network should be: network.
-	connection remotePeer should be: peer.
-	connection socket should be: #socket.
-]
+	peer addNewConnectionOpenedRemotelyUsing: #socket.
 
-{ #category : #tests }
-BasysPassiveRemotePeerTests >> testAddingNewOpenedConnectionShouldGrowConnectionPool [
-
-	peer addNewConnectionOpenedUsing: #socket.
-	
-	peer connectionPool maxActiveObjects should equal: 1
+	[ connection socket: #socket.
+	pool objectToPool: connection.
+	connection startIncomingDataProcess  ] should beDoneInOrder 
 ]
 
 { #category : #tests }

@@ -14,36 +14,3 @@ Class {
 	#superclass : #BasysRemotePeer,
 	#category : 'Basys'
 }
-
-{ #category : #communication }
-BasysActiveRemotePeer >> establishNewConnection [
-
-	| connection |
-	connection := self newConnection.
-	connection open.
-	connectionPool objectToPool: connection
-]
-
-{ #category : #private }
-BasysActiveRemotePeer >> identifyConnection: aConnection [
-	| receivedPeerId registeredPeer |
-	receivedPeerId := network identifyLocalPeerOn: aConnection. 
-	self isIdentified ifTrue: [ 
-		id = receivedPeerId ifFalse: [BasysIdentificationFailed signal].
-		^self ].
-
-	registeredPeer := network remotePeerWithId: receivedPeerId ifAbsent: [
-		id := receivedPeerId. 
-		^self ]. 
-
-	registeredPeer becomeActiveToReplaceSamePeer: self.
-	"It will replace all my references by registeredPeer. And it will change the class of registeredPeer to be active"
-]
-
-{ #category : #initialization }
-BasysActiveRemotePeer >> prepareConnectionPool [
-"
-	connections will be established by demand
-"
-	connectionPool creator: [ self newConnection ].
-]

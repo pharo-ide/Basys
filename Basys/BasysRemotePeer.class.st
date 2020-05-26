@@ -40,6 +40,16 @@ BasysRemotePeer class >> inside: aBasysNetwork at: anAddress [
 		beActiveWith: anAddress
 ]
 
+{ #category : #communication }
+BasysRemotePeer >> addNewConnectionOpenedRemotelyUsing: aSocket [
+
+	| connection |
+	connection := self newConnection.
+	connection socket: aSocket.
+	connectionPool objectToPool: connection.
+	connection startIncomingDataProcess
+]
+
 { #category : #accessing }
 BasysRemotePeer >> address [
 	^ address
@@ -109,18 +119,6 @@ BasysRemotePeer >> connectionsCount [
 	^connectionPool numberOfAvailableObjects 
 ]
 
-{ #category : #initialization }
-BasysRemotePeer >> createNewConnectionPool [
-
-	connectionPool := OPBasicPool new.
-	connectionPool maxWaitForBorrow: 45. "milliSeconds"
-	connectionPool validator: [ :c | c isValid ].
-	connectionPool destroyer: [ :connection | connection close ].
-
-	self prepareConnectionPool
-
-]
-
 { #category : #operations }
 BasysRemotePeer >> execute: aBlock [
 
@@ -136,6 +134,22 @@ BasysRemotePeer >> execute: aBlock [
 { #category : #accessing }
 BasysRemotePeer >> freeConnectionsCount [
 	^connectionPool numberOfIdleObjects
+]
+
+{ #category : #private }
+BasysRemotePeer >> identifyConnection: aConnection [
+	| receivedPeerId registeredPeer |
+	receivedPeerId := network identifyLocalPeerOn: aConnection. 
+	self isIdentified ifTrue: [ 
+		id = receivedPeerId ifFalse: [BasysIdentificationFailed signal].
+		^self ].
+
+	registeredPeer := network remotePeerWithId: receivedPeerId ifAbsent: [
+		id := receivedPeerId. 
+		^self ]. 
+
+	registeredPeer becomeActiveToReplaceSamePeer: self.
+	"It will replace all my references by registeredPeer. And it will change the class of registeredPeer to be active"
 ]
 
 { #category : #controlling }
@@ -209,10 +223,10 @@ BasysRemotePeer >> newConnection [
 	^BasysConnection with: self inside: network
 ]
 
-{ #category : #initialization }
-BasysRemotePeer >> prepareConnectionPool [
+{ #category : #communication }
+BasysRemotePeer >> openNewConnection [
 
-	self subclassResponsibility 
+	connectionPool openNewConnection
 ]
 
 { #category : #communication }

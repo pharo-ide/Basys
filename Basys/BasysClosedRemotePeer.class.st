@@ -10,25 +10,14 @@ Class {
 	#category : 'Basys'
 }
 
-{ #category : #communication }
-BasysClosedRemotePeer >> establishNewConnection [
-
-	^BasysRemotePeerClosed signal
-]
-
 { #category : #testing }
 BasysClosedRemotePeer >> isClosed [
 
 	^true
 ]
 
-{ #category : #initialization }
-BasysClosedRemotePeer >> prepareConnectionPool [
-"
-	connections can't be established
-"
-	connectionPool creator: [ BasysRemotePeerClosed signal ].
-	"it is hook to immediatelly raise error by creator.
-	With maxActiveObjects=0 pool will be waiting for new conection from outside"
-	connectionPool maxActiveObjects: Float infinity
+{ #category : #communication }
+BasysClosedRemotePeer >> openNewConnection [
+
+	^BasysRemotePeerClosed signal
 ]

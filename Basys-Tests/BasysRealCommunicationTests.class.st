@@ -27,7 +27,7 @@ BasysRealCommunicationTests >> testConnectionEstablishingOnClosedPeer [
 	remotePeer := self connectToServerPeer.
 	remotePeer close.
 	
-	[remotePeer establishNewConnection] should raise: BasysRemotePeerClosed
+	[remotePeer openNewConnection] should raise: BasysRemotePeerClosed
 ]
 
 { #category : #tests }
@@ -35,14 +35,14 @@ BasysRealCommunicationTests >> testConvertingPassivePeerToActive [
  
 	| passivePeer activePeer secondDataWasSent firstDataWasSentLast syncSemaphore waitSemaphore |
 	"producing passive peer on server"
-	self connectToServerPeer establishNewConnection.
+	self connectToServerPeer openNewConnection.
 	passivePeer := self waitServerSidePeer.
 	passivePeer should beInstanceOf: BasysPassiveRemotePeer.	
 
 	"producing active peer on server"
 	server network: clientSideNetwork.
 	activePeer := serverSideNetwork remotePeerAt: self serverAddress.
-	activePeer establishNewConnection.
+	activePeer openNewConnection.
 	self waitUntil: [clientSideNetwork remotePeers size = 2].
 		
 	"converting existed passive peer to existed active peer"
@@ -134,7 +134,7 @@ BasysRealCommunicationTests >> testFirstConnectionEstablishing [
  
 	| remotePeer |
 	remotePeer := self connectToServerPeer.
-	remotePeer establishNewConnection.
+	remotePeer openNewConnection.
 	
 	self waitServerSidePeer.
 	
@@ -176,7 +176,7 @@ BasysRealCommunicationTests >> testRequestFromServerToClient [
  
 	| remotePeer serverSideClientPeer |
 	remotePeer := self connectToServerPeer.
-	remotePeer establishNewConnection.
+	remotePeer openNewConnection.
 	
 	serverSideClientPeer := self waitServerSidePeer.
 	serverSideClientPeer execute: [ :connection | connection sendDataPacket: 'server to client' ].
@@ -192,7 +192,7 @@ BasysRealCommunicationTests >> testRequestFromServerToClientWhenNoConnectionsWas
  
 	| remotePeer serverSideClientPeer |
 	remotePeer := self connectToServerPeer.
-	remotePeer establishNewConnection.
+	remotePeer openNewConnection.
 	serverSideClientPeer := self waitServerSidePeer.
 	remotePeer close.
 	"The pause is needed to proceed close request from client socket by server socket"
@@ -216,7 +216,7 @@ BasysRealCommunicationTests >> testRequestOnClosedActivePeer [
 BasysRealCommunicationTests >> testRequestOnClosedPassivePeer [
  
 	| remotePeer |
-	self connectToServerPeer establishNewConnection.
+	self connectToServerPeer openNewConnection.
 	100 milliSeconds wait.
 	remotePeer := serverSideNetwork remotePeers anyOne.
 	remotePeer close.
@@ -289,7 +289,7 @@ BasysRealCommunicationTests >> testTwoParallelRequestsFromServerToClient [
  
 	| remotePeer serverSideClientPeer forkIsFirst |
 	remotePeer := self connectToServerPeer.
-	remotePeer establishNewConnection.
+	remotePeer openNewConnection.
 	serverSideClientPeer := self waitServerSidePeer.
 	forkIsFirst := nil.
 	

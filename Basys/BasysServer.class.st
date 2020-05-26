@@ -64,7 +64,7 @@ BasysServer >> processNewConnection: clientSocket [
 	| newPeer |
 	newPeer := network addNewPassivePeer.
 	
-	newPeer addNewConnectionOpenedUsing: clientSocket
+	newPeer addNewConnectionOpenedRemotelyUsing: clientSocket
 ]
 
 { #category : #controlling }
