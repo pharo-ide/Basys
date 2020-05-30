@@ -119,6 +119,16 @@ BasysRemotePeer >> connectionsCount [
 	^connectionPool numberOfAvailableObjects 
 ]
 
+{ #category : #private }
+BasysRemotePeer >> ensureIdentity: peerId [
+
+	self isIdentified ifTrue: [ 
+		id = peerId ifFalse: [BasysIdentificationFailed signal]. "better name needed"
+		^self ].
+
+	network identifyRemotePeer: self as: peerId
+]
+
 { #category : #operations }
 BasysRemotePeer >> execute: aBlock [
 

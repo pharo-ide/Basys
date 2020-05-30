@@ -158,6 +158,32 @@ BasysNetworkTests >> testHasLocalPeerByDefault [
 ]
 
 { #category : #tests }
+BasysNetworkTests >> testIdentifyingRemotePeerWhenItWasAlreadyRegisteredShouldRemoveItFromNetwork [
+
+	| registeredPeer newPeer |
+	registeredPeer := BasysRemotePeer new.
+	registeredPeer id: #peerId.
+	newPeer := BasysRemotePeer new.
+	network addRemotePeer: registeredPeer.
+	network addRemotePeer: newPeer.
+		
+	network identifyRemotePeer: newPeer as: #peerId.
+	
+	network remotePeers should not include: newPeer
+]
+
+{ #category : #tests }
+BasysNetworkTests >> testIdentifyingRemotePeerWhenItWasNotYetRegistered [
+
+	| remotePeer |
+	remotePeer := BasysRemotePeer new.
+	
+	network identifyRemotePeer: remotePeer as: #peerId.
+	
+	remotePeer id should be: #peerId 
+]
+
+{ #category : #tests }
 BasysNetworkTests >> testRemoveRemotePeer [
 
 	network addRemotePeer: #remotePeer.

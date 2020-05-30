@@ -157,6 +157,18 @@ BasysNetwork >> identifyLocalPeerOn: aConnection [
 	self subclassResponsibility 
 ]
 
+{ #category : #operations }
+BasysNetwork >> identifyRemotePeer: aRemotePeer as: peerId [
+
+	| identifiedPeer |
+	identifiedPeer := self remotePeerWithId: peerId ifAbsent: [
+		aRemotePeer id: peerId. 
+		^self ]. 
+
+	identifiedPeer becomeActiveToReplaceSamePeer: self.
+	"It will replace all my references by registeredPeer. And it will change the class of registeredPeer to be active"
+]
+
 { #category : #initialization }
 BasysNetwork >> initialize [
 	super initialize.

@@ -25,15 +25,6 @@ Class {
 	#category : 'Basys'
 }
 
-{ #category : #private }
-BasysPassiveRemotePeer >> addNewConnection: aBasysConnection [
-
-	aBasysConnection remotePeer: self.
-	
-	connectionPool objectToPool: aBasysConnection.
-	connectionPool fixMaxActiveObjects
-]
-
 { #category : #controlling }
 BasysPassiveRemotePeer >> beIdentifiedAs: peerId [
 	

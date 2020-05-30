@@ -29,6 +29,37 @@ BasysActiveRemotePeerTests >> testCreationActivePeerUsingAddress [
 ]
 
 { #category : #tests }
+BasysActiveRemotePeerTests >> testEnsureIdentityWhenItIsAlreadyIdentified [
+	peer id: #peerId.
+	
+	peer ensureIdentity: #peerId.
+	
+	peer id should be: #peerId.
+	network should not receive identifyRemotePeer: Any as: Any
+]
+
+{ #category : #tests }
+BasysActiveRemotePeerTests >> testEnsureIdentityWhenItIsAlreadyIdentifiedButAsAnotherPeer [
+
+	peer id: #peerId.
+		
+	[peer ensureIdentity: #anotherPeerId] should raise: BasysIdentificationFailed.
+
+	network should not receive identifyRemotePeer: Any as: Any
+]
+
+{ #category : #tests }
+BasysActiveRemotePeerTests >> testEnsureIdentityWhenItIsNotYetIdentified [
+	peer id: nil.
+	
+	peer ensureIdentity: #peerId.
+	
+	network should receive identifyRemotePeer: peer as: #peerId.
+	peer id should be: nil. "it should be performed by network above"
+	
+]
+
+{ #category : #tests }
 BasysActiveRemotePeerTests >> testHasDefaultMaxConnectionsCount [
 	
 	peer maxConnectionsCount should beReturnedFrom: [ network maxConnectionsCountPerPeer ]
