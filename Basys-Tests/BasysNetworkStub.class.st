@@ -10,6 +10,12 @@ Class {
 
 { #category : #operations }
 BasysNetworkStub >> identifyLocalPeerOn: aConnection [
+	"As a stub I only maintain peer identity on local side.
+	On local side all connections from the active peer will belong to it using same server address.
+	But on remote side the separate peer instances will be created for every new connection
+	For testing purposes it is enough behavior 	assuming that most of the tests are about single connection logic.
+	For multiple connections tests explicitly perform identification on server side"
+	^aConnection remotePeer address
 ]
 
 { #category : #initialization }

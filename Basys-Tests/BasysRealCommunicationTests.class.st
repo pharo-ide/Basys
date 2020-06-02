@@ -33,38 +33,30 @@ BasysRealCommunicationTests >> testConnectionEstablishingOnClosedPeer [
 { #category : #tests }
 BasysRealCommunicationTests >> testConvertingPassivePeerToActive [
  
-	| passivePeer activePeer secondDataWasSent firstDataWasSentLast syncSemaphore waitSemaphore |
+	| passivePeer activePeer |
 	"producing passive peer on server"
 	self connectToServerPeer openNewConnection.
 	passivePeer := self waitServerSidePeer.
-	passivePeer should beInstanceOf: BasysPassiveRemotePeer.	
+	passivePeer should be isPassive.	
 
 	"producing active peer on server"
 	server network: clientSideNetwork.
 	activePeer := serverSideNetwork remotePeerAt: self serverAddress.
 	activePeer openNewConnection.
-	self waitUntil: [clientSideNetwork remotePeers size = 2].
+	clientSideNetwork remotePeers should takeAWhile to haveSize: 2.
 		
-	"converting existed passive peer to existed active peer"
-	passivePeer becomeActiveToReplaceSamePeer: activePeer.	
-	passivePeer should beInstanceOf: BasysActiveRemotePeer.
-	passivePeer connectionsCount should be: 1.
-	
-	"now we checking that converted peer is really active and establish new connections by demand"
-	syncSemaphore := Semaphore new.
-	waitSemaphore := Semaphore new.
-	secondDataWasSent := false.
-	self fork: [	passivePeer execute: [ :connection | 
-				syncSemaphore signal. waitSemaphore wait. connection sendDataPacket: 'first'.
-				firstDataWasSentLast := secondDataWasSent. ]].
-	syncSemaphore wait.
-	passivePeer execute: [ :connection | connection sendDataPacket: 'second'.
-		secondDataWasSent := true].
-	waitSemaphore signal.
-	self waitUntil: [secondDataWasSent & firstDataWasSentLast notNil].
-	secondDataWasSent should be: true.
-	firstDataWasSentLast should be: true.
+	"converting existing passive peer to existing active peer during identification with same id"
+	activePeer id should not be: nil.
+	passivePeer id: activePeer id. "simulate that new active peer is actually existing passive peer"
+	activePeer id: nil.
+	activePeer ensureIdentity: passivePeer id.
+	passivePeer should be isActive.
 	passivePeer connectionsCount should be: 2.
+	
+	"now we are checking that converted peer is really active and can open new connections"
+	passivePeer openNewConnection.
+	passivePeer connectionsCount should be: 3.
+	clientSideNetwork remotePeers should takeAWhile to haveSize: 3.
 ]
 
 { #category : #tests }

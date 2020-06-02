@@ -56,6 +56,46 @@ BasysActiveConnectionPoolTests >> testIsNotPassive [
 ]
 
 { #category : #tests }
+BasysActiveConnectionPoolTests >> testOpeningNewConnection [
+
+	| newConnection |
+	newConnection := Mock new.
+	remotePeer stub newConnection willReturn: newConnection.
+	
+	connectionPool openNewConnection.
+	
+	newConnection should receive open.
+	connectionPool numberOfAvailableObjects should be: 1.
+	connectionPool should be isPooled: newConnection.
+	connectionPool borrow should be: newConnection
+]
+
+{ #category : #tests }
+BasysActiveConnectionPoolTests >> testOpeningNewConnectionShouldOpenItInBorrowedState [
+
+	| newConnection |
+	newConnection := Mock new.
+	remotePeer stub newConnection willReturn: newConnection.
+	newConnection stub open when: [ connectionPool numberOfActiveObjects ] is: 1.
+	
+	connectionPool openNewConnection
+]
+
+{ #category : #tests }
+BasysActiveConnectionPoolTests >> testOpeningNewConnectionWhenOpenFails [
+
+	| newConnection openError |
+	newConnection := Mock new.
+	remotePeer stub newConnection willReturn: newConnection.
+	openError := Error new.
+	newConnection stub open willRaise: openError.
+	
+	[connectionPool openNewConnection] should raise: openError.
+	
+	connectionPool numberOfAvailableObjects should be: 0
+]
+
+{ #category : #tests }
 BasysActiveConnectionPoolTests >> testRaisesErrorWhenZeroConnectionsAreAllowed [
 
 	remotePeer stub maxConnectionsCount willReturn: 0.

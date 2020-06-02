@@ -146,12 +146,6 @@ BasysNetwork >> connectionsCount [
 ]
 
 { #category : #operations }
-BasysNetwork >> establishNewConnectionTo: anAddress [
-
-	^communicationLibrary openConnectionTo: anAddress timeout: self connectionTimeout
-]
-
-{ #category : #operations }
 BasysNetwork >> identifyLocalPeerOn: aConnection [
 
 	self subclassResponsibility 
@@ -206,6 +200,12 @@ BasysNetwork >> maxConnectionsCountPerPeer [
 { #category : #accessing }
 BasysNetwork >> maxConnectionsCountPerPeer: anInteger [
 	maxConnectionsCountPerPeer := anInteger
+]
+
+{ #category : #operations }
+BasysNetwork >> openNewConnectionTo: anAddress [
+
+	^communicationLibrary openConnectionTo: anAddress timeout: self connectionTimeout
 ]
 
 { #category : #operations }

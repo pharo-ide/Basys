@@ -89,7 +89,7 @@ BasysConnectionTests >> testOpeningShouldAssignSocket [
 	connection open.
 	
 	connection socket should beReturnedFrom: [
-		network establishNewConnectionTo: #peerAddress]
+		network openNewConnectionTo: #peerAddress]
 ]
 
 { #category : #tests }

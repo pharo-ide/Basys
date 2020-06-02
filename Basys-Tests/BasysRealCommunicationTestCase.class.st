@@ -103,7 +103,7 @@ BasysRealCommunicationTestCase >> waitLastProcessFinished [
 { #category : #running }
 BasysRealCommunicationTestCase >> waitServerSidePeer [
 	
-	self waitUntil: [ serverSideNetwork remotePeers notEmpty ].
+	serverSideNetwork remotePeers should takeAWhile to not be isEmpty.
 	^serverSideNetwork remotePeers anyOne
 ]
 

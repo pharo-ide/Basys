@@ -133,7 +133,7 @@ BasysConnection >> open [
 	which points to my (client) local peer. 
 	Without identification server would always have separate peers for every connection"
 	| remotePeerId |
-	socket := network establishNewConnectionTo: remotePeer address.
+	socket := network openNewConnectionTo: remotePeer address.
 	
 	self startIncomingDataProcess.
 	
