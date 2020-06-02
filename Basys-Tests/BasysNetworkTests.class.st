@@ -158,18 +158,79 @@ BasysNetworkTests >> testHasLocalPeerByDefault [
 ]
 
 { #category : #tests }
+BasysNetworkTests >> testIdentifyingActiveRemotePeerShouldConvertRegisteredPeerToBecomeActive [
+
+	| registeredPeer newActivePeer |
+	registeredPeer := BasysRemotePeer new.
+	registeredPeer id: #peerId.
+	network addRemotePeer: registeredPeer.
+	newActivePeer := BasysRemotePeer new.
+	newActivePeer beActiveWith: #address.	
+		
+	network identifyRemotePeer: newActivePeer as: #peerId.
+	
+	registeredPeer should be isActive.
+	registeredPeer address should be: #address
+]
+
+{ #category : #tests }
+BasysNetworkTests >> testIdentifyingPassiveRemotePeerShouldNotChangeRegisteredPeer [
+
+	| registeredPeer newPassivePeer |
+	registeredPeer := BasysRemotePeer new.
+	registeredPeer id: #peerId.
+	network addRemotePeer: registeredPeer.
+	newPassivePeer := BasysRemotePeer new.
+		
+	network identifyRemotePeer: newPassivePeer as: #peerId.
+	
+	registeredPeer should not be isActive
+]
+
+{ #category : #tests }
+BasysNetworkTests >> testIdentifyingRemotePeerShouldConvertItIntoRegisteredPeer [
+
+	| registeredPeer newPeer |
+	registeredPeer := BasysRemotePeer new.
+	registeredPeer id: #peerId.
+	network addRemotePeer: registeredPeer.
+	newPeer := BasysRemotePeer new.
+	network addRemotePeer: newPeer.
+		
+	network identifyRemotePeer: newPeer as: #peerId.
+	
+	newPeer should be: registeredPeer
+]
+
+{ #category : #tests }
+BasysNetworkTests >> testIdentifyingRemotePeerShouldMigrateAllConnectionsIntoRegisteredPeer [
+
+	| registeredPeer newPeer newPeerConnections |
+	registeredPeer := BasysRemotePeer new.
+	registeredPeer id: #peerId.
+	network addRemotePeer: registeredPeer.
+	newPeer := BasysRemotePeer new.
+	newPeerConnections := newPeer connectionPool.
+	newPeerConnections stub.
+		
+	network identifyRemotePeer: newPeer as: #peerId.
+	
+	newPeerConnections should receive migrateConnectionsInto: registeredPeer connectionPool
+]
+
+{ #category : #tests }
 BasysNetworkTests >> testIdentifyingRemotePeerWhenItWasAlreadyRegisteredShouldRemoveItFromNetwork [
 
 	| registeredPeer newPeer |
 	registeredPeer := BasysRemotePeer new.
 	registeredPeer id: #peerId.
-	newPeer := BasysRemotePeer new.
 	network addRemotePeer: registeredPeer.
+	newPeer := BasysRemotePeer new.
 	network addRemotePeer: newPeer.
 		
 	network identifyRemotePeer: newPeer as: #peerId.
 	
-	network remotePeers should not include: newPeer
+	network remotePeers should equal: { registeredPeer }
 ]
 
 { #category : #tests }

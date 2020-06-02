@@ -44,3 +44,40 @@ BasysConnectionPoolTestCase >> testConvertingToPassivePool [
 	
 	connectionPool should beInstanceOf: BasysPassiveConnectionPool
 ]
+
+{ #category : #tests }
+BasysConnectionPoolTestCase >> testMigrationIntoAnotherPool [
+
+	| anotherPool connection |
+	connection := Mock new.
+	anotherPool := Mock new.
+	connectionPool objectToPool: connection.
+	
+	connectionPool migrateConnectionsInto: anotherPool.
+	
+	anotherPool should receive objectToPool: connection.
+	connectionPool numberOfAvailableObjects should be: 0
+]
+
+{ #category : #tests }
+BasysConnectionPoolTestCase >> testMigrationIntoAnotherPoolShouldBeForbiddenWhenThereIsBusyConnection [
+
+	| connection |
+	connection := Mock new.
+	connectionPool objectToPool: connection.
+	connectionPool borrow.
+	
+	[connectionPool migrateConnectionsInto: #anotherPool] should raise: BasysConnectionMigrationFailed.
+	connectionPool numberOfAvailableObjects should be: 1
+]
+
+{ #category : #tests }
+BasysConnectionPoolTestCase >> testPoolingConnetionShouldSetItsRemotePeer [
+
+	| connection |
+	connection := BasysConnection new.
+	
+	connectionPool objectToPool: connection.
+	
+	connection remotePeer should be: remotePeer
+]

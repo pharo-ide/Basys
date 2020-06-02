@@ -163,9 +163,9 @@ BasysRemotePeer >> identifyConnection: aConnection [
 ]
 
 { #category : #controlling }
-BasysRemotePeer >> importConnectionsFrom: anotherConnectionsPool [
+BasysRemotePeer >> importConnectionsFrom: aRemotePeer [
 
-	anotherConnectionsPool migrateObjectsInto: connectionPool andDo: [ :each | each remotePeer: self ]
+	aRemotePeer connectionPool migrateConnectionsInto: connectionPool
 ]
 
 { #category : #initialization }

@@ -159,14 +159,17 @@ BasysNetwork >> identifyLocalPeerOn: aConnection [
 
 { #category : #operations }
 BasysNetwork >> identifyRemotePeer: aRemotePeer as: peerId [
-
+	"Identification process ensures the only peer instance for all connections established with same remote side. For users it is transparent:
+	- when user retrieves new active peer using an address the network can already have a passive peer created from incoming connections. The identification in that case will convert new peer to registered one. The become operation here transparently push the registed peer into the user.
+	- when server accepts new connection it creates unidentified passive peer. Then the identification can find the registered peer and it will convert newly created instance into it"
 	| identifiedPeer |
-	identifiedPeer := self remotePeerWithId: peerId ifAbsent: [
+	identifiedPeer := remotePeers detect: [ :each | each id = peerId ] ifNone: [ 
 		aRemotePeer id: peerId. 
 		^self ]. 
-
-	identifiedPeer becomeActiveToReplaceSamePeer: self.
-	"It will replace all my references by registeredPeer. And it will change the class of registeredPeer to be active"
+	remotePeers remove: aRemotePeer ifAbsent: [].	
+	identifiedPeer importConnectionsFrom: aRemotePeer.
+	aRemotePeer isActive ifTrue: [ identifiedPeer beActiveWith: aRemotePeer address ].
+	aRemotePeer becomeForward: identifiedPeer 
 ]
 
 { #category : #initialization }

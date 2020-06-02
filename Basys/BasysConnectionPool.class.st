@@ -38,9 +38,29 @@ BasysConnectionPool >> isPassive [
 	^self isActive not
 ]
 
+{ #category : #controlling }
+BasysConnectionPool >> migrateConnectionsInto: anotherConnectionPool [
+
+	self critical: [ 
+		borrowedObjects ifNotEmpty: [ 
+			"Pool allows migration only when all objects are free"
+			BasysConnectionMigrationFailed signal ].
+		
+		idleObjects do: [ :each | 
+			anotherConnectionPool objectToPool: each].
+		idleObjects removeAll]
+]
+
 { #category : #private }
 BasysConnectionPool >> objectGoingToBeBorrowed: aConnection [
 	aConnection isValid ifFalse: [OPAbortOperation signal]
+]
+
+{ #category : #private }
+BasysConnectionPool >> objectToPool: aBasysConnection [
+	aBasysConnection remotePeer: remotePeer.
+	
+	super objectToPool: aBasysConnection
 ]
 
 { #category : #accessing }

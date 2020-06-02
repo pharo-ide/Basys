@@ -57,31 +57,3 @@ BasysPassiveRemotePeerTests >> testHasZeroMaxActiveConnectionsByDefault [
 
 	peer connectionPool maxActiveObjects should be: 0
 ]
-
-{ #category : #tests }
-BasysPassiveRemotePeerTests >> testIdentificationWhenThereIsNoSameRegisteredPeer [
-
-	[				
-		[ (peer beIdentifiedAs: #peerId) should be: peer]
-			should strictly satisfy: 
-		[ (network remotePeerWithId: #peerId ifAbsent: Any)
-				will: [ :arg1 :arg2 | arg2 value ] ].
-
-		peer id should be: #peerId
-	] runWithMocks 
-]
-
-{ #category : #tests }
-BasysPassiveRemotePeerTests >> testIdentificationWhenThereIsRegisteredPeerWithGivenId [
-
-	[:registeredPeer :existedConnectionPool |			
-		peer connectionPool: existedConnectionPool.
-		[ (peer beIdentifiedAs: #peerId) should be: registeredPeer]
-			should strictly satisfy: 
-		[ (network remotePeerWithId: #peerId ifAbsent: Any) willReturn: registeredPeer.
-		registeredPeer importConnectionsFrom: existedConnectionPool.
-		network removeRemotePeer: peer].
-		peer should be: registeredPeer.
-		
-	] runWithMocks 
-]
