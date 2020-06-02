@@ -180,7 +180,7 @@ BasysRealCommunicationTests >> testRequestFromServerToClient [
 ]
 
 { #category : #tests }
-BasysRealCommunicationTests >> testRequestFromServerToClientWhenNoConnectionsWasClosedByClient [
+BasysRealCommunicationTests >> testRequestFromServerToClientWhenAllConnectionsWereClosedByClient [
  
 	| remotePeer serverSideClientPeer |
 	remotePeer := self connectToServerPeer.
@@ -190,7 +190,7 @@ BasysRealCommunicationTests >> testRequestFromServerToClientWhenNoConnectionsWas
 	"The pause is needed to proceed close request from client socket by server socket"
 	100 milliSeconds wait. 
 	
-	[serverSideClientPeer execute: [ :connection | ]] should raise: OPTimedOutError.
+	[serverSideClientPeer execute: [ :connection | ]] should raise: BasysConnectionDoesNotExist.
 	serverSideClientPeer connectionsCount should equal: 0
 ]
 
@@ -295,8 +295,7 @@ BasysRealCommunicationTests >> testTwoParallelRequestsFromServerToClient [
 		forkIsFirst ifNil: [ forkIsFirst := false].
 			 connection sendDataPacket: 'server to client'].
 		
-	self waitUntil: [ forkIsFirst notNil ].
-	forkIsFirst should be: true.
+	[ forkIsFirst ] should takeAWhile to be: true
 ]
 
 { #category : #tests }

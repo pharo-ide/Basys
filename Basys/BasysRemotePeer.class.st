@@ -83,24 +83,18 @@ BasysRemotePeer >> bePassive [
 
 { #category : #controlling }
 BasysRemotePeer >> close [
-	"Here we really close peer. It will be converted to BasysClosedRemotePeer 
-	which forbid any remote communication. Also we remove this peer from network".
+	"Here we really close peer. The pool will be converted to BasysClosedConnectionPool 
+	which forbid any remote communication. Also we remove this peer from the network.
+	The pool close operation will close all existing connections".
 	
-	connectionPool creator: [ BasysRemotePeerClosed signal ].
-	
-	BasysClosedRemotePeer adoptInstance: self.	
-	self closeConnections.	
-	network removeRemotePeer: self.
-	
-	"it is hook to immediatelly raise error by creator.
-	With maxActiveObjects=0 pool will be waiting for new connection from outside and then it will fail by timeout error. But we want more precise failure"	
-	connectionPool maxActiveObjects: Float infinity.
+	connectionPool close.
+	network removeRemotePeer: self
 ]
 
 { #category : #controlling }
 BasysRemotePeer >> closeConnections [
 	"Here we just close existing connections. Peer is stayed working.
-	connectionPool is configured such way that clear closes all connections"
+	connectionPool is configured such way that #clear closes all connections"
 	connectionPool clear
 ]
 
@@ -172,7 +166,7 @@ BasysRemotePeer >> isBelongsTo: anAddress [
 { #category : #testing }
 BasysRemotePeer >> isClosed [
 
-	^false
+	^connectionPool isClosed
 ]
 
 { #category : #testing }

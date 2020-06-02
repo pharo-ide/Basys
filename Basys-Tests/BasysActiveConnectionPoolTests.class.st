@@ -1,6 +1,6 @@
 Class {
 	#name : #BasysActiveConnectionPoolTests,
-	#superclass : #BasysConnectionPoolTestCase,
+	#superclass : #BasysOpenedConnectionPoolTestCase,
 	#category : #'Basys-Tests'
 }
 

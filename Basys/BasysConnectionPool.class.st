@@ -7,6 +7,11 @@ Class {
 	#category : #Basys
 }
 
+{ #category : #testing }
+BasysConnectionPool class >> isAbstract [ 	
+	^self = BasysConnectionPool 
+]
+
 { #category : #'instance creation' }
 BasysConnectionPool class >> of: aBasysRemotePeer [
 	^self new 
@@ -23,6 +28,12 @@ BasysConnectionPool >> bePassive [
 	MirrorPrimitives setClass: BasysPassiveConnectionPool to: self
 ]
 
+{ #category : #controlling }
+BasysConnectionPool >> close [
+	MirrorPrimitives setClass: BasysClosedConnectionPool to: self.
+	self clear
+]
+
 { #category : #private }
 BasysConnectionPool >> destroyObject: aConnection [
 	aConnection close
@@ -31,6 +42,11 @@ BasysConnectionPool >> destroyObject: aConnection [
 { #category : #testing }
 BasysConnectionPool >> isActive [ 
 	self subclassResponsibility 
+]
+
+{ #category : #testing }
+BasysConnectionPool >> isClosed [
+	^false
 ]
 
 { #category : #testing }

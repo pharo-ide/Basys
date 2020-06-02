@@ -106,9 +106,3 @@ BasysRealCommunicationTestCase >> waitServerSidePeer [
 	serverSideNetwork remotePeers should takeAWhile to not be isEmpty.
 	^serverSideNetwork remotePeers anyOne
 ]
-
-{ #category : #running }
-BasysRealCommunicationTestCase >> waitUntil: conditionBlock [
-	
-	conditionBlock whileFalse: [Processor yield]
-]

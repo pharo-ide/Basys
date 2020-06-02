@@ -33,6 +33,18 @@ BasysRemotePeerTestCase >> testBelongsToOwnAddress [
 ]
 
 { #category : #tests }
+BasysRemotePeerTestCase >> testClose [
+	
+	peer connectionPool stub.
+	
+	peer close.
+	
+	peer should be isClosed.
+	peer connectionPool should receive close.
+	network remotePeers should not include: peer. 
+]
+
+{ #category : #tests }
 BasysRemotePeerTestCase >> testConnectionsCount [
 	
 	peer maxConnectionsCount: 10.
