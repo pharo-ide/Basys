@@ -73,51 +73,6 @@ BasysActiveRemotePeerTests >> testHasPassiveConnectionPoolByDefault [
 ]
 
 { #category : #tests }
-BasysActiveRemotePeerTests >> testIdentifyingFirstConnection [
-	(network stub identifyLocalPeerOn: #connection) willReturn: #peerId.
-	(network stub remotePeerWithId: #peerId ifAbsent: Any) will: [ :id :block | block value ].
-	
-	peer identifyConnection: #connection.
-	
-	peer id should be: #peerId
-]
-
-{ #category : #tests }
-BasysActiveRemotePeerTests >> testIdentifyingNewConnectionWhenAlreadyIdentified [
-	(network stub identifyLocalPeerOn: #connection) willReturn: #peerId.
-	peer id: #peerId.
-	
-	peer identifyConnection: #connection.
-	
-	peer id should be: #peerId.
-	network should not receive remotePeerWithId: Any ifAbsent: Any
-]
-
-{ #category : #tests }
-BasysActiveRemotePeerTests >> testIdentifyingNewConnectionWhenItBelongsToExistingPassivePeer [
-	| existingPeer |
-	existingPeer := Mock new.
-	(network stub identifyLocalPeerOn: #connection) willReturn: #peerId.
-	(network stub remotePeerWithId: #peerId ifAbsent: Any) willReturn: existingPeer.
-	
-	peer identifyConnection: #connection.
-	
-	existingPeer should receive becomeActiveToReplaceSamePeer: peer.
-	
-	
-]
-
-{ #category : #tests }
-BasysActiveRemotePeerTests >> testIdentifyingNewConnectionWhenItIsFromAnotherPeerId [
-	(network stub identifyLocalPeerOn: #connection) willReturn: #anotherPeerId.
-	peer id: #peerId.
-	
-	[peer identifyConnection: #connection] should raise: BasysIdentificationFailed.
-	network should not receive remotePeerWithId: Any ifAbsent: Any
-	
-]
-
-{ #category : #tests }
 BasysActiveRemotePeerTests >> testMakingActivePeer [
 	
 	peer connectionPool stub.

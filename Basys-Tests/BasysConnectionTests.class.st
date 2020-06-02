@@ -93,16 +93,39 @@ BasysConnectionTests >> testOpeningShouldAssignSocket [
 ]
 
 { #category : #tests }
-BasysConnectionTests >> testOpeningShouldCloseWhenIdentificationFails [
+BasysConnectionTests >> testOpeningShouldCloseConnectionWhenIdentificationFails [
 	
 	| error |
 	connection stub.
 	error := Error new.
-	(remotePeer stub identifyConnection: connection) willRaise: error.
+	(network stub identifyLocalPeerOn: connection) willRaise: error.
 	
 	[connection open] should raise: error.
 	connection should receive close
 	
+]
+
+{ #category : #tests }
+BasysConnectionTests >> testOpeningShouldCloseConnectionWhenReceivedPeerIdIsWrong [
+	
+	| error |
+	connection stub.
+	error := Error new.
+	(remotePeer stub ensureIdentity: Any) willRaise: error.
+	
+	[connection open] should raise: error.
+	connection should receive close
+	
+]
+
+{ #category : #tests }
+BasysConnectionTests >> testOpeningShouldEnsurePeerIdentityWithReceivedValue [
+	
+	(network stub identifyLocalPeerOn: connection) willReturn: #remotePeerId.
+	
+	connection open.
+	
+	remotePeer should receive ensureIdentity: #remotePeerId
 ]
 
 { #category : #tests }
@@ -113,7 +136,7 @@ BasysConnectionTests >> testOpeningShouldStartIncompingDataProcessBeforeIdentifi
 	connection open.
 	
 	[connection startIncomingDataProcess.
-	remotePeer identifyConnection: connection] should beDoneInOrder
+	network identifyLocalPeerOn: connection] should beDoneInOrder
 ]
 
 { #category : #tests }

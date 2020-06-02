@@ -132,11 +132,13 @@ BasysConnection >> open [
 	With identification the server will have single remote peer with many pooled connections 
 	which points to my (client) local peer. 
 	Without identification server would always have separate peers for every connection"
+	| remotePeerId |
 	socket := network establishNewConnectionTo: remotePeer address.
 	
 	self startIncomingDataProcess.
 	
-	[remotePeer identifyConnection: self] on: Error do: [ :err |
+	[remotePeerId := network identifyLocalPeerOn: self.
+	remotePeer ensureIdentity: remotePeerId] on: Error do: [ :err |
 		self close.
 		err pass ]
 ]
