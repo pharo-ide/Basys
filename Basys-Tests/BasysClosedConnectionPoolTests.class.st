@@ -28,6 +28,12 @@ BasysClosedConnectionPoolTests >> testFailsToBorrowNewConnection [
 ]
 
 { #category : #tests }
+BasysClosedConnectionPoolTests >> testFailsToOpenNewConnection [
+
+	[connectionPool openNewConnection] should raise: BasysRemotePeerClosed 
+]
+
+{ #category : #tests }
 BasysClosedConnectionPoolTests >> testFailsToPoolIncomingConnection [
 
 	[connectionPool objectToPool: #newConnection] should raise: BasysRemotePeerClosed 

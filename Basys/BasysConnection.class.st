@@ -106,12 +106,12 @@ BasysConnection >> inputStream [
 
 { #category : #testing }
 BasysConnection >> isOpened [
-	^socket notNil and: [ self isValid ]
+	^socket notNil
 ]
 
 { #category : #testing }
 BasysConnection >> isValid [
-	^socket isConnected
+	^self isOpened not or: [socket isConnected]
 ]
 
 { #category : #accessing }

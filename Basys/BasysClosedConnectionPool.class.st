@@ -43,6 +43,11 @@ BasysClosedConnectionPool >> objectToPool: aBasysConnection [
 	BasysRemotePeerClosed signal
 ]
 
+{ #category : #communication }
+BasysClosedConnectionPool >> openNewConnection [
+	BasysRemotePeerClosed signal
+]
+
 { #category : #'object-lifecycle' }
 BasysClosedConnectionPool >> unsafeBorrow [ 
 	

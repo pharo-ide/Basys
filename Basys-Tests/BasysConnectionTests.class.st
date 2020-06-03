@@ -68,17 +68,31 @@ BasysConnectionTests >> testHasProcessingPriorityByDefault [
 ]
 
 { #category : #tests }
-BasysConnectionTests >> testIsNotOpenedWhenNoSocketIsAssigned [
+BasysConnectionTests >> testIsOpenedWhenSocketIsConnected [
 	
 	connection socket: nil.
+	connection should not be isOpened.
 	
-	connection should not be isOpened
+	connection socket: Mock new.
+	connection should be isOpened
 ]
 
 { #category : #tests }
-BasysConnectionTests >> testIsOpenedWhenSocketIsConnected [
+BasysConnectionTests >> testIsValid [
 	
-	connection isOpened should beReturnedFrom: [socket isConnected] 
+	socket := Mock new.
+	connection socket: socket.
+	
+	connection isValid should beReturnedFrom: [ socket isConnected ]
+]
+
+{ #category : #tests }
+BasysConnectionTests >> testIsValidWhenNotOpenedYet [
+	
+	connection socket: nil.
+	connection should not be isOpened.
+	
+	connection should be isValid
 ]
 
 { #category : #tests }
