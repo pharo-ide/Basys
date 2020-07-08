@@ -90,10 +90,10 @@ BasysNetwork class >> defaultMaxConnectionsCountPerPeer: anObject [
 ]
 
 { #category : #accessing }
-BasysNetwork >> addNewPassivePeer [
+BasysNetwork >> addNewRemotePeer [
 
 	| newPeer |
-	newPeer := BasysPassiveRemotePeer inside: self.
+	newPeer := BasysRemotePeer inside: self.
 	remotePeers add: newPeer.
 	^newPeer
 ]
@@ -232,11 +232,9 @@ BasysNetwork >> receiveIncomingDataPacketFrom: aRemotePeer by: aBasysConnection 
 
 { #category : #accessing }
 BasysNetwork >> remotePeerAt: anAddress [ 
-	| peer |
+
 	^remotePeers detect: [ :each | each isBelongsTo: anAddress ] ifNone: [ 
-		peer := BasysRemotePeer inside: self at: anAddress.
-		remotePeers add: peer.
-		peer]
+		self addNewRemotePeer beActiveWith: anAddress ]
 ]
 
 { #category : #accessing }

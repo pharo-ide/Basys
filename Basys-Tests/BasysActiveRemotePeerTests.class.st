@@ -18,6 +18,16 @@ BasysActiveRemotePeerTests >> testCanBeConfiguredWithMaxConnectionsCount [
 ]
 
 { #category : #tests }
+BasysActiveRemotePeerTests >> testConnectionsCount [
+	
+	peer maxConnectionsCount: 10.
+	peer connectionPool objectToPool: Mock new.
+	peer connectionPool objectToPool: Mock new.
+	
+	peer connectionsCount should be: 2
+]
+
+{ #category : #tests }
 BasysActiveRemotePeerTests >> testCreationActivePeerUsingAddress [
 	
 	peer := BasysRemotePeer inside: network at: #address.

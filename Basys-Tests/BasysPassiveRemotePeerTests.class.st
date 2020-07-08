@@ -30,9 +30,3 @@ BasysPassiveRemotePeerTests >> testAddingNewOpenedConnection [
 	pool objectToPool: connection.
 	connection startIncomingDataProcess  ] should beDoneInOrder 
 ]
-
-{ #category : #tests }
-BasysPassiveRemotePeerTests >> testHasZeroMaxActiveConnectionsByDefault [
-
-	peer connectionPool maxActiveObjects should be: 0
-]

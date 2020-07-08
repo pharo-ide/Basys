@@ -15,13 +15,13 @@ BasysNetworkTests >> setUp [
 ]
 
 { #category : #tests }
-BasysNetworkTests >> testAddingNewPassivePeer [
+BasysNetworkTests >> testAddingNewRemotePeer [
 
 	| remotePeer |
 	
-	remotePeer := network addNewPassivePeer.
+	remotePeer := network addNewRemotePeer.
 	
-	remotePeer should beInstanceOf: BasysPassiveRemotePeer.
+	remotePeer should beInstanceOf: BasysRemotePeer.
 	remotePeer network should be: network.
 	network remotePeers should include: remotePeer
 ]
@@ -106,8 +106,8 @@ BasysNetworkTests >> testGettingNewRemotePeerAtAddress [
 BasysNetworkTests >> testGettingPeerWithIdWhenItExists [
 
 	| remotePeer actual |
-	remotePeer := BasysPassiveRemotePeer new id: 1.
-	network addRemotePeer: remotePeer.
+	remotePeer := network addNewRemotePeer.
+	remotePeer id: 1.
 	
 	actual := network remotePeerWithId: 1 ifAbsent: [  ].
 	
