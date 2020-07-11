@@ -51,6 +51,24 @@ BasysPassiveConnectionPoolTests >> testRaisesErrorWhenTooManyConnectionsAlreadyE
 ]
 
 { #category : #tests }
+BasysPassiveConnectionPoolTests >> testRaisesErrorWhenWaitingCompletesWithInvalidFreeConnection [
+	| busyConnection  error process |
+	remotePeer stub maxConnections willReturn: 1.
+	busyConnection := Mock new.
+	connectionPool objectToPool: busyConnection.
+	connectionPool borrow should be: busyConnection.
+		
+	process := [ error := [connectionPool borrow] should fail ] 
+		forkAt: Processor activePriority + 1.
+	process should not be isTerminated.
+	
+	busyConnection stub isValid willReturn: false.
+	connectionPool return: busyConnection.
+	process should be isTerminated.
+	error should beInstanceOf: BasysConnectionDoesNotExist 
+]
+
+{ #category : #tests }
 BasysPassiveConnectionPoolTests >> testRaisesErrorWhenZeroConnectionsAreAllowed [
 
 	| connection |
