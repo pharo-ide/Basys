@@ -18,12 +18,12 @@ BasysActiveConnectionPool >> makeObject [
 BasysActiveConnectionPool >> openNewConnection [
 	"This method forcibly opens new connection and pools it in opened state.
 	It allows to avoid lazy connection opening and perform the slow open logic in required time.
-	It's useful for testing the open logic without sending any real data for processing"
+	Also it is useful for testing of #open logic without sending any real data for processing"
 	| newConnection |
 	newConnection := self makeObject.
 	self critical: [ borrowedObjects add: newConnection].
 	[newConnection open] ifCurtailed: [ 
-		"In case of open error we do not need to keep this connection"
+		"In case of failed open operation we do not need to keep this connection"
 		self critical: [ borrowedObjects remove: newConnection ].
 	].
 	self return: newConnection

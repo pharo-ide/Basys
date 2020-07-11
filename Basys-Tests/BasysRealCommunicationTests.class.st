@@ -51,11 +51,11 @@ BasysRealCommunicationTests >> testConvertingPassivePeerToActive [
 	activePeer id: nil.
 	activePeer ensureIdentity: passivePeer id.
 	passivePeer should be isActive.
-	passivePeer connectionsCount should be: 2.
+	passivePeer connectionCount should be: 2.
 	
 	"now we are checking that converted peer is really active and can open new connections"
 	passivePeer openNewConnection.
-	passivePeer connectionsCount should be: 3.
+	passivePeer connectionCount should be: 3.
 	clientSideNetwork remotePeers should takeAWhile to haveSize: 3.
 ]
 
@@ -130,8 +130,8 @@ BasysRealCommunicationTests >> testFirstConnectionEstablishing [
 	
 	self waitServerSidePeer.
 	
-	serverSideNetwork connectionsCount should be: 1.
-	clientSideNetwork connectionsCount should be: 1
+	serverSideNetwork connectionCount should be: 1.
+	clientSideNetwork connectionCount should be: 1
 ]
 
 { #category : #tests }
@@ -191,7 +191,7 @@ BasysRealCommunicationTests >> testRequestFromServerToClientWhenAllConnectionsWe
 	100 milliSeconds wait. 
 	
 	[serverSideClientPeer execute: [ :connection | ]] should raise: BasysConnectionDoesNotExist.
-	serverSideClientPeer connectionsCount should equal: 0
+	serverSideClientPeer connectionCount should equal: 0
 ]
 
 { #category : #tests }

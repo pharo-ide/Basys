@@ -99,6 +99,11 @@ BasysRemotePeer >> closeConnections [
 ]
 
 { #category : #accessing }
+BasysRemotePeer >> connectionCount [
+	^connectionPool numberOfAvailableObjects 
+]
+
+{ #category : #accessing }
 BasysRemotePeer >> connectionPool [
 	^ connectionPool
 ]
@@ -106,11 +111,6 @@ BasysRemotePeer >> connectionPool [
 { #category : #accessing }
 BasysRemotePeer >> connectionPool: anObject [
 	connectionPool := anObject
-]
-
-{ #category : #accessing }
-BasysRemotePeer >> connectionsCount [
-	^connectionPool numberOfAvailableObjects 
 ]
 
 { #category : #private }
@@ -193,7 +193,7 @@ BasysRemotePeer >> localPeerId [
 
 { #category : #accessing }
 BasysRemotePeer >> maxConnectionsCount [
-	^maxConnectionsCount ifNil: [ network maxConnectionsCountPerPeer ]
+	^maxConnectionsCount ifNil: [ network maxConnectionsPerPeer ]
 ]
 
 { #category : #accessing }

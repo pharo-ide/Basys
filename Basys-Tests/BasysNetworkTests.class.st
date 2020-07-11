@@ -56,23 +56,23 @@ BasysNetworkTests >> testClosingConnections [
 ]
 
 { #category : #tests }
-BasysNetworkTests >> testConnectionsCount [
+BasysNetworkTests >> testConnectionCount [
 
 	| remotePeer1 remotePeer2 |
 	remotePeer1 := Mock new.
-	remotePeer1 stub connectionsCount willReturn: 2.
+	remotePeer1 stub connectionCount willReturn: 2.
 	remotePeer2 := Mock new.
-	remotePeer2 stub connectionsCount willReturn: 5.
+	remotePeer2 stub connectionCount willReturn: 5.
 	
 	network addRemotePeer: remotePeer1; addRemotePeer: remotePeer2.
 		
-	network connectionsCount should be: 7
+	network connectionCount should be: 7
 ]
 
 { #category : #tests }
-BasysNetworkTests >> testConnectionsCountWhenNoRemotePeers [
+BasysNetworkTests >> testConnectionCountWhenNoRemotePeers [
 
-	network connectionsCount should be: 0
+	network connectionCount should be: 0
 ]
 
 { #category : #tests }
@@ -127,15 +127,15 @@ BasysNetworkTests >> testGettingPeerWithIdWhenItNotExists [
 { #category : #tests }
 BasysNetworkTests >> testHasDefaultConnectionTimeoutByDefault [
 
-	network connectionTimeout should equal: BasysNetwork defaultConnectionTimeout.
-	BasysNetwork defaultConnectionTimeout should not be: nil
+	network connectionTimeout should equal: BasysNetwork connectionTimeout.
+	BasysNetwork connectionTimeout should not be: nil
 ]
 
 { #category : #tests }
-BasysNetworkTests >> testHasDefaultMaxConnectionsCountPerPeerByDefault [
+BasysNetworkTests >> testHasDefaultMaxConnectionsByDefault [
 
-	network maxConnectionsCountPerPeer should equal: BasysNetwork defaultMaxConnectionsCountPerPeer.
-	BasysNetwork defaultMaxConnectionsCountPerPeer should not be: nil
+	network maxConnectionsPerPeer should equal: BasysNetwork maxConnectionsPerPeer.
+	BasysNetwork maxConnectionsPerPeer should not be: nil
 ]
 
 { #category : #tests }
@@ -258,10 +258,10 @@ BasysNetworkTests >> testRemoveRemotePeer [
 BasysNetworkTests >> testShouldFollowDefaultConnectionTimeoutChangesWhenInstanceIsNotConfigured [
 
 	| current |
-	network connectionTimeout should equal: BasysNetwork defaultConnectionTimeout.
-	current := BasysNetwork defaultConnectionTimeout.
+	network connectionTimeout should equal: BasysNetwork connectionTimeout.
+	current := BasysNetwork connectionTimeout.
 	[ 
-		BasysNetwork defaultConnectionTimeout: 1000 seconds.
-		network connectionTimeout should equal: BasysNetwork defaultConnectionTimeout.
-	] ensure: [ BasysNetwork defaultConnectionTimeout: current ]
+		BasysNetwork connectionTimeout: 1000 seconds.
+		network connectionTimeout should equal: BasysNetwork connectionTimeout.
+	] ensure: [ BasysNetwork connectionTimeout: current ]
 ]

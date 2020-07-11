@@ -60,19 +60,19 @@ BasysRemotePeerTests >> testClose [
 ]
 
 { #category : #tests }
-BasysRemotePeerTests >> testConnectionsCount [
+BasysRemotePeerTests >> testConnectionCount [
 	
 	peer maxConnectionsCount: 10.
 	peer connectionPool objectToPool: Mock new.
 	peer connectionPool objectToPool: Mock new.
 	
-	peer connectionsCount should be: 2
+	peer connectionCount should be: 2
 ]
 
 { #category : #tests }
-BasysRemotePeerTests >> testConnectionsCountWhenNothingExists [
+BasysRemotePeerTests >> testConnectionCountWhenNothingExists [
 
-	peer connectionsCount should be: 0
+	peer connectionCount should be: 0
 ]
 
 { #category : #tests }
@@ -137,9 +137,9 @@ BasysRemotePeerTests >> testGettingLocalPeerId [
 ]
 
 { #category : #tests }
-BasysRemotePeerTests >> testHasDefaultMaxConnectionsCount [
+BasysRemotePeerTests >> testHasDefaultMaxConnectionsByDefault [
 	
-	peer maxConnectionsCount should beReturnedFrom: [ network maxConnectionsCountPerPeer ]
+	peer maxConnectionsCount should beReturnedFrom: [ network maxConnectionsPerPeer ]
 ]
 
 { #category : #tests }

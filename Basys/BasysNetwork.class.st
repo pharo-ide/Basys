@@ -60,33 +60,43 @@ Class {
 		'processingPriority',
 		'localPeer',
 		'remotePeers',
-		'maxConnectionsCountPerPeer'
+		'maxConnectionsPerPeer'
 	],
 	#classInstVars : [
-		'defaultConnectionTimeout',
-		'defaultMaxConnectionsCountPerPeer'
+		'connectionTimeout',
+		'maxConnectionsPerPeer'
 	],
 	#category : #Basys
 }
 
 { #category : #accessing }
+BasysNetwork class >> connectionTimeout [
+	^connectionTimeout ifNil: [ self defaultConnectionTimeout ]
+]
+
+{ #category : #accessing }
+BasysNetwork class >> connectionTimeout: aDuration [
+	connectionTimeout := aDuration
+]
+
+{ #category : #accessing }
 BasysNetwork class >> defaultConnectionTimeout [
-	^defaultConnectionTimeout ifNil: [ 10 seconds ]
+	^10 seconds
 ]
 
 { #category : #accessing }
-BasysNetwork class >> defaultConnectionTimeout: aDuration [
-	defaultConnectionTimeout := aDuration
+BasysNetwork class >> defaultMaxConnectionsPerPeer [
+	^10
 ]
 
 { #category : #accessing }
-BasysNetwork class >> defaultMaxConnectionsCountPerPeer [
-	^defaultMaxConnectionsCountPerPeer ifNil: [ 10 ]
+BasysNetwork class >> maxConnectionsPerPeer [
+	^maxConnectionsPerPeer ifNil: [ self defaultMaxConnectionsPerPeer ]
 ]
 
 { #category : #accessing }
-BasysNetwork class >> defaultMaxConnectionsCountPerPeer: anObject [
-	defaultMaxConnectionsCountPerPeer := anObject
+BasysNetwork class >> maxConnectionsPerPeer: anInteger [
+	maxConnectionsPerPeer := anInteger
 ]
 
 { #category : #accessing }
@@ -129,20 +139,20 @@ BasysNetwork >> communicationLibrary: anObject [
 ]
 
 { #category : #accessing }
+BasysNetwork >> connectionCount [
+	remotePeers ifEmpty: [ ^0 ].
+	
+	^remotePeers sum: [ :each | each connectionCount ]
+]
+
+{ #category : #accessing }
 BasysNetwork >> connectionTimeout [
-	^ connectionTimeout ifNil: [ self class defaultConnectionTimeout ]
+	^ connectionTimeout ifNil: [ self class connectionTimeout ]
 ]
 
 { #category : #accessing }
 BasysNetwork >> connectionTimeout: aDuration [
 	connectionTimeout := aDuration
-]
-
-{ #category : #accessing }
-BasysNetwork >> connectionsCount [
-	remotePeers ifEmpty: [ ^0 ].
-	
-	^remotePeers sum: [ :each | each connectionsCount ]
 ]
 
 { #category : #operations }
@@ -193,13 +203,13 @@ BasysNetwork >> localPeerId [
 ]
 
 { #category : #accessing }
-BasysNetwork >> maxConnectionsCountPerPeer [
-	^ maxConnectionsCountPerPeer ifNil: [ self class defaultMaxConnectionsCountPerPeer ]
+BasysNetwork >> maxConnectionsPerPeer [
+	^ maxConnectionsPerPeer ifNil: [ self class maxConnectionsPerPeer ]
 ]
 
 { #category : #accessing }
-BasysNetwork >> maxConnectionsCountPerPeer: anInteger [
-	maxConnectionsCountPerPeer := anInteger
+BasysNetwork >> maxConnectionsPerPeer: anInteger [
+	maxConnectionsPerPeer := anInteger
 ]
 
 { #category : #operations }

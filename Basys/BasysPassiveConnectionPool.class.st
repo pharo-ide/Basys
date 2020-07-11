@@ -27,11 +27,11 @@ BasysPassiveConnectionPool >> objectToPool: aBasysConnection [
 
 { #category : #private }
 BasysPassiveConnectionPool >> unsafeBorrow [
-	self numberOfAvailableObjects = 0 ifTrue: [  BasysConnectionDoesNotExist signal ].
-	
+		
 	^self critical: [ 
-		self waitUntil: [
-			self numberOfIdleObjects > 0 ].
+		self numberOfAvailableObjects = 0 ifTrue: [  BasysConnectionDoesNotExist signal ].
+		
+		self waitUntil: [ self numberOfIdleObjects > 0 ].
 		super unsafeBorrow 
 	].
 ]
