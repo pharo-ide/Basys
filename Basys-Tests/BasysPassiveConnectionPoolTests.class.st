@@ -46,8 +46,8 @@ BasysPassiveConnectionPoolTests >> testRaisesErrorWhenTooManyConnectionsAlreadyE
 	connection2 := Mock new.
 	remotePeer stub maxConnections willReturn: 1.
 	
-	connectionPool objectToPool: connection.
-	[connectionPool objectToPool: connection2] should raise: BasysTooManyConnections
+	connectionPool addConnection: connection.
+	[connectionPool addConnection: connection2] should raise: BasysTooManyConnections
 ]
 
 { #category : #tests }
@@ -57,7 +57,7 @@ BasysPassiveConnectionPoolTests >> testRaisesErrorWhenZeroConnectionsAreAllowed 
 	connection := Mock new.
 	remotePeer stub maxConnections willReturn: 0.
 	
-	[connectionPool objectToPool: connection] should raise: BasysNoConnectionAllowed
+	[connectionPool addConnection: connection] should raise: BasysNoConnectionAllowed
 ]
 
 { #category : #tests }
@@ -93,7 +93,7 @@ BasysPassiveConnectionPoolTests >> testReusesPooledConnection [
 
 	| reusedConnection connection |
 	connection := Mock new.
-	connectionPool objectToPool: connection.
+	connectionPool addConnection: connection.
 	
 	reusedConnection := connectionPool borrow.
 	reusedConnection should be: connection

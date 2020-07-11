@@ -103,7 +103,7 @@ BasysOpenedConnectionPoolTestCase >> testMigrationIntoAnotherPool [
 	
 	connectionPool migrateConnectionsInto: anotherPool.
 	
-	anotherPool should receive objectToPool: connection.
+	anotherPool should receive addConnection: connection.
 	connectionPool numberOfAvailableObjects should be: 0
 ]
 
@@ -120,12 +120,12 @@ BasysOpenedConnectionPoolTestCase >> testMigrationIntoAnotherPoolShouldBeForbidd
 ]
 
 { #category : #tests }
-BasysOpenedConnectionPoolTestCase >> testPoolingConnetionShouldSetItsRemotePeer [
+BasysOpenedConnectionPoolTestCase >> testPoolingConnectionShouldSetItsRemotePeer [
 
 	| connection |
 	connection := BasysConnection new.
 	
-	connectionPool objectToPool: connection.
+	connectionPool addConnection: connection.
 	
 	connection remotePeer should be: remotePeer
 ]
