@@ -44,7 +44,7 @@ BasysPassiveConnectionPoolTests >> testRaisesErrorWhenTooManyConnectionsAlreadyE
 	| connection connection2 |
 	connection := Mock new.
 	connection2 := Mock new.
-	remotePeer stub maxConnectionsCount willReturn: 1.
+	remotePeer stub maxConnections willReturn: 1.
 	
 	connectionPool objectToPool: connection.
 	[connectionPool objectToPool: connection2] should raise: BasysTooManyConnections
@@ -55,7 +55,7 @@ BasysPassiveConnectionPoolTests >> testRaisesErrorWhenZeroConnectionsAreAllowed 
 
 	| connection |
 	connection := Mock new.
-	remotePeer stub maxConnectionsCount willReturn: 0.
+	remotePeer stub maxConnections willReturn: 0.
 	
 	[connectionPool objectToPool: connection] should raise: BasysNoConnectionAllowed
 ]
@@ -117,7 +117,7 @@ BasysPassiveConnectionPoolTests >> testWaitsAnyNewIdleConnectionWhenOthersAreBus
 { #category : #tests }
 BasysPassiveConnectionPoolTests >> testWaitsBusyConnectionToBecomeFreeWhenNoFreeIsAvailable [
 	| busyConnection retrievedConnection  |
-	remotePeer stub maxConnectionsCount willReturn: 1.
+	remotePeer stub maxConnections willReturn: 1.
 	busyConnection := Mock new.
 	connectionPool objectToPool: busyConnection.
 	connectionPool borrow should be: busyConnection.

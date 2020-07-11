@@ -16,16 +16,6 @@ BasysPassiveConnectionPool >> makeObject [
 ]
 
 { #category : #private }
-BasysPassiveConnectionPool >> objectToPool: aBasysConnection [
-	remotePeer maxConnectionsCount = 0 ifTrue: [ 
-		BasysNoConnectionAllowed signal ].
-	self numberOfAvailableObjects >= remotePeer maxConnectionsCount ifTrue: [ 
-			^ BasysTooManyConnections signal ].
-		
-	^super objectToPool: aBasysConnection
-]
-
-{ #category : #private }
 BasysPassiveConnectionPool >> unsafeBorrow [
 		
 	^self critical: [ 

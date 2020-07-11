@@ -71,7 +71,7 @@ BasysRealCommunicationTests >> testFailedRequestAtTheEndShouldPassErrorAndNotFre
 			on: BasysCommunicationFailed do: [ :err | err defaultAction  ]
 	]
 		on: ZeroDivide do: [:err | errorCatched := true.
-			remotePeer freeConnectionsCount should be: 0].
+			remotePeer freeConnectionCount should be: 0].
 		
 	errorCatched should be: true
 ]
@@ -88,7 +88,7 @@ BasysRealCommunicationTests >> testFailedRequestShouldAllowGetErrorWithReleasedC
 			on: BasysCommunicationFailed do: [ :err | err releaseConnectionAndPassError  ]
 	]
 		on: ZeroDivide do: [:err | errorCatched := true.
-			remotePeer freeConnectionsCount should be: 1].
+			remotePeer freeConnectionCount should be: 1].
 		
 	errorCatched should be: true
 ]
@@ -103,7 +103,7 @@ BasysRealCommunicationTests >> testFailedRequestShouldSignalSpecialCommunication
 	[remotePeer execute:[:con | connection := con. 1/0 ]]
 		on: BasysCommunicationFailed do: [:err | errorCatched := true.
 			failure := err.
-			remotePeer freeConnectionsCount should be: 0].
+			remotePeer freeConnectionCount should be: 0].
 		
 	errorCatched should be: true.
 	failure reason should beInstanceOf: ZeroDivide 

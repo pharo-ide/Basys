@@ -71,6 +71,16 @@ BasysActiveConnectionPoolTests >> testOpeningNewConnection [
 ]
 
 { #category : #tests }
+BasysActiveConnectionPoolTests >> testOpeningNewConnectionShouldCheckMaxConnectionsLimit [
+
+	remotePeer stub maxConnections willReturn: 0.
+	
+	[connectionPool openNewConnection] should raise: BasysNoConnectionAllowed.
+
+	connectionPool numberOfAvailableObjects should be: 0
+]
+
+{ #category : #tests }
 BasysActiveConnectionPoolTests >> testOpeningNewConnectionShouldOpenItInBorrowedState [
 
 	| newConnection |
@@ -98,7 +108,7 @@ BasysActiveConnectionPoolTests >> testOpeningNewConnectionWhenOpenFails [
 { #category : #tests }
 BasysActiveConnectionPoolTests >> testRaisesErrorWhenZeroConnectionsAreAllowed [
 
-	remotePeer stub maxConnectionsCount willReturn: 0.
+	remotePeer stub maxConnections willReturn: 0.
 	
 	[connectionPool borrow] should raise: BasysNoConnectionAllowed.
 	
@@ -133,7 +143,7 @@ BasysActiveConnectionPoolTests >> testReusesCreatedConnection [
 { #category : #tests }
 BasysActiveConnectionPoolTests >> testWaitsAnyNewIdleConnectionWhenItIsFull [
 	| retrievedConnection  newConnection |
-	remotePeer stub maxConnectionsCount willReturn: 1.
+	remotePeer stub maxConnections willReturn: 1.
 	connectionPool borrow.
 		
 	[retrievedConnection := connectionPool borrow] forkAt: Processor activePriority + 1.
@@ -147,7 +157,7 @@ BasysActiveConnectionPoolTests >> testWaitsAnyNewIdleConnectionWhenItIsFull [
 { #category : #tests }
 BasysActiveConnectionPoolTests >> testWaitsBusyConnectionToBecomeFreeWhenItIsFull [
 	| busyConnection retrievedConnection  |
-	remotePeer stub maxConnectionsCount willReturn: 1.
+	remotePeer stub maxConnections willReturn: 1.
 	busyConnection := connectionPool borrow.
 		
 	[retrievedConnection := connectionPool borrow] forkAt: Processor activePriority + 1.

@@ -19,6 +19,26 @@ BasysConnectionPool class >> of: aBasysRemotePeer [
 ]
 
 { #category : #controlling }
+BasysConnectionPool >> addConnection: aBasysConnection [
+	
+	self critical:	[ 
+		self allowNewConnection.
+		aBasysConnection remotePeer: remotePeer.	
+			
+		self objectToPool: aBasysConnection
+	]
+]
+
+{ #category : #controlling }
+BasysConnectionPool >> allowNewConnection [
+
+	remotePeer maxConnections = 0 ifTrue: [ BasysNoConnectionAllowed signal ].
+	
+	self numberOfAvailableObjects >= remotePeer maxConnections 
+		ifTrue: [ ^ BasysTooManyConnections signal ]
+]
+
+{ #category : #controlling }
 BasysConnectionPool >> beActive [ 
 	MirrorPrimitives setClass: BasysActiveConnectionPool to: self
 ]
@@ -63,20 +83,13 @@ BasysConnectionPool >> migrateConnectionsInto: anotherConnectionPool [
 			BasysConnectionMigrationFailed signal ].
 		
 		idleObjects do: [ :each | 
-			anotherConnectionPool objectToPool: each].
+			anotherConnectionPool addConnection: each].
 		idleObjects removeAll]
 ]
 
 { #category : #private }
 BasysConnectionPool >> objectGoingToBeBorrowed: aConnection [
 	aConnection isValid ifFalse: [OPAbortOperation signal]
-]
-
-{ #category : #private }
-BasysConnectionPool >> objectToPool: aBasysConnection [
-	aBasysConnection remotePeer: remotePeer.
-	
-	super objectToPool: aBasysConnection
 ]
 
 { #category : #accessing }

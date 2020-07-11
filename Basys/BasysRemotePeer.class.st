@@ -28,7 +28,7 @@ Class {
 	#instVars : [
 		'address',
 		'connectionPool',
-		'maxConnectionsCount'
+		'maxConnections'
 	],
 	#category : #Basys
 }
@@ -46,7 +46,7 @@ BasysRemotePeer >> addNewConnectionOpenedRemotelyUsing: aSocket [
 	| connection |
 	connection := self newConnection.
 	connection socket: aSocket.
-	connectionPool objectToPool: connection.
+	connectionPool addConnection: connection.
 	connection startIncomingDataProcess
 ]
 
@@ -136,7 +136,7 @@ BasysRemotePeer >> execute: aBlock [
 ]
 
 { #category : #accessing }
-BasysRemotePeer >> freeConnectionsCount [
+BasysRemotePeer >> freeConnectionCount [
 	^connectionPool numberOfIdleObjects
 ]
 
@@ -192,13 +192,13 @@ BasysRemotePeer >> localPeerId [
 ]
 
 { #category : #accessing }
-BasysRemotePeer >> maxConnectionsCount [
-	^maxConnectionsCount ifNil: [ network maxConnectionsPerPeer ]
+BasysRemotePeer >> maxConnections [
+	^maxConnections ifNil: [ network maxConnectionsPerPeer ]
 ]
 
 { #category : #accessing }
-BasysRemotePeer >> maxConnectionsCount: anObject [
-	maxConnectionsCount := anObject
+BasysRemotePeer >> maxConnections: anObject [
+	maxConnections := anObject
 ]
 
 { #category : #accessing }

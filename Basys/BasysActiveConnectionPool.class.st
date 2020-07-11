@@ -21,7 +21,9 @@ BasysActiveConnectionPool >> openNewConnection [
 	Also it is useful for testing of #open logic without sending any real data for processing"
 	| newConnection |
 	newConnection := self makeObject.
-	self critical: [ borrowedObjects add: newConnection].
+	self critical: [ 
+		self allowNewConnection.
+		borrowedObjects add: newConnection].
 	[newConnection open] ifCurtailed: [ 
 		"In case of failed open operation we do not need to keep this connection"
 		self critical: [ borrowedObjects remove: newConnection ].
@@ -31,12 +33,12 @@ BasysActiveConnectionPool >> openNewConnection [
 
 { #category : #private }
 BasysActiveConnectionPool >> unsafeBorrow [
-	remotePeer maxConnectionsCount > 0 ifFalse: [ BasysNoConnectionAllowed signal ].
+	remotePeer maxConnections > 0 ifFalse: [ BasysNoConnectionAllowed signal ].
 	
 	^self critical: [ 
 		self waitUntil: [
 			self numberOfIdleObjects > 0 
-				or: [self numberOfActiveObjects < remotePeer maxConnectionsCount ]].
+				or: [self numberOfActiveObjects < remotePeer maxConnections ]].
 		super unsafeBorrow 
 	].
 ]

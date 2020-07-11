@@ -24,7 +24,7 @@ BasysRemotePeerTests >> testAddingNewConnectionOpenedRemotely [
 	peer addNewConnectionOpenedRemotelyUsing: #socket.
 
 	[ connection socket: #socket.
-	pool objectToPool: connection.
+	pool addConnection: connection.
 	connection startIncomingDataProcess  ] should beDoneInOrder 
 ]
 
@@ -40,11 +40,11 @@ BasysRemotePeerTests >> testBelongsToOwnAddress [
 ]
 
 { #category : #tests }
-BasysRemotePeerTests >> testCanBeConfiguredWithMaxConnectionsCount [
+BasysRemotePeerTests >> testCanBeConfiguredWithMaxConnectionsLimit [
 	
-	peer maxConnectionsCount: 100.
+	peer maxConnections: 100.
 	
-	peer maxConnectionsCount should be: 100
+	peer maxConnections should be: 100
 ]
 
 { #category : #tests }
@@ -62,9 +62,9 @@ BasysRemotePeerTests >> testClose [
 { #category : #tests }
 BasysRemotePeerTests >> testConnectionCount [
 	
-	peer maxConnectionsCount: 10.
-	peer connectionPool objectToPool: Mock new.
-	peer connectionPool objectToPool: Mock new.
+	peer maxConnections: 10.
+	peer connectionPool addConnection: Mock new.
+	peer connectionPool addConnection: Mock new.
 	
 	peer connectionCount should be: 2
 ]
@@ -139,7 +139,7 @@ BasysRemotePeerTests >> testGettingLocalPeerId [
 { #category : #tests }
 BasysRemotePeerTests >> testHasDefaultMaxConnectionsByDefault [
 	
-	peer maxConnectionsCount should beReturnedFrom: [ network maxConnectionsPerPeer ]
+	peer maxConnections should beReturnedFrom: [ network maxConnectionsPerPeer ]
 ]
 
 { #category : #tests }
