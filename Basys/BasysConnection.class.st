@@ -50,7 +50,7 @@ BasysConnection class >> with: aBasysRemotePeer inside: aBasysNetwork [
 { #category : #controlling }
 BasysConnection >> close [
 	incomingDataProcess ifNotNil: [
-		incomingDataProcess terminate.
+		incomingDataProcess isTerminated ifFalse: [incomingDataProcess terminate].
 		incomingDataProcess := nil].
 	
 	self closeSocketSafely 
