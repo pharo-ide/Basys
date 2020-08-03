@@ -34,9 +34,10 @@ Class {
 		'incomingDataProcess',
 		'processingPriority',
 		'inputStream',
-		'outputStream'
+		'outputStream',
+		'isBusy'
 	],
-	#category : 'Basys'
+	#category : #Basys
 }
 
 { #category : #'instance creation' }
@@ -45,6 +46,16 @@ BasysConnection class >> with: aBasysRemotePeer inside: aBasysNetwork [
 	^self new
 		network: aBasysNetwork;
 		remotePeer: aBasysRemotePeer
+]
+
+{ #category : #controlling }
+BasysConnection >> beBusy [
+	isBusy := true
+]
+
+{ #category : #controlling }
+BasysConnection >> beFree [
+	isBusy := false
 ]
 
 { #category : #controlling }
@@ -95,13 +106,23 @@ BasysConnection >> incomingDataProcess: anObject [
 BasysConnection >> initialize [
 	super initialize.
 	
-	processingPriority := Processor userBackgroundPriority 
+	isBusy := false
 ]
 
 { #category : #controlling }
 BasysConnection >> inputStream [
 	^inputStream ifNil: [ inputStream := network transferInputStreamOn: socket]
 
+]
+
+{ #category : #accessing }
+BasysConnection >> isBusy [
+	^ isBusy
+]
+
+{ #category : #accessing }
+BasysConnection >> isBusy: anObject [
+	isBusy := anObject
 ]
 
 { #category : #testing }
@@ -156,12 +177,12 @@ BasysConnection >> processIncomingDataPacket [
 	dataPacket := network receiveIncomingDataPacketFrom: remotePeer by: self.
 	
 	[ network process: dataPacket receivedFrom: remotePeer ] 
-		forkAt: processingPriority named: network printString
+		forkAt: self processingPriority named: network printString
 ]
 
 { #category : #accessing }
 BasysConnection >> processingPriority [
-	^ processingPriority
+	^ processingPriority ifNil: [ network processingPriority ]
 ]
 
 { #category : #accessing }
@@ -201,5 +222,5 @@ BasysConnection >> startIncomingDataProcess [
 
 	incomingDataProcess := [
 		[self incomingDataLoop] ifCurtailed: [ self closeYourself ]		
-	] forkAt: processingPriority named: self printString.
+	] forkAt: self processingPriority named: self printString.
 ]

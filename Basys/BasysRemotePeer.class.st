@@ -100,7 +100,7 @@ BasysRemotePeer >> closeConnections [
 
 { #category : #accessing }
 BasysRemotePeer >> connectionCount [
-	^connectionPool numberOfAvailableObjects 
+	^connectionPool numberOfValidConnections 
 ]
 
 { #category : #accessing }
@@ -226,7 +226,8 @@ BasysRemotePeer >> receiveIncomingDataPacketBy: aSocket [
 { #category : #operations }
 BasysRemotePeer >> sendDataPacket: dataObject [ 
 
-	self execute: [ :connection | connection sendDataPacket: dataObject ].
+	connectionPool allocateConnectionFor: [ :connection | 
+		connection sendDataPacket: dataObject ]
 
 ]
 

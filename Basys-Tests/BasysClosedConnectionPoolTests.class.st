@@ -10,6 +10,18 @@ BasysClosedConnectionPoolTests >> createConnectionPool [
 ]
 
 { #category : #tests }
+BasysClosedConnectionPoolTests >> testFailsToAddNewConnection [
+
+	[connectionPool addConnection: #newConnection] should raise: BasysRemotePeerClosed 
+]
+
+{ #category : #tests }
+BasysClosedConnectionPoolTests >> testFailsToAllocateNewConnection [
+
+	[connectionPool allocateConnection] should raise: BasysRemotePeerClosed 
+]
+
+{ #category : #tests }
 BasysClosedConnectionPoolTests >> testFailsToBeConvertedToActivePeer [
 
 	[connectionPool beActive] should raise: BasysRemotePeerClosed 
@@ -19,24 +31,6 @@ BasysClosedConnectionPoolTests >> testFailsToBeConvertedToActivePeer [
 BasysClosedConnectionPoolTests >> testFailsToBeConvertedToPassivePeer [
 
 	[connectionPool bePassive] should raise: BasysRemotePeerClosed 
-]
-
-{ #category : #tests }
-BasysClosedConnectionPoolTests >> testFailsToBorrowNewConnection [
-
-	[connectionPool borrow] should raise: BasysRemotePeerClosed 
-]
-
-{ #category : #tests }
-BasysClosedConnectionPoolTests >> testFailsToOpenNewConnection [
-
-	[connectionPool openNewConnection] should raise: BasysRemotePeerClosed 
-]
-
-{ #category : #tests }
-BasysClosedConnectionPoolTests >> testFailsToPoolIncomingConnection [
-
-	[connectionPool addConnection: #newConnection] should raise: BasysRemotePeerClosed 
 ]
 
 { #category : #tests }

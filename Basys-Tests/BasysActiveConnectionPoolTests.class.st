@@ -10,37 +10,27 @@ BasysActiveConnectionPoolTests >> createConnectionPool [
 ]
 
 { #category : #tests }
-BasysActiveConnectionPoolTests >> testClosesInvalidConnection [
+BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenAllBusyButMoreConnectionsAreAllowed [
 
-	| invalidConnection |
-	invalidConnection := connectionPool borrow.
-	connectionPool return: invalidConnection.	
-	invalidConnection stub isValid willReturn: false.
+	| busyConnection newConnection |
+	busyConnection := Mock new.
+	connectionPool addConnection: busyConnection.
+	busyConnection stub isBusy willReturn: true.
+	newConnection := connectionPool allocateConnection.
 	
-	connectionPool borrow.
-	
-	invalidConnection should receive close
-]
-
-{ #category : #tests }
-BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenAllBusyButMoreConnectionAreAllowed [
-
-	| connection1 connection2 |
-	connection1 := connectionPool borrow.
-	connection2 := connectionPool borrow.
-	
-	connection2 should beReturnedFrom: [ remotePeer newConnection ].
-	connection1 should not be: connection2.
+	newConnection should beReturnedFrom: [ remotePeer newConnection ].
+	newConnection should not be: busyConnection.
+	connectionPool should haveSize: 2
 ]
 
 { #category : #tests }
 BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenNothingExists [
 
 	| connection |
-	connection := connectionPool borrow.
+	connection := connectionPool allocateConnection.
 	
 	connection should beReturnedFrom: [ remotePeer newConnection ].
-	connectionPool numberOfActiveObjects should be: 1
+	connectionPool should haveSize: 1
 ]
 
 { #category : #tests }
@@ -58,37 +48,38 @@ BasysActiveConnectionPoolTests >> testIsNotPassive [
 { #category : #tests }
 BasysActiveConnectionPoolTests >> testOpeningNewConnection [
 
+	connectionPool openNewConnection.
+	
+	connectionPool should haveSize: 1.
+	remotePeer should receive newConnection
+]
+
+{ #category : #tests }
+BasysActiveConnectionPoolTests >> testOpeningNewConnectionLeftItFree [
+
 	| newConnection |
 	newConnection := Mock new.
 	remotePeer stub newConnection willReturn: newConnection.
 	
 	connectionPool openNewConnection.
 	
-	newConnection should receive open.
-	connectionPool numberOfAvailableObjects should be: 1.
-	connectionPool should be isPooled: newConnection.
-	connectionPool borrow should be: newConnection
-]
-
-{ #category : #tests }
-BasysActiveConnectionPoolTests >> testOpeningNewConnectionShouldCheckMaxConnectionsLimit [
-
-	remotePeer stub maxConnections willReturn: 0.
+	[newConnection open.
+	newConnection beFree] should beDoneInOrder.
 	
-	[connectionPool openNewConnection] should raise: BasysNoConnectionAllowed.
-
-	connectionPool numberOfAvailableObjects should be: 0
 ]
 
 { #category : #tests }
-BasysActiveConnectionPoolTests >> testOpeningNewConnectionShouldOpenItInBorrowedState [
+BasysActiveConnectionPoolTests >> testOpeningNewConnectionShouldOpenItInBusyState [
 
 	| newConnection |
 	newConnection := Mock new.
 	remotePeer stub newConnection willReturn: newConnection.
-	newConnection stub open when: [ connectionPool numberOfActiveObjects ] is: 1.
 	
-	connectionPool openNewConnection
+	connectionPool openNewConnection.
+	
+	[newConnection beBusy.
+	newConnection open] should beDoneInOrder.
+	
 ]
 
 { #category : #tests }
@@ -102,67 +93,5 @@ BasysActiveConnectionPoolTests >> testOpeningNewConnectionWhenOpenFails [
 	
 	[connectionPool openNewConnection] should raise: openError.
 	
-	connectionPool numberOfAvailableObjects should be: 0
-]
-
-{ #category : #tests }
-BasysActiveConnectionPoolTests >> testRaisesErrorWhenZeroConnectionsAreAllowed [
-
-	remotePeer stub maxConnections willReturn: 0.
-	
-	[connectionPool borrow] should raise: BasysNoConnectionAllowed.
-	
-	remotePeer should not receive newConnection.
-]
-
-{ #category : #tests }
-BasysActiveConnectionPoolTests >> testRemovesInvalidConnection [
-
-	| invalidConnection newConnection |
-	invalidConnection := connectionPool borrow.
-	connectionPool return: invalidConnection.	
-	invalidConnection stub isValid willReturn: false.
-	
-	newConnection := connectionPool borrow.
-	newConnection should not be: invalidConnection.
-	
-	connectionPool numberOfActiveObjects should be: 1
-]
-
-{ #category : #tests }
-BasysActiveConnectionPoolTests >> testReusesCreatedConnection [
-
-	| reusedConnection newConnection |
-	newConnection := connectionPool borrow.
-	connectionPool return: newConnection.
-	
-	reusedConnection := connectionPool borrow.
-	reusedConnection should be: newConnection
-]
-
-{ #category : #tests }
-BasysActiveConnectionPoolTests >> testWaitsAnyNewIdleConnectionWhenItIsFull [
-	| retrievedConnection  newConnection |
-	remotePeer stub maxConnections willReturn: 1.
-	connectionPool borrow.
-		
-	[retrievedConnection := connectionPool borrow] forkAt: Processor activePriority + 1.
-	retrievedConnection should be: nil.
-	
-	newConnection := Mock new.
-	connectionPool objectToPool: newConnection.
-	retrievedConnection should be: newConnection
-]
-
-{ #category : #tests }
-BasysActiveConnectionPoolTests >> testWaitsBusyConnectionToBecomeFreeWhenItIsFull [
-	| busyConnection retrievedConnection  |
-	remotePeer stub maxConnections willReturn: 1.
-	busyConnection := connectionPool borrow.
-		
-	[retrievedConnection := connectionPool borrow] forkAt: Processor activePriority + 1.
-	retrievedConnection should be: nil.
-	
-	connectionPool return: busyConnection.
-	retrievedConnection should be: busyConnection
+	connectionPool should be isEmpty
 ]

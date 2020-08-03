@@ -10,14 +10,15 @@ BasysRealCommunicationTests >> networkClass [
 ]
 
 { #category : #tests }
-BasysRealCommunicationTests >> testClosingConnectionWhenWaitingIncomingData [
+BasysRealCommunicationTests >> testClosingConnectionWhenRemoteSideWaitsIncomingData [
  
-	| remotePeer |
-	remotePeer := self connectToServerPeer.
-			
-	remotePeer execute: [ :connection | connection close].
-	
-	5 milliSeconds wait.
+	| clientSidePeer serverSidePeer |
+	clientSidePeer := self connectToServerPeer.		
+	clientSidePeer execute: [ :connection | connection open; close].
+
+	clientSidePeer connectionCount should be: 0.
+	serverSidePeer := serverSideNetwork remotePeers first.
+	serverSidePeer connectionCount should be: 0
 ]
 
 { #category : #tests }

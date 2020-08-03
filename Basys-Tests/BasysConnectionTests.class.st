@@ -20,7 +20,8 @@ BasysConnectionTests >> setUp [
 	remotePeer := Mock new.
 	
 	connection := BasysConnection with: remotePeer inside: network.
-	connection socket: socket
+	connection socket: socket.
+	connection processingPriority: Processor userBackgroundPriority 
 ]
 
 { #category : #tests }
@@ -62,9 +63,11 @@ BasysConnectionTests >> testClosingWhenItWasNotOpened [
 ]
 
 { #category : #tests }
-BasysConnectionTests >> testHasProcessingPriorityByDefault [
+BasysConnectionTests >> testHasProcessingPriorityFromNetworkByDefault [
+
+	connection processingPriority: nil.
 	
-	connection processingPriority should be: Processor userBackgroundPriority
+	connection processingPriority should beReturnedFrom: [ network processingPriority ]
 ]
 
 { #category : #tests }
