@@ -133,12 +133,20 @@ BasysConnectionPool >> allocateConnection [
 ]
 
 { #category : #controlling }
-BasysConnectionPool >> allocateConnectionFor: aBlock [
+BasysConnectionPool >> allocateConnectionFor: communicationBlock [
 
-	| connection |
+	| connection communicationFailed |
+	communicationFailed := false.
 	[connection := self allocateConnection.
-	aBlock value: connection] ensure: [ 
-		connection ifNotNil: [ 	self releaseConnection: connection ]]
+	
+	[communicationBlock value: connection] on: Error do: [:err |
+		communicationFailed := true.
+		self releaseConnection: connection.
+		err pass ]
+	
+	] ensure: [ 
+		(communicationFailed not and: [connection notNil]) ifTrue: [ 
+			self releaseConnection: connection ]]
 ]
 
 { #category : #private }

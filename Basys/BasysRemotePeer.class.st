@@ -98,6 +98,13 @@ BasysRemotePeer >> closeConnections [
 	connectionPool clear
 ]
 
+{ #category : #operations }
+BasysRemotePeer >> connectToLocalPeerFor: communicationBlock [
+	"Method allocates a connection between a local peer and a receiver 
+	to perform a communication using given communicationBlock"
+	connectionPool allocateConnectionFor: communicationBlock
+]
+
 { #category : #accessing }
 BasysRemotePeer >> connectionCount [
 	^connectionPool numberOfValidConnections 
@@ -121,18 +128,6 @@ BasysRemotePeer >> ensureIdentity: peerId [
 		^self ].
 
 	network identifyRemotePeer: self as: peerId
-]
-
-{ #category : #operations }
-BasysRemotePeer >> execute: aBlock [
-
-	| error |
-	connectionPool withPooled: [:connection |
-		[aBlock value: connection] on: Error do: [ :err |
-			BasysCommunicationFailed by: err.
-			error := err]].
-	
-	error ifNotNil: [ error signal ]
 ]
 
 { #category : #accessing }
@@ -226,8 +221,7 @@ BasysRemotePeer >> receiveIncomingDataPacketBy: aSocket [
 { #category : #operations }
 BasysRemotePeer >> sendDataPacket: dataObject [ 
 
-	connectionPool allocateConnectionFor: [ :connection | 
-		connection sendDataPacket: dataObject ]
+	self connectToLocalPeerFor: [:connection | 	connection sendDataPacket: dataObject ]
 
 ]
 
@@ -237,7 +231,7 @@ BasysRemotePeer >> waitConnection [
 	done := false.
 	[
 		[
-			[self execute: [ :connection | done := true ]] 
+			[self connectToLocalPeerFor: [ :connection | done := true ]] 
 				valueWithin: 100 milliSeconds onTimeout: [  ]
 		] on: ConnectionTimedOut, OPTimedOutError do: [ :err | ].
 	] doWhileFalse: [done]

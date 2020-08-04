@@ -14,7 +14,7 @@ BasysRealCommunicationTests >> testClosingConnectionWhenRemoteSideWaitsIncomingD
  
 	| clientSidePeer serverSidePeer |
 	clientSidePeer := self connectToServerPeer.		
-	clientSidePeer execute: [ :connection | connection open; close].
+	clientSidePeer connectToLocalPeerFor: [ :connection | connection open; close].
 
 	clientSidePeer connectionCount should be: 0.
 	serverSidePeer := serverSideNetwork remotePeers first.
@@ -61,65 +61,17 @@ BasysRealCommunicationTests >> testConvertingPassivePeerToActive [
 ]
 
 { #category : #tests }
-BasysRealCommunicationTests >> testFailedRequestAtTheEndShouldPassErrorAndNotFreeGivenConnection [
+BasysRealCommunicationTests >> testFailedRequestShouldPassErrorAndFreeConnection [
  
-	| remotePeer errorCatched connection |
+	| remotePeer errorCatched |
 	remotePeer := self connectToServerPeer.
 	errorCatched := false. 
 	
-	[
-		[remotePeer execute:[:con | connection := con. 1/0 ]] 
-			on: BasysCommunicationFailed do: [ :err | err defaultAction  ]
-	]
-		on: ZeroDivide do: [:err | errorCatched := true.
-			remotePeer freeConnectionCount should be: 0].
-		
-	errorCatched should be: true
-]
-
-{ #category : #tests }
-BasysRealCommunicationTests >> testFailedRequestShouldAllowGetErrorWithReleasedConnection [
- 
-	| remotePeer errorCatched connection |
-	remotePeer := self connectToServerPeer.
-	errorCatched := false. 
-	
-	[
-		[remotePeer execute:[:con | connection := con. 1/0 ]] 
-			on: BasysCommunicationFailed do: [ :err | err releaseConnectionAndPassError  ]
-	]
+	[remotePeer connectToLocalPeerFor:[:con | con. 1/0 ]]
 		on: ZeroDivide do: [:err | errorCatched := true.
 			remotePeer freeConnectionCount should be: 1].
 		
 	errorCatched should be: true
-]
-
-{ #category : #tests }
-BasysRealCommunicationTests >> testFailedRequestShouldSignalSpecialCommunicationFailure [
- 
-	| remotePeer errorCatched connection failure |
-	remotePeer := self connectToServerPeer.
-	errorCatched := false. 
-	
-	[remotePeer execute:[:con | connection := con. 1/0 ]]
-		on: BasysCommunicationFailed do: [:err | errorCatched := true.
-			failure := err.
-			remotePeer freeConnectionCount should be: 0].
-		
-	errorCatched should be: true.
-	failure reason should beInstanceOf: ZeroDivide 
-	
-]
-
-{ #category : #tests }
-BasysRealCommunicationTests >> testFailedRequestWhenRecursiveSpecialCommunicationFailure [
- 
-	| remotePeer originalFailure |
-	remotePeer := self connectToServerPeer.
-	originalFailure := BasysCommunicationFailed new.
-	
-	[remotePeer execute:[:con | originalFailure signal ]]
-		should raise: originalFailure
 ]
 
 { #category : #tests }
@@ -141,7 +93,7 @@ BasysRealCommunicationTests >> testRequestFromClientToServer [
 	| remotePeer |
 	remotePeer := self connectToServerPeer.
 	
-	remotePeer execute: [ :connection | connection sendDataPacket: 'test data packet' ].
+	remotePeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'test data packet' ].
 	
 	10 milliSeconds wait.
 	
@@ -155,10 +107,10 @@ BasysRealCommunicationTests >> testRequestFromClientToServerAfterConnectionClose
 	| remotePeer |
 	remotePeer := self connectToServerPeer.
 			
-	remotePeer execute: [ :connection | connection close].	
+	remotePeer connectToLocalPeerFor: [ :connection | connection close].	
 	5 milliSeconds wait.
 	
-	remotePeer execute: [ :connection | connection sendDataPacket: 'server to client'].	
+	remotePeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'server to client'].	
 	5 milliSeconds wait.
 	
 	serverSideNetwork lastDataPacket should equal: 'server to client'
@@ -172,7 +124,7 @@ BasysRealCommunicationTests >> testRequestFromServerToClient [
 	remotePeer openNewConnection.
 	
 	serverSideClientPeer := self waitServerSidePeer.
-	serverSideClientPeer execute: [ :connection | connection sendDataPacket: 'server to client' ].
+	serverSideClientPeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'server to client' ].
 	
 	10 milliSeconds wait.
 	
@@ -191,7 +143,7 @@ BasysRealCommunicationTests >> testRequestFromServerToClientWhenAllConnectionsWe
 	"The pause is needed to proceed close request from client socket by server socket"
 	100 milliSeconds wait. 
 	
-	[serverSideClientPeer execute: [ :connection | ]] should raise: BasysConnectionDoesNotExist.
+	[serverSideClientPeer connectToLocalPeerFor: [ :connection | ]] should raise: BasysConnectionDoesNotExist.
 	serverSideClientPeer connectionCount should equal: 0
 ]
 
@@ -202,7 +154,7 @@ BasysRealCommunicationTests >> testRequestOnClosedActivePeer [
 	remotePeer := self connectToServerPeer.
 	remotePeer close.
 	
-	[remotePeer execute:[:connection | ]] should raise: BasysRemotePeerClosed
+	[remotePeer connectToLocalPeerFor:[:connection | ]] should raise: BasysRemotePeerClosed
 ]
 
 { #category : #tests }
@@ -214,7 +166,7 @@ BasysRealCommunicationTests >> testRequestOnClosedPassivePeer [
 	remotePeer := serverSideNetwork remotePeers anyOne.
 	remotePeer close.
 	
-	[remotePeer execute:[:connection | ]] should raise: BasysRemotePeerClosed
+	[remotePeer connectToLocalPeerFor:[:connection | ]] should raise: BasysRemotePeerClosed
 ]
 
 { #category : #tests }
@@ -237,7 +189,7 @@ BasysRealCommunicationTests >> testSendingTwoDataPacketImmediately [
 	| remotePeer |
 	remotePeer := self connectToServerPeer.
 	
-	remotePeer execute: [ :connection | connection sendDataPacket: 'test data packet1'.
+	remotePeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'test data packet1'.
 		connection sendDataPacket: 'test data packet2'].
 	
 	10 milliSeconds wait.
@@ -252,7 +204,7 @@ BasysRealCommunicationTests >> testTimeoutOnWaitingIncomingData [
 	serverSideNetwork waitingDataTimeout: 5 milliSeconds.
 	remotePeer := self connectToServerPeer.
 			
-	remotePeer execute: [ :connection | 10 milliSeconds wait.
+	remotePeer connectToLocalPeerFor: [ :connection | 10 milliSeconds wait.
 		connection sendDataPacket: 'test data packet' ].
 	
 	5 milliSeconds wait.
@@ -267,10 +219,10 @@ BasysRealCommunicationTests >> testTwoParallelRequestsFromClientToServer [
 	| remotePeer |
 	remotePeer := self connectToServerPeer.
 	
-	self fork: [	remotePeer execute: [ :connection | 
+	self fork: [	remotePeer connectToLocalPeerFor: [ :connection | 
 				10 milliSeconds wait. connection sendDataPacket: 'first' ]].
 	
-	remotePeer execute: [ :connection | connection sendDataPacket: 'second' ].
+	remotePeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'second' ].
 	
 	20 milliSeconds wait.
 
@@ -286,13 +238,13 @@ BasysRealCommunicationTests >> testTwoParallelRequestsFromServerToClient [
 	serverSideClientPeer := self waitServerSidePeer.
 	forkIsFirst := nil.
 	
-	self fork: [serverSideClientPeer execute: [ :connection | 
+	self fork: [serverSideClientPeer connectToLocalPeerFor: [ :connection | 
 			10 milliSeconds wait. forkIsFirst ifNil: [forkIsFirst := true].
 			 connection sendDataPacket: 'server to client' ]].
 	
 	self passForkedProcesses.
 	
-	serverSideClientPeer execute: [ :connection | 
+	serverSideClientPeer connectToLocalPeerFor: [ :connection | 
 		forkIsFirst ifNil: [ forkIsFirst := false].
 			 connection sendDataPacket: 'server to client'].
 		
@@ -305,9 +257,9 @@ BasysRealCommunicationTests >> testTwoSequentialRequestsFromClientToServer [
 	| remotePeer |
 	remotePeer := self connectToServerPeer.
 	
-	remotePeer execute: [ :connection | connection sendDataPacket: 'first' ].
+	remotePeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'first' ].
 	10 milliSeconds wait.
-	remotePeer execute: [ :connection | connection sendDataPacket: 'second' ].
+	remotePeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'second' ].
 	
 	10 milliSeconds wait.
 

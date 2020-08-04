@@ -231,6 +231,48 @@ BasysOpenedConnectionPoolTestCase >> testMigratesConnectionsIntoAnotherPool [
 ]
 
 { #category : #tests }
+BasysOpenedConnectionPoolTestCase >> testPassesCommunicationFailureToSender [
+	| freeConnection error |
+	freeConnection := Mock new.
+	connectionPool addConnection: freeConnection.	
+	error := Error new.
+	[
+		connectionPool allocateConnectionFor: [ :connection | error signal ] 
+	] should raise: error
+]
+
+{ #category : #tests }
+BasysOpenedConnectionPoolTestCase >> testReleasesConnectionWhenCommunicationCompletes [
+	| freeConnection |
+	freeConnection := Mock new.
+	connectionPool addConnection: freeConnection.	
+		
+	connectionPool allocateConnectionFor: [ :connection | 
+		connection should be: freeConnection.
+		freeConnection should receive beBusy.
+		freeConnection should not receive beFree ].
+	
+	freeConnection should receive beFree.
+	
+]
+
+{ #category : #tests }
+BasysOpenedConnectionPoolTestCase >> testReleasesConnectionWhenCommunicationFailed [
+	| freeConnection |
+	freeConnection := Mock new.
+	connectionPool addConnection: freeConnection.	
+		
+	[connectionPool allocateConnectionFor: [ :connection | 
+		connection should be: freeConnection.
+		freeConnection should receive beBusy.
+		freeConnection should not receive beFree.
+		self error: 'test error']
+	] on: Error do: [ :err | 
+		freeConnection should receive beFree once].
+	freeConnection should receive beFree once
+]
+
+{ #category : #tests }
 BasysOpenedConnectionPoolTestCase >> testRemovesAllConnectionsDuringClear [
 
 	| connection1 connection2 |
