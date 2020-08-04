@@ -59,6 +59,12 @@ BasysConnection >> beFree [
 ]
 
 { #category : #controlling }
+BasysConnection >> beOpened [
+	self isOpened ifFalse: [ self open ]
+
+]
+
+{ #category : #controlling }
 BasysConnection >> close [
 	incomingDataProcess ifNotNil: [
 		incomingDataProcess isTerminated ifFalse: [incomingDataProcess terminate].
@@ -200,7 +206,7 @@ BasysConnection >> remotePeer: anObject [
 
 { #category : #controlling }
 BasysConnection >> sendDataPacket: dataObject [
-	self isOpened ifFalse: [ self open ].
+	self beOpened.
 	
 	network sendDataPacket: dataObject by: self
 ]

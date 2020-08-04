@@ -97,6 +97,12 @@ BasysConnectionPool class >> of: aBasysRemotePeer [
 		remotePeer: aBasysRemotePeer
 ]
 
+{ #category : #accessing }
+BasysConnectionPool >> activeSize [
+
+	^connections count: [ :each | each isBusy ]
+]
+
 { #category : #controlling }
 BasysConnectionPool >> addConnection: aBasysConnection [
 	
@@ -221,6 +227,12 @@ BasysConnectionPool >> guardAccessDuring: aBlock [
 	^result
 ]
 
+{ #category : #accessing }
+BasysConnectionPool >> idleSize [
+
+	^connections count: [ :each | each isBusy not ]
+]
+
 { #category : #testing }
 BasysConnectionPool >> includesConnection: aConnection [ 
 
@@ -273,6 +285,12 @@ BasysConnectionPool >> migrateConnectionsInto: anotherConnectionPool [
 { #category : #private }
 BasysConnectionPool >> nextFreeConnectionOrNil [
 	^connections detect: [ :each | each isBusy not ] ifNone: [ nil ]
+]
+
+{ #category : #accessing }
+BasysConnectionPool >> openSize [
+
+	^connections count: [ :each | each isOpened ]
 ]
 
 { #category : #private }

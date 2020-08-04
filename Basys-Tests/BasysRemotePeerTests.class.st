@@ -64,7 +64,7 @@ BasysRemotePeerTests >> testConnectionCount [
 	
 	peer connectionPool stub.
 	
-	peer connectionCount should beReturnedFrom: [ peer connectionPool size ]
+	peer connectionCount should beReturnedFrom: [ peer connectionPool openSize ]
 ]
 
 { #category : #tests }

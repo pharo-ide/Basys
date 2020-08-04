@@ -195,6 +195,54 @@ BasysOpenedConnectionPoolTestCase >> testIsNotClosed [
 ]
 
 { #category : #tests }
+BasysOpenedConnectionPoolTestCase >> testKnowsBusyConnectionsCount [
+
+	| busyConnection |
+	connectionPool addConnection: Mock new.
+	connectionPool addConnection: Mock new.
+	busyConnection := Mock new.
+	connectionPool addConnection: busyConnection.
+	busyConnection stub isBusy willReturn: true.
+	
+	connectionPool activeSize should equal: 1
+]
+
+{ #category : #tests }
+BasysOpenedConnectionPoolTestCase >> testKnowsConnectionsCount [
+
+	connectionPool addConnection: Mock new.
+	connectionPool addConnection: Mock new.
+	
+	connectionPool size should equal: 2
+]
+
+{ #category : #tests }
+BasysOpenedConnectionPoolTestCase >> testKnowsFreeConnectionsCount [
+
+	| busyConnection |
+	connectionPool addConnection: Mock new.
+	connectionPool addConnection: Mock new.
+	busyConnection := Mock new.
+	connectionPool addConnection: busyConnection.
+	busyConnection stub isBusy willReturn: true.
+	
+	connectionPool idleSize should equal: 2
+]
+
+{ #category : #tests }
+BasysOpenedConnectionPoolTestCase >> testKnowsOpenedConnectionsCount [
+
+	| openedConnection |
+	connectionPool addConnection: Mock new.
+	connectionPool addConnection: Mock new.
+	openedConnection := Mock new.
+	connectionPool addConnection: openedConnection.
+	openedConnection stub isOpened willReturn: true.
+	
+	connectionPool openSize should equal: 1
+]
+
+{ #category : #tests }
 BasysOpenedConnectionPoolTestCase >> testMarksAllocatedConnectionsAsBusy [
 
 	| allocatedConnection freeConnection |

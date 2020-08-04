@@ -269,16 +269,36 @@ BasysRealCommunicationTests >> testTwoSequentialRequestsFromClientToServer [
 
 { #category : #tests }
 BasysRealCommunicationTests >> testWaitingConnetionByActivePeer [
- 
 	| remotePeer |
 	remotePeer := self connectToServerPeer.
 	server stop.
 	
-	self fork: [	remotePeer waitConnection].
-	
+	self fork: [ remotePeer waitConnection ].	
 	20 milliSeconds wait.
+	remotePeer connectionCount should equal: 0.
+		
 	server start.
 	self waitLastProcessFinished.
 
-	remotePeer connectionPool numberOfAvailableObjects should be: 1
+	remotePeer connectionCount should equal: 1
+]
+
+{ #category : #tests }
+BasysRealCommunicationTests >> testWaitingConnetionByPassivePeer [
+	| remotePeer done serverSideRemotePeer |
+	remotePeer := self connectToServerPeer.
+	remotePeer openNewConnection.
+	20 milliSeconds wait.
+	done := false.
+	serverSideRemotePeer := serverSideNetwork remotePeers first.
+	serverSideRemotePeer closeConnections.
+	self fork: [ serverSideRemotePeer waitConnection. done := true ].	
+	20 milliSeconds wait.
+	done should be: false.
+		
+	remotePeer openNewConnection.
+	self waitLastProcessFinished.
+	done should be: true.
+
+	remotePeer connectionCount should equal: 1
 ]

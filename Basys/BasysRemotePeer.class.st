@@ -107,7 +107,7 @@ BasysRemotePeer >> connectToLocalPeerFor: communicationBlock [
 
 { #category : #accessing }
 BasysRemotePeer >> connectionCount [
-	^connectionPool size
+	^connectionPool openSize
 ]
 
 { #category : #accessing }
@@ -225,8 +225,8 @@ BasysRemotePeer >> waitConnection [
 	done := false.
 	[
 		[
-			[self connectToLocalPeerFor: [ :connection | done := true ]] 
+			[self connectToLocalPeerFor: [ :connection | connection beOpened. done := true ]] 
 				valueWithin: 100 milliSeconds onTimeout: [  ]
-		] on: ConnectionTimedOut, OPTimedOutError do: [ :err | ].
+		] on: ConnectionTimedOut, BasysConnectionDoesNotExist do: [ :err | ].
 	] doWhileFalse: [done]
 ]
