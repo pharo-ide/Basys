@@ -62,17 +62,9 @@ BasysRemotePeerTests >> testClose [
 { #category : #tests }
 BasysRemotePeerTests >> testConnectionCount [
 	
-	peer maxConnections: 10.
-	peer connectionPool addConnection: Mock new.
-	peer connectionPool addConnection: Mock new.
+	peer connectionPool stub.
 	
-	peer connectionCount should be: 2
-]
-
-{ #category : #tests }
-BasysRemotePeerTests >> testConnectionCountWhenNothingExists [
-
-	peer connectionCount should be: 0
+	peer connectionCount should beReturnedFrom: [ peer connectionPool size ]
 ]
 
 { #category : #tests }
@@ -217,15 +209,4 @@ BasysRemotePeerTests >> testOpeningNewConnection [
 	peer openNewConnection.
 	
 	activePool should receive openNewConnection
-]
-
-{ #category : #tests }
-BasysRemotePeerTests >> testReceivingIncomingDataPackets [
-
-	[:transporter |		
-		[ (peer receiveIncomingDataPacketBy: #socket) should be: #result]
-			should strictly satisfy: 
-		[(network receiveIncomingDataPacketFrom: peer by: #socket) willReturn: #result].
-
-	] runWithMocks 
 ]

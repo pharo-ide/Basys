@@ -75,7 +75,7 @@ BasysRealCommunicationTests >> testFailedRequestShouldPassErrorAndFreeConnection
 ]
 
 { #category : #tests }
-BasysRealCommunicationTests >> testFirstConnectionEstablishing [
+BasysRealCommunicationTests >> testFirstConnectionOpening [
  
 	| remotePeer |
 	remotePeer := self connectToServerPeer.

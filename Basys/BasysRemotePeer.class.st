@@ -107,7 +107,7 @@ BasysRemotePeer >> connectToLocalPeerFor: communicationBlock [
 
 { #category : #accessing }
 BasysRemotePeer >> connectionCount [
-	^connectionPool numberOfValidConnections 
+	^connectionPool size
 ]
 
 { #category : #accessing }
@@ -210,12 +210,6 @@ BasysRemotePeer >> newConnection [
 BasysRemotePeer >> openNewConnection [
 
 	connectionPool openNewConnection
-]
-
-{ #category : #communication }
-BasysRemotePeer >> receiveIncomingDataPacketBy: aSocket [
-	
-	^network receiveIncomingDataPacketFrom: self by: aSocket
 ]
 
 { #category : #operations }
