@@ -85,10 +85,8 @@ BasysConnection >> incomingDataLoop [
 
 	[
 		[
-			[
-				[self processIncomingDataPacket] on: ConnectionTimedOut, PrimitiveFailed do: [ :err | ]
-		 	] repeat
-		] on: BasysWrongProtocolError do: [ :err | self closeYourself ]
+			[self processIncomingDataPacket] on: ConnectionTimedOut, PrimitiveFailed do: [ :err | ]
+		] repeat
 	] on: ConnectionClosed do: [ :err |  ]
 ]
 

@@ -185,17 +185,6 @@ BasysConnectionTests >> testProcessingIncomingDataPacketShouldDoneWithProcessing
 ]
 
 { #category : #tests }
-BasysConnectionTests >> testProcessingWrongProtocolError [
-	
-	(network stub receiveIncomingDataPacketFrom: remotePeer by: connection) 
-				willRaise: BasysWrongProtocolError.
-				
-	connection incomingDataLoop.
-	
-	socket should receive closeAndDestroy
-]
-
-{ #category : #tests }
 BasysConnectionTests >> testSendingDataPacket [
 	
 	connection sendDataPacket: #dataPacket.
