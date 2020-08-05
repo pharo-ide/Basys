@@ -10,6 +10,19 @@ BasysPassiveConnectionPoolTests >> createConnectionPool [
 ]
 
 { #category : #tests }
+BasysPassiveConnectionPoolTests >> testAllowsToWaitConnectionWhenNothingExists [
+	| connection done |
+	connection := Mock new.
+	done := false.
+	[connectionPool waitOpenedConnection. done := true] forkAt: Processor activePriority + 1.
+	done should be: false.
+	
+	connectionPool addConnection: connection.
+	done should be: true.
+	connection should receive beOpened
+]
+
+{ #category : #tests }
 BasysPassiveConnectionPoolTests >> testDoesNotLockWhenFailsToAllocateConnection [
 	| process |
 

@@ -34,6 +34,12 @@ BasysClosedConnectionPoolTests >> testFailsToBeConvertedToPassivePeer [
 ]
 
 { #category : #tests }
+BasysClosedConnectionPoolTests >> testFailsToWaitConnection [
+
+	[connectionPool waitOpenedConnection] should raise: BasysRemotePeerClosed 
+]
+
+{ #category : #tests }
 BasysClosedConnectionPoolTests >> testIsClosed [
 
 	connectionPool should be isClosed

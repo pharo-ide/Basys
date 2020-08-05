@@ -10,12 +10,11 @@ Class {
 
 { #category : #operations }
 BasysNetworkStub >> identifyLocalPeerOn: aConnection [
-	"As a stub I only maintain peer identity on local side.
-	On local side all connections from the active peer will belong to it using same server address.
-	But on remote side the separate peer instances will be created for every new connection
-	For testing purposes it is enough behavior 	assuming that most of the tests are about single connection logic.
-	For multiple connections tests explicitly perform identification on server side"
-	^aConnection remotePeer address
+	"The stub implementation identifies peers by server address. 
+	On local and remote side all connections belong to peer with same server address.
+	In case of single server (in most of tests) it means the network with single remote peer"
+	self sendDataPacket:  'identity:' , aConnection remotePeer address printString by: aConnection.
+	^aConnection remotePeer address printString
 ]
 
 { #category : #initialization }
@@ -33,7 +32,10 @@ BasysNetworkStub >> lastDataPacket [
 { #category : #operations }
 BasysNetworkStub >> process: dataObject receivedFrom: aRemotePeer [ 
 "	Transcript show: 'new data received: ', dataObject printString; cr." 
-	lastDataPacket := dataObject
+	lastDataPacket := dataObject.
+	(lastDataPacket beginsWith: 'identity:') ifTrue: [ 
+		aRemotePeer ensureIdentity: (lastDataPacket allButFirst: 'identity:' size)
+	]
 ]
 
 { #category : #operations }

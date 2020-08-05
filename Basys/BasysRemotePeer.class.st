@@ -221,12 +221,6 @@ BasysRemotePeer >> sendDataPacket: dataObject [
 
 { #category : #operations }
 BasysRemotePeer >> waitConnection [
-	| done |
-	done := false.
-	[
-		[
-			[self connectToLocalPeerFor: [ :connection | connection beOpened. done := true ]] 
-				valueWithin: 100 milliSeconds onTimeout: [  ]
-		] on: ConnectionTimedOut, BasysConnectionDoesNotExist do: [ :err | ].
-	] doWhileFalse: [done]
+	
+	connectionPool waitOpenedConnection 
 ]

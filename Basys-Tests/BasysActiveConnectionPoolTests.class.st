@@ -10,6 +10,23 @@ BasysActiveConnectionPoolTests >> createConnectionPool [
 ]
 
 { #category : #tests }
+BasysActiveConnectionPoolTests >> testAllowsToWaitOpenedConnectionWhenItFailsWithTimeout [
+	| connection done syncSemaphore |
+	syncSemaphore := Semaphore new.
+	connection := Mock new.
+	connectionPool addConnection: connection.
+	connection stub beOpened will: [ syncSemaphore wait. ConnectionTimedOut signal].
+	done := false.
+	[connectionPool waitOpenedConnection. done := true] forkAt: Processor activePriority + 1.
+	done should be: false.
+	syncSemaphore signal.
+	done should be: false.
+	connection stub beOpened will: [ syncSemaphore wait ].
+	syncSemaphore signal; signal. "first signal continue first block with timeout"
+	done should be: true.
+]
+
+{ #category : #tests }
 BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenAllBusyButMoreConnectionsAreAllowed [
 
 	| busyConnection newConnection |
@@ -24,6 +41,26 @@ BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenAllBusyButMoreConn
 ]
 
 { #category : #tests }
+BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenItNeedsToOpenNewOne [
+
+	connectionPool openNewConnection.
+	
+	connectionPool should haveSize: 1.
+	remotePeer should receive newConnection
+]
+
+{ #category : #tests }
+BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenItNeedsToWaitOpenedOneButNothingExists [
+	| connection |
+	connection := Mock new.
+	remotePeer stub newConnection willReturn: connection.
+
+	[connectionPool waitOpenedConnection] forkAt: Processor activePriority + 1.
+
+	connection should receive beOpened.
+]
+
+{ #category : #tests }
 BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenNothingExists [
 
 	| connection |
@@ -31,6 +68,20 @@ BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenNothingExists [
 	
 	connection should beReturnedFrom: [ remotePeer newConnection ].
 	connectionPool should haveSize: 1
+]
+
+{ #category : #tests }
+BasysActiveConnectionPoolTests >> testDoesNotKeepNewOpenedConnectionWhenOpenFails [
+
+	| newConnection openError |
+	newConnection := Mock new.
+	remotePeer stub newConnection willReturn: newConnection.
+	openError := Error new.
+	newConnection stub open willRaise: openError.
+	
+	[connectionPool openNewConnection] should raise: openError.
+	
+	connectionPool should be isEmpty
 ]
 
 { #category : #tests }
@@ -46,16 +97,7 @@ BasysActiveConnectionPoolTests >> testIsNotPassive [
 ]
 
 { #category : #tests }
-BasysActiveConnectionPoolTests >> testOpeningNewConnection [
-
-	connectionPool openNewConnection.
-	
-	connectionPool should haveSize: 1.
-	remotePeer should receive newConnection
-]
-
-{ #category : #tests }
-BasysActiveConnectionPoolTests >> testOpeningNewConnectionLeftItFree [
+BasysActiveConnectionPoolTests >> testLeavesNewOpenedConnectionInFreeState [
 
 	| newConnection |
 	newConnection := Mock new.
@@ -69,7 +111,7 @@ BasysActiveConnectionPoolTests >> testOpeningNewConnectionLeftItFree [
 ]
 
 { #category : #tests }
-BasysActiveConnectionPoolTests >> testOpeningNewConnectionShouldOpenItInBusyState [
+BasysActiveConnectionPoolTests >> testOpensNewConnectionInBusyState [
 
 	| newConnection |
 	newConnection := Mock new.
@@ -80,18 +122,4 @@ BasysActiveConnectionPoolTests >> testOpeningNewConnectionShouldOpenItInBusyStat
 	[newConnection beBusy.
 	newConnection open] should beDoneInOrder.
 	
-]
-
-{ #category : #tests }
-BasysActiveConnectionPoolTests >> testOpeningNewConnectionWhenOpenFails [
-
-	| newConnection openError |
-	newConnection := Mock new.
-	remotePeer stub newConnection willReturn: newConnection.
-	openError := Error new.
-	newConnection stub open willRaise: openError.
-	
-	[connectionPool openNewConnection] should raise: openError.
-	
-	connectionPool should be isEmpty
 ]

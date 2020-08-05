@@ -316,3 +316,16 @@ BasysConnectionPool >> size [
 
 	^connections size
 ]
+
+{ #category : #controlling }
+BasysConnectionPool >> waitOpenedConnection [	
+
+	[
+		self allocateConnectionFor: [:connection | 
+			[ connection beOpened ] on: ConnectionTimedOut do: [:err | err retry ]. 
+			^self ]
+	] on: BasysConnectionDoesNotExist do: [ :err | 		
+		freeConnectionSemaphore wait.
+		err retry
+	]
+]

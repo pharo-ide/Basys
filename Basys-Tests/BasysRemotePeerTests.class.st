@@ -210,3 +210,15 @@ BasysRemotePeerTests >> testOpeningNewConnection [
 	
 	activePool should receive openNewConnection
 ]
+
+{ #category : #tests }
+BasysRemotePeerTests >> testWaitingConnection [
+
+	| pool |
+	pool := Mock new.
+	peer connectionPool: pool.
+		
+	peer waitConnection.
+	
+	pool should receive waitOpenedConnection
+]
