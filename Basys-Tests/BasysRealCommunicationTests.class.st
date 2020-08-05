@@ -9,6 +9,11 @@ BasysRealCommunicationTests >> networkClass [
 	^BasysNetworkStub
 ]
 
+{ #category : #helpers }
+BasysRealCommunicationTests >> serverSidePeer [
+	^serverSideNetwork remotePeers first
+]
+
 { #category : #tests }
 BasysRealCommunicationTests >> testClosingConnectionWhenRemoteSideWaitsIncomingData [
  
@@ -77,14 +82,17 @@ BasysRealCommunicationTests >> testFailedRequestShouldPassErrorAndFreeConnection
 { #category : #tests }
 BasysRealCommunicationTests >> testFirstConnectionOpening [
  
-	| remotePeer |
-	remotePeer := self connectToServerPeer.
-	remotePeer openNewConnection.
+	| clientSidePeer |
+	clientSidePeer := self connectToServerPeer.
+	clientSidePeer openNewConnection.
 	
 	self waitServerSidePeer.
 	
+	clientSideNetwork connectionCount should be: 1.
+	clientSidePeer id should equal: server port.
 	serverSideNetwork connectionCount should be: 1.
-	clientSideNetwork connectionCount should be: 1
+	self serverSidePeer id should equal: server port
+	
 ]
 
 { #category : #tests }

@@ -103,6 +103,8 @@ BasysRealCommunicationTestCase >> waitLastProcessFinished [
 { #category : #running }
 BasysRealCommunicationTestCase >> waitServerSidePeer [
 	
+	| peer |
 	serverSideNetwork remotePeers should takeAWhile to not be isEmpty.
-	^serverSideNetwork remotePeers anyOne
+	peer := serverSideNetwork remotePeers first.
+	peer where id should takeAWhile to not be: nil
 ]
