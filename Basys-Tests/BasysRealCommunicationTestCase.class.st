@@ -63,6 +63,11 @@ BasysRealCommunicationTestCase >> serverClass [
 	^BasysServer
 ]
 
+{ #category : #helpers }
+BasysRealCommunicationTestCase >> serverSidePeer [
+	^serverSideNetwork remotePeers first
+]
+
 { #category : #running }
 BasysRealCommunicationTestCase >> setUp [
 	super setUp.
@@ -105,6 +110,7 @@ BasysRealCommunicationTestCase >> waitServerSidePeer [
 	
 	| peer |
 	serverSideNetwork remotePeers should takeAWhile to not be isEmpty.
-	peer := serverSideNetwork remotePeers first.
-	peer where id should takeAWhile to not be: nil
+	peer := self serverSidePeer.
+	peer where id should takeAWhile to not be: nil.
+	^peer
 ]

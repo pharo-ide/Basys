@@ -132,7 +132,7 @@ BasysRemotePeer >> ensureIdentity: peerId [
 
 { #category : #accessing }
 BasysRemotePeer >> freeConnectionCount [
-	^connectionPool numberOfIdleObjects
+	^connectionPool idleSize
 ]
 
 { #category : #controlling }

@@ -121,6 +121,14 @@ BasysRemotePeerTests >> testEnsureIdentityWhenItIsNotYetIdentified [
 ]
 
 { #category : #tests }
+BasysRemotePeerTests >> testFreeConnectionCount [
+	
+	peer connectionPool stub.
+	
+	peer freeConnectionCount should beReturnedFrom: [ peer connectionPool idleSize ]
+]
+
+{ #category : #tests }
 BasysRemotePeerTests >> testGettingLocalPeerId [
 
 	network stub localPeerId willReturn: #localPeerId.

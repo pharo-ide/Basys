@@ -9,11 +9,6 @@ BasysRealCommunicationTests >> networkClass [
 	^BasysNetworkStub
 ]
 
-{ #category : #helpers }
-BasysRealCommunicationTests >> serverSidePeer [
-	^serverSideNetwork remotePeers first
-]
-
 { #category : #tests }
 BasysRealCommunicationTests >> testClosingConnectionWhenRemoteSideWaitsIncomingData [
  
@@ -22,7 +17,7 @@ BasysRealCommunicationTests >> testClosingConnectionWhenRemoteSideWaitsIncomingD
 	clientSidePeer connectToLocalPeerFor: [ :connection | connection open; close].
 
 	clientSidePeer connectionCount should be: 0.
-	serverSidePeer := serverSideNetwork remotePeers first.
+	serverSidePeer := self serverSidePeer.
 	serverSidePeer connectionCount should be: 0
 ]
 
@@ -33,7 +28,7 @@ BasysRealCommunicationTests >> testConnectionEstablishingOnClosedPeer [
 	remotePeer := self connectToServerPeer.
 	remotePeer close.
 	
-	[remotePeer openNewConnection] should raise: BasysRemotePeerClosed
+	[remotePeer openNewConnection] should raise: MessageNotUnderstood 
 ]
 
 { #category : #tests }
@@ -49,20 +44,15 @@ BasysRealCommunicationTests >> testConvertingPassivePeerToActive [
 	server network: clientSideNetwork.
 	activePeer := serverSideNetwork remotePeerAt: self serverAddress.
 	activePeer openNewConnection.
-	clientSideNetwork remotePeers should takeAWhile to haveSize: 2.
-		
-	"converting existing passive peer to existing active peer during identification with same id"
-	activePeer id should not be: nil.
-	passivePeer id: activePeer id. "simulate that new active peer is actually existing passive peer"
-	activePeer id: nil.
-	activePeer ensureIdentity: passivePeer id.
-	passivePeer should be isActive.
+	20 milliSeconds wait.
+	clientSideNetwork remotePeers should haveSize: 1.
+	
+	activePeer should be: passivePeer.
 	passivePeer connectionCount should be: 2.
 	
 	"now we are checking that converted peer is really active and can open new connections"
 	passivePeer openNewConnection.
-	passivePeer connectionCount should be: 3.
-	clientSideNetwork remotePeers should takeAWhile to haveSize: 3.
+	passivePeer connectionCount should be: 3
 ]
 
 { #category : #tests }
@@ -115,7 +105,7 @@ BasysRealCommunicationTests >> testRequestFromClientToServerAfterConnectionClose
 	| remotePeer |
 	remotePeer := self connectToServerPeer.
 			
-	remotePeer connectToLocalPeerFor: [ :connection | connection close].	
+	remotePeer connectToLocalPeerFor: [ :connection | connection open; close].	
 	5 milliSeconds wait.
 	
 	remotePeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'server to client'].	
@@ -127,12 +117,12 @@ BasysRealCommunicationTests >> testRequestFromClientToServerAfterConnectionClose
 { #category : #tests }
 BasysRealCommunicationTests >> testRequestFromServerToClient [
  
-	| remotePeer serverSideClientPeer |
+	| remotePeer serverSidePeer |
 	remotePeer := self connectToServerPeer.
 	remotePeer openNewConnection.
 	
-	serverSideClientPeer := self waitServerSidePeer.
-	serverSideClientPeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'server to client' ].
+	serverSidePeer := self waitServerSidePeer.
+	serverSidePeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'server to client' ].
 	
 	10 milliSeconds wait.
 	
@@ -143,16 +133,16 @@ BasysRealCommunicationTests >> testRequestFromServerToClient [
 { #category : #tests }
 BasysRealCommunicationTests >> testRequestFromServerToClientWhenAllConnectionsWereClosedByClient [
  
-	| remotePeer serverSideClientPeer |
-	remotePeer := self connectToServerPeer.
-	remotePeer openNewConnection.
-	serverSideClientPeer := self waitServerSidePeer.
-	remotePeer close.
+	| clientSidePeer serverSidePeer |
+	clientSidePeer := self connectToServerPeer.
+	clientSidePeer openNewConnection.
+	serverSidePeer := self waitServerSidePeer.
+	clientSidePeer close.
 	"The pause is needed to proceed close request from client socket by server socket"
 	100 milliSeconds wait. 
 	
-	[serverSideClientPeer connectToLocalPeerFor: [ :connection | ]] should raise: BasysConnectionDoesNotExist.
-	serverSideClientPeer connectionCount should equal: 0
+	[serverSidePeer connectToLocalPeerFor: [ :connection | ]] should raise: BasysConnectionDoesNotExist.
+	serverSidePeer connectionCount should equal: 0
 ]
 
 { #category : #tests }
@@ -168,13 +158,12 @@ BasysRealCommunicationTests >> testRequestOnClosedActivePeer [
 { #category : #tests }
 BasysRealCommunicationTests >> testRequestOnClosedPassivePeer [
  
-	| remotePeer |
+	| serverSidePeer |
 	self connectToServerPeer openNewConnection.
-	100 milliSeconds wait.
-	remotePeer := serverSideNetwork remotePeers anyOne.
-	remotePeer close.
+	serverSidePeer := self waitServerSidePeer.
+	serverSidePeer close.
 	
-	[remotePeer connectToLocalPeerFor:[:connection | ]] should raise: BasysRemotePeerClosed
+	[serverSidePeer connectToLocalPeerFor:[:connection | ]] should raise: BasysRemotePeerClosed
 ]
 
 { #category : #tests }
@@ -234,25 +223,25 @@ BasysRealCommunicationTests >> testTwoParallelRequestsFromClientToServer [
 	
 	20 milliSeconds wait.
 
-	remotePeer connectionPool numberOfAvailableObjects should be: 2
+	remotePeer connectionCount should be: 2
 ]
 
 { #category : #tests }
 BasysRealCommunicationTests >> testTwoParallelRequestsFromServerToClient [
  
-	| remotePeer serverSideClientPeer forkIsFirst |
-	remotePeer := self connectToServerPeer.
-	remotePeer openNewConnection.
-	serverSideClientPeer := self waitServerSidePeer.
+	| clientSidePeer serverSidePeer forkIsFirst |
+	clientSidePeer := self connectToServerPeer.
+	clientSidePeer openNewConnection.
+	serverSidePeer := self waitServerSidePeer.
 	forkIsFirst := nil.
 	
-	self fork: [serverSideClientPeer connectToLocalPeerFor: [ :connection | 
+	self fork: [serverSidePeer connectToLocalPeerFor: [ :connection | 
 			10 milliSeconds wait. forkIsFirst ifNil: [forkIsFirst := true].
 			 connection sendDataPacket: 'server to client' ]].
 	
 	self passForkedProcesses.
 	
-	serverSideClientPeer connectToLocalPeerFor: [ :connection | 
+	serverSidePeer connectToLocalPeerFor: [ :connection | 
 		forkIsFirst ifNil: [ forkIsFirst := false].
 			 connection sendDataPacket: 'server to client'].
 		
@@ -271,7 +260,7 @@ BasysRealCommunicationTests >> testTwoSequentialRequestsFromClientToServer [
 	
 	10 milliSeconds wait.
 
-	remotePeer connectionPool numberOfAvailableObjects should be: 1.
+	remotePeer connectionCount should be: 1.
 	serverSideNetwork lastDataPacket should equal: 'second'.
 ]
 
@@ -298,7 +287,7 @@ BasysRealCommunicationTests >> testWaitingConnetionByPassivePeer [
 	remotePeer openNewConnection.
 	20 milliSeconds wait.
 	done := false.
-	serverSideRemotePeer := serverSideNetwork remotePeers first.
+	serverSideRemotePeer := self serverSidePeer.
 	serverSideRemotePeer closeConnections.
 	self fork: [ serverSideRemotePeer waitConnection. done := true ].	
 	20 milliSeconds wait.

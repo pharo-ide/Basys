@@ -272,10 +272,6 @@ BasysConnectionPool >> isPassive [
 BasysConnectionPool >> migrateConnectionsInto: anotherConnectionPool [
 
 	self guardAccessDuring: [ 
-		(connections anySatisfy: [ :each | each isBusy ]) ifTrue: [ 
-			"Pool allows migration only when all connections are free"
-			BasysConnectionMigrationFailed signal ].
-		
 		connections reverseDo: [ :each | "reversed is used for safe removal of enumerated items"
 			anotherConnectionPool addConnection: each.
 			connections remove: each ]
