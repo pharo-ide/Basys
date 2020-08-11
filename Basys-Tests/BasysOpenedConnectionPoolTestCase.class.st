@@ -347,6 +347,18 @@ BasysOpenedConnectionPoolTestCase >> testRemovesAllConnectionsDuringClose [
 ]
 
 { #category : #tests }
+BasysOpenedConnectionPoolTestCase >> testRemovesClosedConnection [
+
+	| connection |
+	connection := Mock new.
+	connectionPool addConnection: connection.
+	
+	connectionPool removeClosedConnection: connection.
+	
+	connectionPool should be isEmpty
+]
+
+{ #category : #tests }
 BasysOpenedConnectionPoolTestCase >> testWaitsAnyNewConnectionWhenAllAreBusy [
 	| retrievedConnection  newConnection busyConnection |
 	remotePeer stub maxConnections willReturn: 1.

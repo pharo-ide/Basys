@@ -51,6 +51,23 @@ BasysPassiveConnectionPoolTests >> testFailsAllocationWhenNoConnectionExists [
 ]
 
 { #category : #tests }
+BasysPassiveConnectionPoolTests >> testFailsAllocationWhenWaitingCompletesByOnlyConnectionRemovalAsClosed [
+	| busyConnection  error process |
+	remotePeer stub maxConnections willReturn: 1.
+	busyConnection := Mock new.
+	connectionPool addConnection: busyConnection.
+	busyConnection stub isBusy willReturn: true.
+		
+	process := [ error := [connectionPool allocateConnection] should fail ] 
+		forkAt: Processor activePriority + 1.
+	process should not be isTerminated.
+	
+	connectionPool removeClosedConnection: busyConnection.
+	process should be isTerminated.
+	error should beInstanceOf: BasysConnectionDoesNotExist 
+]
+
+{ #category : #tests }
 BasysPassiveConnectionPoolTests >> testFailsAllocationWhenWaitingCompletesWithInvalidFreeConnection [
 	| busyConnection  error process |
 	remotePeer stub maxConnections willReturn: 1.

@@ -70,20 +70,22 @@ BasysConnection >> close [
 		incomingDataProcess isTerminated ifFalse: [incomingDataProcess terminate].
 		incomingDataProcess := nil].
 	
-	self closeSocketSafely 
+	self closeSocketSafely.
+	remotePeer removeClosedConnection: self
+]
+
+{ #category : #private }
+BasysConnection >> closeByBrokenIncomingDataProcess [	
+	"When incoming data process is terminated by any reason the connection closes itself here"
+	self closeSocketSafely.
+	incomingDataProcess := nil.
+	remotePeer removeClosedConnection: self
 ]
 
 { #category : #private }
 BasysConnection >> closeSocketSafely [
 
 	[socket closeAndDestroy] on: Error do: [ ]
-]
-
-{ #category : #private }
-BasysConnection >> closeYourself [	
-	"When incoming data process is terminated by any reason the connection closes itself here"
-	self closeSocketSafely.
-	incomingDataProcess := nil
 ]
 
 { #category : #private }
@@ -225,6 +227,6 @@ BasysConnection >> socket: anObject [
 BasysConnection >> startIncomingDataProcess [
 
 	incomingDataProcess := [
-		[self incomingDataLoop] ifCurtailed: [ self closeYourself ]		
-	] forkAt: self processingPriority named: self printString.
+		[self incomingDataLoop] ifCurtailed: [ self closeByBrokenIncomingDataProcess ]		
+	] forkAt: self processingPriority named: self printString
 ]

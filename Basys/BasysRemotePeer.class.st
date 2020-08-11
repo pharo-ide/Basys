@@ -120,7 +120,7 @@ BasysRemotePeer >> connectionPool: anObject [
 	connectionPool := anObject
 ]
 
-{ #category : #private }
+{ #category : #communication }
 BasysRemotePeer >> ensureIdentity: peerId [
 
 	self isIdentified ifTrue: [ 
@@ -135,7 +135,7 @@ BasysRemotePeer >> freeConnectionCount [
 	^connectionPool idleSize
 ]
 
-{ #category : #controlling }
+{ #category : #communication }
 BasysRemotePeer >> importConnectionsFrom: aRemotePeer [
 
 	aRemotePeer connectionPool migrateConnectionsInto: connectionPool
@@ -201,7 +201,7 @@ BasysRemotePeer >> network: aBasysNetwork [
 	super network: aBasysNetwork
 ]
 
-{ #category : #private }
+{ #category : #communication }
 BasysRemotePeer >> newConnection [
 	^BasysConnection with: self inside: network
 ]
@@ -210,6 +210,12 @@ BasysRemotePeer >> newConnection [
 BasysRemotePeer >> openNewConnection [
 
 	connectionPool openNewConnection
+]
+
+{ #category : #communication }
+BasysRemotePeer >> removeClosedConnection: aConnection [
+
+	connectionPool removeClosedConnection: aConnection
 ]
 
 { #category : #operations }

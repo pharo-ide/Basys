@@ -220,6 +220,17 @@ BasysRemotePeerTests >> testOpeningNewConnection [
 ]
 
 { #category : #tests }
+BasysRemotePeerTests >> testRemoveClosedConnection [
+
+	| connection |
+	connection := Mock new.
+	peer connectionPool stub.
+	peer removeClosedConnection: connection.
+	
+	peer connectionPool should receive removeClosedConnection: connection
+]
+
+{ #category : #tests }
 BasysRemotePeerTests >> testWaitingConnection [
 
 	| pool |

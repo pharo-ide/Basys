@@ -44,9 +44,11 @@ BasysRealCommunicationTests >> testConvertingPassivePeerToActive [
 	server network: clientSideNetwork.
 	activePeer := serverSideNetwork remotePeerAt: self serverAddress.
 	activePeer openNewConnection.
+	"Now connection will follow identification procedure.
+	It will detect an existing passive peer with same id
+	and it will convert this activePeer to it"
 	20 milliSeconds wait.
-	clientSideNetwork remotePeers should haveSize: 1.
-	
+	clientSideNetwork remotePeers should haveSize: 1.	
 	activePeer should be: passivePeer.
 	passivePeer connectionCount should be: 2.
 	

@@ -307,6 +307,16 @@ BasysConnectionPool >> remotePeer: anObject [
 	remotePeer := anObject
 ]
 
+{ #category : #controlling }
+BasysConnectionPool >> removeClosedConnection: aConnection [
+
+	self guardAccessDuring: [ 
+		connections remove: aConnection ].
+	
+	freeConnectionSemaphore signal
+	
+]
+
 { #category : #accessing }
 BasysConnectionPool >> size [
 

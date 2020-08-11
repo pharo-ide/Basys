@@ -71,6 +71,22 @@ BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenNothingExists [
 ]
 
 { #category : #tests }
+BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenWaitingCompletesWithRemovalOfClosedConnection [
+	| connection allocated process |
+	remotePeer stub maxConnections willReturn: 1.
+	connection := Mock new.
+	connectionPool addConnection: connection.
+	connection stub isBusy willReturn: true.
+	
+	process := [allocated := connectionPool allocateConnection] forkAt: Processor activePriority + 1.
+	allocated should be: nil.
+	process should not be isTerminated.
+	
+	connectionPool removeClosedConnection: connection.
+	allocated should beReturnedFrom: [ remotePeer newConnection ]
+]
+
+{ #category : #tests }
 BasysActiveConnectionPoolTests >> testDoesNotKeepNewOpenedConnectionWhenOpenFails [
 
 	| newConnection openError |

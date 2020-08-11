@@ -48,7 +48,15 @@ BasysConnectionTests >> testClosing [
 	connection incomingDataProcess should takeAWhile to not be: nil.
 	
 	connection close.
-	connection should receive closeSocketSafely.
+	connection should receive closeSocketSafely
+]
+
+{ #category : #tests }
+BasysConnectionTests >> testClosingShouldRemoveItFromOwningPeer [
+	
+	connection close.
+	
+	remotePeer should receive removeClosedConnection: connection
 ]
 
 { #category : #tests }
