@@ -165,15 +165,20 @@ BasysOpenedConnectionPoolTestCase >> testDoesNotLockWhenFailsToAddTooManyConnect
 ]
 
 { #category : #tests }
-BasysOpenedConnectionPoolTestCase >> testFailsMigrationIntoAnotherPoolWhenThereAreBusyConnections [
-
-	| connection |
-	connection := Mock new.
-	connectionPool addConnection: connection.
-	connection stub isBusy willReturn: true.
+BasysOpenedConnectionPoolTestCase >> testFailsAllocationWhenCloseHappensDuringWait [
+	| busyConnection  error process |
+	remotePeer stub maxConnections willReturn: 1.
+	busyConnection := Mock new.
+	connectionPool addConnection: busyConnection.
+	busyConnection stub isBusy willReturn: true.
+		
+	process := [ error := [connectionPool allocateConnection] should fail ] 
+		forkAt: Processor activePriority + 1.
+	process should not be isTerminated.
 	
-	[connectionPool migrateConnectionsInto: #anotherPool] should raise: BasysConnectionMigrationFailed.
-	connectionPool should be includesConnection: connection
+	connectionPool close.
+	process should be isTerminated.
+	error should beInstanceOf: BasysRemotePeerClosed 
 ]
 
 { #category : #tests }

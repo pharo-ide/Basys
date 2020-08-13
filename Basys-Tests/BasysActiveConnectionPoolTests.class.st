@@ -61,6 +61,23 @@ BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenItNeedsToWaitOpene
 ]
 
 { #category : #tests }
+BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenMaxLimitIsIncreasedDuringAllocationWait [
+	| connection allocated process |
+	remotePeer stub maxConnections willReturn: 1.
+	connection := Mock new.
+	connectionPool addConnection: connection.
+	connection stub isBusy willReturn: true.
+	connection connectivityPollingRate: 30 milliSeconds.
+	process := [allocated := connectionPool allocateConnection] forkAt: Processor activePriority + 1.
+	allocated should be: nil.
+	process should not be isTerminated.
+	
+	remotePeer stub maxConnections willReturn: 2.
+	([allocated] should take: 50 milliSeconds) to not be: nil.
+	allocated should beReturnedFrom: [ remotePeer newConnection ].
+]
+
+{ #category : #tests }
 BasysActiveConnectionPoolTests >> testCreatesNewConnectionWhenNothingExists [
 
 	| connection |
@@ -97,7 +114,24 @@ BasysActiveConnectionPoolTests >> testDoesNotKeepNewOpenedConnectionWhenOpenFail
 	
 	[connectionPool openNewConnection] should raise: openError.
 	
-	connectionPool should be isEmpty
+	newConnection should receive close
+]
+
+{ #category : #tests }
+BasysActiveConnectionPoolTests >> testImmediatelyAllocatesManuallyOpenedConnectionWhenItWaitsAllBusyOnes [
+	| connection allocated |
+	remotePeer stub maxConnections willReturn: 1.
+	connection := Mock new.
+	connectionPool addConnection: connection.
+	connection stub isBusy willReturn: true.
+	
+	[allocated := connectionPool allocateConnection] forkAt: Processor activePriority + 1.	
+	remotePeer stub maxConnections willReturn: 2.
+	allocated should be: nil.
+
+	connectionPool openNewConnection.
+	allocated should beReturnedFrom: [ remotePeer newConnection ].
+	remotePeer should receive newConnection once
 ]
 
 { #category : #tests }

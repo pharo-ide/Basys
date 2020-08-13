@@ -45,6 +45,40 @@ BasysPassiveConnectionPoolTests >> testFailsAllocationWhenAllConnectionsAreInval
 ]
 
 { #category : #tests }
+BasysPassiveConnectionPoolTests >> testFailsAllocationWhenClearHappensDuringWait [
+	| busyConnection  error process |
+	remotePeer stub maxConnections willReturn: 1.
+	busyConnection := Mock new.
+	connectionPool addConnection: busyConnection.
+	busyConnection stub isBusy willReturn: true.
+		
+	process := [ error := [connectionPool allocateConnection] should fail ] 
+		forkAt: Processor activePriority + 1.
+	process should not be isTerminated.
+	
+	connectionPool clear.
+	process should be isTerminated.
+	error should beInstanceOf: BasysConnectionDoesNotExist 
+]
+
+{ #category : #tests }
+BasysPassiveConnectionPoolTests >> testFailsAllocationWhenMigrationHappensDuringWait [
+	| busyConnection  error process |
+	remotePeer stub maxConnections willReturn: 1.
+	busyConnection := Mock new.
+	connectionPool addConnection: busyConnection.
+	busyConnection stub isBusy willReturn: true.
+		
+	process := [ error := [connectionPool allocateConnection] should fail ] 
+		forkAt: Processor activePriority + 1.
+	process should not be isTerminated.
+	
+	connectionPool migrateConnectionsInto: self createConnectionPool.
+	process should be isTerminated.
+	error should beInstanceOf: BasysConnectionDoesNotExist 
+]
+
+{ #category : #tests }
 BasysPassiveConnectionPoolTests >> testFailsAllocationWhenNoConnectionExists [
 
 	[connectionPool allocateConnection] should raise: BasysConnectionDoesNotExist

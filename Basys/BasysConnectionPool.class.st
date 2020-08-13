@@ -80,8 +80,8 @@ Class {
 		'remotePeer',
 		'connections',
 		'accessGuard',
-		'freeConnectionSemaphore',
-		'connectivityPollingRate'
+		'connectivityPollingRate',
+		'stateChangeSemaphore'
 	],
 	#category : #Basys
 }
@@ -106,13 +106,11 @@ BasysConnectionPool >> activeSize [
 { #category : #controlling }
 BasysConnectionPool >> addConnection: aBasysConnection [
 	
-	self guardAccessDuring:	[ 
+	self changeStateBy: [ 
 		self allowNewConnection.
 		aBasysConnection remotePeer: remotePeer.	
 		connections add: aBasysConnection.
-	].
-
-	freeConnectionSemaphore signal
+	]
 ]
 
 { #category : #private }
@@ -134,7 +132,7 @@ BasysConnectionPool >> allocateConnection [
 		].
 	   "there should be a timeout to handle case when all busy connections become invalid
 		Logicaly it can be a connection timeout"
-		freeConnectionSemaphore wait: connectivityPollingRate
+		stateChangeSemaphore wait: connectivityPollingRate
 	] repeat
 ]
 
@@ -173,6 +171,14 @@ BasysConnectionPool >> bePassive [
 ]
 
 { #category : #private }
+BasysConnectionPool >> changeStateBy: aBlock [
+
+	self guardAccessDuring: aBlock.
+
+	stateChangeSemaphore signal
+]
+
+{ #category : #private }
 BasysConnectionPool >> checkConnectivity [
 	self cleanInvalidConnections
 ]
@@ -189,7 +195,7 @@ BasysConnectionPool >> cleanInvalidConnections [
 { #category : #controlling }
 BasysConnectionPool >> clear [
 
-	self guardAccessDuring: [ 
+	self changeStateBy: [ 
 		connections do: [ :each | each close ].
 		connections removeAll ]
 ]
@@ -244,7 +250,7 @@ BasysConnectionPool >> initialize [
 	super initialize.
 	connections := OrderedCollection new.
 	accessGuard := Mutex new.
-	freeConnectionSemaphore := Semaphore new.
+	stateChangeSemaphore := Semaphore new.
 	connectivityPollingRate := 100 milliSeconds
 ]
 
@@ -271,7 +277,7 @@ BasysConnectionPool >> isPassive [
 { #category : #controlling }
 BasysConnectionPool >> migrateConnectionsInto: anotherConnectionPool [
 
-	self guardAccessDuring: [ 
+	self changeStateBy: [ 
 		connections reverseDo: [ :each | "reversed is used for safe removal of enumerated items"
 			anotherConnectionPool addConnection: each.
 			connections remove: each ]
@@ -292,9 +298,7 @@ BasysConnectionPool >> openSize [
 { #category : #private }
 BasysConnectionPool >> releaseConnection: aBasysConnection [
 		
-	self guardAccessDuring: [ aBasysConnection beFree ].
-	
-	freeConnectionSemaphore signal
+	self changeStateBy: [ aBasysConnection beFree ]
 ]
 
 { #category : #accessing }
@@ -310,11 +314,7 @@ BasysConnectionPool >> remotePeer: anObject [
 { #category : #controlling }
 BasysConnectionPool >> removeClosedConnection: aConnection [
 
-	self guardAccessDuring: [ 
-		connections remove: aConnection ].
-	
-	freeConnectionSemaphore signal
-	
+	self changeStateBy: [ connections remove: aConnection ]
 ]
 
 { #category : #accessing }
@@ -331,7 +331,7 @@ BasysConnectionPool >> waitOpenedConnection [
 			[ connection beOpened ] on: ConnectionTimedOut do: [:err | err retry ]. 
 			^self ]
 	] on: BasysConnectionDoesNotExist do: [ :err | 		
-		freeConnectionSemaphore wait.
+		stateChangeSemaphore wait.
 		err retry
 	]
 ]

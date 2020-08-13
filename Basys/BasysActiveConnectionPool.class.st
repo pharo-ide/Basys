@@ -37,10 +37,10 @@ BasysActiveConnectionPool >> openNewConnection [
 		newConnection beBusy].
 	 
 	[newConnection open.
-	self guardAccessDuring: [ newConnection beFree]
+	self releaseConnection: newConnection beFree.
 	] ifCurtailed: [ 
-		"In case of failed open operation we do not need to keep this connection"
-		newConnection close.		
-		self guardAccessDuring: [ connections remove: newConnection ]
+		"In case of failed open operation we do not need to keep this connection.
+		Notice that #close will ask the pool to remove connection"
+		newConnection close
 	]
 ]
