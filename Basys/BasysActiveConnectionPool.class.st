@@ -40,7 +40,7 @@ BasysActiveConnectionPool >> openNewConnection [
 	self releaseConnection: newConnection beFree.
 	] ifCurtailed: [ 
 		"In case of failed open operation we do not need to keep this connection.
-		Notice that #close will ask the pool to remove connection"
+		In that case connection will be released via #close logic"
 		newConnection close
 	]
 ]

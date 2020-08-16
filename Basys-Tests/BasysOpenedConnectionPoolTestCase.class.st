@@ -209,7 +209,7 @@ BasysOpenedConnectionPoolTestCase >> testKnowsBusyConnectionsCount [
 	connectionPool addConnection: busyConnection.
 	busyConnection stub isBusy willReturn: true.
 	
-	connectionPool activeSize should equal: 1
+	connectionPool busySize should equal: 1
 ]
 
 { #category : #tests }
@@ -231,7 +231,7 @@ BasysOpenedConnectionPoolTestCase >> testKnowsFreeConnectionsCount [
 	connectionPool addConnection: busyConnection.
 	busyConnection stub isBusy willReturn: true.
 	
-	connectionPool idleSize should equal: 2
+	connectionPool freeSize should equal: 2
 ]
 
 { #category : #tests }

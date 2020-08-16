@@ -125,7 +125,7 @@ BasysRemotePeerTests >> testFreeConnectionCount [
 	
 	peer connectionPool stub.
 	
-	peer freeConnectionCount should beReturnedFrom: [ peer connectionPool idleSize ]
+	peer freeConnectionCount should beReturnedFrom: [ peer connectionPool freeSize ]
 ]
 
 { #category : #tests }

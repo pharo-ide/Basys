@@ -17,9 +17,9 @@ Remote peer restricts a number of connections which pool is allowed to have:
 
 	remotePeer maxConnections 
 	
-I raise a BasysTooManyConnections error when user adds too many connections. Method #allowNewConnection performs the required checks.
+I raise a BasysTooManyConnections error when user adds too many connections. Method #allowNewConnection performs required checks.
 
-When all connections in the pool are busy the allocation request will wait next free connection.
+When all connections in the pool are busy the allocation operation will wait next free connection.
 
 Both #addConnection: and #allocateConnection operations clean invalid connections detected in the pool:
 	
@@ -28,10 +28,10 @@ Both #addConnection: and #allocateConnection operations clean invalid connection
 It can be connections closed from remote side or broken by any other reason (from debugger for example).
 In addition the allocation logic is built with a loop to periodically check the connectivity to avoid the corner case when all busy connections silently become invalid while allocation was in a waiting state (see #connectivityPollingRate).
 
-My subclases add specific features depending on connectivity status of remote peer instance (which they belong to): 
+My subclases add specific features depending on connectivity status of remote peer (which they belong to): 
 
 - active pool is able to establish new connections by demand when no free connection is available.
-When all connections are busy the active pool establishes a new one (until it is allowed)
+When all connections are busy the active pool opens a new one (until it is allowed)
 
 - passive pool fails allocation immediately when no connections exist in the pool.
 It's unable to open connection by itself and therefore there is no reason to wait anything. It raises BasysConnectionDoesNotExist error.
@@ -47,30 +47,33 @@ I implement converting methods to change the type of live pool instance:
 - bePassive 
 - beActive  
 
-They use a change class primitive as very simple approach which does not require to create a new instance of new type.
+They use a change class primitive as very simple approach which does not require to create a new instance of new class.
 
 Another method #close converts the pool to the BasysClosedConnectionPool class. It was introduced as hardcore approach to block any communication with remote side forever. Closed pool simply fails any operation with BasysRemotePeerClosed error. 
-
 At first step the #close cleans the pool (using #clean method). It closes all connection (#close) and removes them from the pool. At the end pool becomes empty.
 
-To check the size of the pool use following methods: 
+Methods to check the pool size:
 
 - #isEmpty 
 - #size  
+- #busySize 
+- #freeSize 
+- #openSize 
 
 To create pool instances use following example: 
 
 	BasysActiveConnectionPool of: aRemotePeer 
 
-Pool is created internaly by remote peer and it is not supposed to be used outside of it.
+Pools are created internaly by remote peer and it is not supposed to be used outside of it.
 
 Internal Representation and Key Implementation Points.
 
     Instance Variables
+	remotePeer:		<BasysRemotePeer>
 	accessGuard:		<Mutex>
 	connections:		<OrderedCollection<BasysConnection>>
 	connectivityPollingRate:		<Duration>
-	freeConnectionSemaphore:		<Semaphore>
+	stateChangeSemaphore:		<Semaphore>
 	remotePeer:		<BasysRemotePeer>
 "
 Class {
@@ -95,12 +98,6 @@ BasysConnectionPool class >> isAbstract [
 BasysConnectionPool class >> of: aBasysRemotePeer [
 	^self new 
 		remotePeer: aBasysRemotePeer
-]
-
-{ #category : #accessing }
-BasysConnectionPool >> activeSize [
-
-	^connections count: [ :each | each isBusy ]
 ]
 
 { #category : #controlling }
@@ -170,6 +167,12 @@ BasysConnectionPool >> bePassive [
 	MirrorPrimitives setClass: BasysPassiveConnectionPool to: self
 ]
 
+{ #category : #accessing }
+BasysConnectionPool >> busySize [
+
+	^connections count: [ :each | each isBusy ]
+]
+
 { #category : #private }
 BasysConnectionPool >> changeStateBy: aBlock [
 
@@ -216,6 +219,12 @@ BasysConnectionPool >> connectivityPollingRate: anObject [
 	connectivityPollingRate := anObject
 ]
 
+{ #category : #accessing }
+BasysConnectionPool >> freeSize [
+
+	^connections count: [ :each | each isBusy not ]
+]
+
 { #category : #private }
 BasysConnectionPool >> guardAccessDuring: aBlock [
 	"Guard access should ensure that any error during given block will not leave the lock active.
@@ -231,12 +240,6 @@ BasysConnectionPool >> guardAccessDuring: aBlock [
 		accessGuard criticalWithUnlockIfError: aBlock"
 	error ifNotNil: [ ^error signal ]. 
 	^result
-]
-
-{ #category : #accessing }
-BasysConnectionPool >> idleSize [
-
-	^connections count: [ :each | each isBusy not ]
 ]
 
 { #category : #testing }
