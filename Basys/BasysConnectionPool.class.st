@@ -197,10 +197,12 @@ BasysConnectionPool >> cleanInvalidConnections [
 
 { #category : #controlling }
 BasysConnectionPool >> clear [
-
-	self changeStateBy: [ 
-		connections do: [ :each | each close ].
-		connections removeAll ]
+	"Every #close operation here will remove closed connection from the pool
+	(through #removeCloseConnection: method).
+	Therefore #copy is required for safe enumeration"
+	| currentConnections |
+	currentConnections := connections copy.
+	currentConnections do: [ :each | each close ]
 ]
 
 { #category : #controlling }

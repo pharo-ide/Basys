@@ -10,15 +10,40 @@ BasysRealCommunicationTests >> networkClass [
 ]
 
 { #category : #tests }
+BasysRealCommunicationTests >> testClosingConnectionImmediatelyAfterOpen [
+ 
+	| clientSidePeer |
+	clientSidePeer := self connectToServerPeer.		
+	clientSidePeer connectToLocalPeerFor: [ :connection | connection open; close ].
+
+	clientSidePeer connectionCount should be: 0
+]
+
+{ #category : #tests }
 BasysRealCommunicationTests >> testClosingConnectionWhenRemoteSideWaitsIncomingData [
  
-	| clientSidePeer serverSidePeer |
+	| clientSidePeer |
 	clientSidePeer := self connectToServerPeer.		
-	clientSidePeer connectToLocalPeerFor: [ :connection | connection open; close].
+	clientSidePeer connectToLocalPeerFor: [ :connection | 
+		connection open. 
+		10 milliSeconds wait.
+		connection close ].
 
-	clientSidePeer connectionCount should be: 0.
-	serverSidePeer := self serverSidePeer.
-	serverSidePeer connectionCount should be: 0
+	clientSidePeer connectionCount should be: 0
+]
+
+{ #category : #tests }
+BasysRealCommunicationTests >> testClosingPeerConnections [
+ 
+	| clientSidePeer |
+	clientSidePeer := self connectToServerPeer.
+	clientSidePeer openNewConnection.
+	
+	self waitServerSidePeer.
+	
+	clientSidePeer closeConnections.
+	
+	clientSideNetwork connectionCount should be: 0
 ]
 
 { #category : #tests }
@@ -97,7 +122,7 @@ BasysRealCommunicationTests >> testRequestFromClientToServer [
 	
 	10 milliSeconds wait.
 	
-	serverSideNetwork lastDataPacket should equal: 'test data packet'.
+	serverSideNetwork lastDataPacket should equal: 'test data packet'
 
 ]
 

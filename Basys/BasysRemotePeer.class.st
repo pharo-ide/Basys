@@ -94,7 +94,7 @@ BasysRemotePeer >> close [
 { #category : #controlling }
 BasysRemotePeer >> closeConnections [
 	"Here we just close existing connections. Peer is stayed working.
-	connectionPool is configured such way that #clear closes all connections"
+	ConnectionPool performs a close of all opened connections and removes them"
 	connectionPool clear
 ]
 
