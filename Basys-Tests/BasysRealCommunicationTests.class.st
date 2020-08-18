@@ -113,6 +113,19 @@ BasysRealCommunicationTests >> testFirstConnectionOpening [
 ]
 
 { #category : #tests }
+BasysRealCommunicationTests >> testOpeningNewConnectionWhenClientSidePeerDoesNotAllowMoreConnections [
+
+	| clientSidePeer |
+	clientSidePeer := self connectToServerPeer.
+	clientSidePeer openNewConnection.		
+	clientSidePeer maxConnections: 1.
+	
+	[clientSidePeer openNewConnection] should raise: BasysTooManyConnections.
+
+	clientSideNetwork connectionCount should be: 1
+]
+
+{ #category : #tests }
 BasysRealCommunicationTests >> testOpeningNewConnectionWhenServerDoesNotAllowThemAtAll [
  
 	| clientSidePeer |
@@ -127,7 +140,7 @@ BasysRealCommunicationTests >> testOpeningNewConnectionWhenServerDoesNotAllowThe
 ]
 
 { #category : #tests }
-BasysRealCommunicationTests >> testOpeningNewConnectionWhenServerSidePeerDoesNotAllowMoreConnection [
+BasysRealCommunicationTests >> testOpeningNewConnectionWhenServerSidePeerDoesNotAllowMoreConnections [
  
 	| clientSidePeer serverSidePeer |
 	clientSidePeer := self connectToServerPeer.
