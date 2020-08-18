@@ -224,7 +224,7 @@ BasysRemotePeerTests >> testRemoveClosedConnection [
 
 	| connection |
 	connection := Mock new.
-	peer connectionPool stub.
+	peer connectionPool: Mock new.
 	peer removeClosedConnection: connection.
 	
 	peer connectionPool should receive removeClosedConnection: connection

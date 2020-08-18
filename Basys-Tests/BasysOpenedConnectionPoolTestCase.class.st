@@ -177,6 +177,8 @@ BasysOpenedConnectionPoolTestCase >> testFailsAllocationWhenCloseHappensDuringWa
 	process should not be isTerminated.
 	
 	connectionPool close.
+	"In real scenario following call would be triggered from connection close"
+	connectionPool removeClosedConnection: busyConnection.
 	process should be isTerminated.
 	error should beInstanceOf: BasysRemotePeerClosed 
 ]
@@ -323,32 +325,6 @@ BasysOpenedConnectionPoolTestCase >> testReleasesConnectionWhenCommunicationFail
 	] on: Error do: [ :err | 
 		freeConnection should receive beFree once].
 	freeConnection should receive beFree once
-]
-
-{ #category : #tests }
-BasysOpenedConnectionPoolTestCase >> testRemovesAllConnectionsDuringClear [
-
-	| connection1 connection2 |
-	connection1 := Mock new.	
-	connection2 := Mock new.
-	connectionPool addConnection: connection1; addConnection: connection2.
-	
-	connectionPool clear.
-	
-	connectionPool should be isEmpty
-]
-
-{ #category : #tests }
-BasysOpenedConnectionPoolTestCase >> testRemovesAllConnectionsDuringClose [
-
-	| connection1 connection2 |
-	connection1 := Mock new.	
-	connection2 := Mock new.
-	connectionPool addConnection: connection1; addConnection: connection2.
-	
-	connectionPool close.
-	
-	connectionPool should be isEmpty
 ]
 
 { #category : #tests }

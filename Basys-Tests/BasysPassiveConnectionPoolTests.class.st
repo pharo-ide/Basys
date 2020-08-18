@@ -57,6 +57,8 @@ BasysPassiveConnectionPoolTests >> testFailsAllocationWhenClearHappensDuringWait
 	process should not be isTerminated.
 	
 	connectionPool clear.
+	"In real scenario following call would be triggered from connection close"
+	connectionPool removeClosedConnection: busyConnection. 
 	process should be isTerminated.
 	error should beInstanceOf: BasysConnectionDoesNotExist 
 ]

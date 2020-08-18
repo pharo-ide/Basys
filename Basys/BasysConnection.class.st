@@ -66,18 +66,25 @@ BasysConnection >> beOpened [
 
 { #category : #controlling }
 BasysConnection >> close [
-	"Actual #close is always performed from #incomingDataProcess when it is started.
-	Data process ensures #close when process is terminated by any reason"
-	self hash logCr.
-	(incomingDataProcess isNil or: [incomingDataProcess isActiveProcess]) ifTrue: [ 
-		incomingDataProcess := nil.
-		self closeSocketSafely.
-		remotePeer removeClosedConnection: self.
-		^self	].
+	"The actual connection close is always performed from #incomingDataProcess.
+	When it detects the termination of incomping data loop (by any reason like error or debugger) 
+	the process sends #close to the connection where it cleans all required parts (like socket).	
+	From the other side the close can be initiated from the outside of the connection.
+	For example user can decide to close connection manualy.
+	This scenario is simply handled by terminating the data process:
+	- the termination triggers the actual close (recursive call here) from the context of data process.	
+	And there are two cases where the actual close needs to be performed directly: 
+		- data process is not started yet
+		- data process is in very beggining step where it is not able to handle the termination"		
+	(incomingDataProcess notNil and: [ incomingDataProcess isActiveProcess not ]) ifTrue: [
+		"Here the close is performed from the outside of the connection (not under the data process)"	
+		incomingDataProcess terminate.
+		"If terminate really did the close it will nil the process variable. And therefore the return"
+		incomingDataProcess ifNil: [ ^self ] ].
 		
-	"When #close is requested from the outside of the connection
-	it only terminates the data process to trigger this method from the context of it"	
-	incomingDataProcess ifNotNil: [ incomingDataProcess terminate ]
+	incomingDataProcess := nil.
+	self closeSocketSafely.
+	remotePeer removeClosedConnection: self
 ]
 
 { #category : #private }
