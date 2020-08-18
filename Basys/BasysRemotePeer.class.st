@@ -201,7 +201,7 @@ BasysRemotePeer >> network: aBasysNetwork [
 	super network: aBasysNetwork
 ]
 
-{ #category : #communication }
+{ #category : #factory }
 BasysRemotePeer >> newConnection [
 	^BasysConnection with: self inside: network
 ]

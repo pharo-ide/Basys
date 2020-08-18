@@ -192,8 +192,7 @@ BasysOpenedConnectionPoolTestCase >> testFailsToAddTooManyConnections [
 	remotePeer stub maxConnections willReturn: 1.
 	
 	connectionPool addConnection: connection.
-	err := [connectionPool addConnection: connection2] should raise: BasysTooManyConnections.
-	err where badConnection should be: connection
+	[connectionPool addConnection: connection2] should raise: BasysTooManyConnections
 ]
 
 { #category : #tests }

@@ -76,6 +76,26 @@ BasysNetworkTests >> testConnectionCountWhenNoRemotePeers [
 ]
 
 { #category : #tests }
+BasysNetworkTests >> testCreatingNewLocalPeer [
+
+	| connection |
+	connection := network newLocalPeer.
+	
+	connection should beInstanceOf: BasysLocalPeer.
+	connection network should be: network
+]
+
+{ #category : #tests }
+BasysNetworkTests >> testCreatingNewRemotePeer [
+
+	| connection |
+	connection := network newRemotePeer.
+	
+	connection should beInstanceOf: BasysRemotePeer.
+	connection network should be: network
+]
+
+{ #category : #tests }
 BasysNetworkTests >> testGettingExistedRemotePeerAtAddress [
 
 	| existedPeer remotePeer |

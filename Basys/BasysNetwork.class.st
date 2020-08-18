@@ -103,7 +103,7 @@ BasysNetwork class >> maxConnectionsPerPeer: anInteger [
 BasysNetwork >> addNewRemotePeer [
 
 	| newPeer |
-	newPeer := BasysRemotePeer inside: self.
+	newPeer := self newRemotePeer.
 	remotePeers add: newPeer.
 	^newPeer
 ]
@@ -183,7 +183,7 @@ BasysNetwork >> initialize [
 	
 	communicationLibrary := TCPPharoNetworkLibrary.
 	processingPriority := Processor userBackgroundPriority.
-	localPeer := BasysLocalPeer inside: self.
+	localPeer := self newLocalPeer.
 	remotePeers := OrderedCollection new.
 	
 ]
@@ -211,6 +211,16 @@ BasysNetwork >> maxConnectionsPerPeer [
 { #category : #accessing }
 BasysNetwork >> maxConnectionsPerPeer: anInteger [
 	maxConnectionsPerPeer := anInteger
+]
+
+{ #category : #factory }
+BasysNetwork >> newLocalPeer [ 
+	^BasysLocalPeer inside: self
+]
+
+{ #category : #factory }
+BasysNetwork >> newRemotePeer [ 
+	^BasysRemotePeer inside: self
 ]
 
 { #category : #operations }
