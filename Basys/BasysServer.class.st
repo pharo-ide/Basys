@@ -64,7 +64,9 @@ BasysServer >> processNewConnection: clientSocket [
 	| newPeer |
 	newPeer := network addNewRemotePeer.
 	
-	newPeer addNewConnectionOpenedRemotelyUsing: clientSocket
+	[newPeer addNewConnectionOpenedRemotelyUsing: clientSocket] on: BasysTooManyConnections do: [ :err |
+		clientSocket closeAndDestroy.
+		network removeRemotePeer: newPeer ]
 ]
 
 { #category : #controlling }

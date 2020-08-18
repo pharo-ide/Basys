@@ -113,6 +113,36 @@ BasysRealCommunicationTests >> testFirstConnectionOpening [
 ]
 
 { #category : #tests }
+BasysRealCommunicationTests >> testOpeningNewConnectionWhenServerDoesNotAllowThemAtAll [
+ 
+	| clientSidePeer |
+	serverSideNetwork maxConnectionsPerPeer: 0.
+	
+	clientSidePeer := self connectToServerPeer.
+	clientSidePeer openNewConnection.	
+	30 milliSeconds wait.
+	
+	serverSideNetwork connectionCount should be: 0	.
+	serverSideNetwork remotePeers should haveSize: 0
+]
+
+{ #category : #tests }
+BasysRealCommunicationTests >> testOpeningNewConnectionWhenServerSidePeerDoesNotAllowMoreConnection [
+ 
+	| clientSidePeer serverSidePeer |
+	clientSidePeer := self connectToServerPeer.
+	clientSidePeer openNewConnection.		
+	serverSidePeer := self waitServerSidePeer.
+	serverSidePeer maxConnections: 1.
+	
+	clientSidePeer openNewConnection.
+	30 milliSeconds wait.
+	
+	serverSideNetwork connectionCount should be: 1.
+	serverSideNetwork remotePeers should equal: { serverSidePeer }
+]
+
+{ #category : #tests }
 BasysRealCommunicationTests >> testRequestFromClientToServer [
  
 	| remotePeer |

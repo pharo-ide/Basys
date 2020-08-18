@@ -245,6 +245,23 @@ BasysNetworkTests >> testIdentifyingRemotePeerWhenItWasNotYetRegistered [
 ]
 
 { #category : #tests }
+BasysNetworkTests >> testIdentifyingRemotePeerWhenRegisteredPeerDoesNotAllowMoreConnections [
+
+	| registeredPeer newPeer newPeerConnections |
+	registeredPeer := BasysRemotePeer new.
+	registeredPeer id: #peerId.
+	network addRemotePeer: registeredPeer.
+	newPeer := BasysRemotePeer new.
+	newPeerConnections := newPeer connectionPool.
+	(newPeerConnections stub migrateConnectionsInto: Any) willRaise: BasysTooManyConnections new.
+		
+	network identifyRemotePeer: newPeer as: #peerId.
+	
+	newPeerConnections should receive clear.
+	newPeer should be: registeredPeer
+]
+
+{ #category : #tests }
 BasysNetworkTests >> testRemoveRemotePeer [
 
 	network addRemotePeer: #remotePeer.

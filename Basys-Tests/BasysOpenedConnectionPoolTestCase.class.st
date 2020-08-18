@@ -186,13 +186,14 @@ BasysOpenedConnectionPoolTestCase >> testFailsAllocationWhenCloseHappensDuringWa
 { #category : #tests }
 BasysOpenedConnectionPoolTestCase >> testFailsToAddTooManyConnections [
 
-	| connection connection2 |
+	| connection connection2 err |
 	connection := Mock new.
 	connection2 := Mock new.
 	remotePeer stub maxConnections willReturn: 1.
 	
 	connectionPool addConnection: connection.
-	[connectionPool addConnection: connection2] should raise: BasysTooManyConnections
+	err := [connectionPool addConnection: connection2] should raise: BasysTooManyConnections.
+	err where badConnection should be: connection
 ]
 
 { #category : #tests }

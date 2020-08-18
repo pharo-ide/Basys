@@ -171,7 +171,8 @@ BasysNetwork >> identifyRemotePeer: aRemotePeer as: peerId [
 		aRemotePeer id: peerId. 
 		^self ]. 
 	remotePeers remove: aRemotePeer ifAbsent: [].	
-	identifiedPeer importConnectionsFrom: aRemotePeer.
+	[identifiedPeer importConnectionsFrom: aRemotePeer] on: BasysTooManyConnections do: [:err | 
+		aRemotePeer closeConnections ].
 	aRemotePeer isActive ifTrue: [ identifiedPeer beActiveWith: aRemotePeer address ].
 	aRemotePeer becomeForward: identifiedPeer 
 ]
