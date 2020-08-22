@@ -1,19 +1,18 @@
 "
-I represent connection with remote peer inside Basys network.
-I run process with incoming data loop which receive new data and run it processing asynchronously. 
-Socket variable represents phisical connection to remote peer.  It is passed as argument to network to perform concrete operations: reading incoming data, processing it or sending new data.
+I represent a connection with a remote peer inside a BasysNetwork.
+I run a process with an incoming data loop which receives new data and processes it asynchronously. 
+Socket variable represents a physical connection with remote side. It is passed as an argument to the network to perform concrete operations: reading incoming data, processing or sending new data.
 
 Public API and Key Messages
 
-- sendDataPacket:   dataObject
-	sends dataObject to remote peer.
-- acceptIncomingData 
-	runs incoming data loop in separate process 
-- close
-	terminates incoming data process and closes socket
+- sendDataPacket:   dataObject. It sends dataObject to the remote peer.
+
+- acceptIncomingData. It runs an incoming data loop in a separate process 
+
+- close. It terminates the incoming data process and closes a socket
 
 Instances are created by:
-	BasysConnection inside: aBasysNetwork on: aSocket
+	BasysConnection iwith: aBasysRemotePeer inside: aBasysNetwork
  
 Internal Representation and Key Implementation Points.
 

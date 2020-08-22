@@ -1,13 +1,17 @@
 "
-I am TCP server which serves Basys network.
-I just pass incoming connections to network instance.
+I am a TCP/IP server which serves a BasysNetwork.
+I just pass incoming connections to the network instance.
 
-You can create me by 
+You can create me by:
+
 	BasysServer for: aBasysNetwork
+
 It will ask OS to assign free port for server. Or you can specify concrete port number:
+
 	BasysServer for: aBasysNetwork on: portNumber
 
 Alternatively you can ask a network to start the server: 
+
 	network startServer.
 	network startServerOn: portNumber
 

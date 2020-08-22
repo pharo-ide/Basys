@@ -1,26 +1,27 @@
 "
-I represent  remote peer inside Basys network.
-I maintain pool of connections which can be used to communicate with particular remote peer. 
-I have two subclasses:
-	- BasisActiveRemotePeer
-		It can establish new connections by demand.
-	- BasysPassiveRemotePeer
-		It can't establish new connections. It only accepts connections from the outside. BasysServer is implemented for this. It accepts new connection and add it to corresponding passive remote peer.
+I represent a remote peer inside a BasysNetwork.
+I maintain a pool of connections which can be used to communicate with remote side which I represent. 
+There are three types of connection pools which are responsible for my connectivity properties:
+
+- BasisActiveConnectionPool. It can open new connections by demand when nothing exists or all existing connections are busy.
+
+- BasysPassiveConnectionPool. It can't establish new connections. It can only use what was received from the outside. For example connections are added to the peer (and its connection pool) from the BasysServer. It rans the connection loop and adds the every incomming connection to the peer instances.
+
+- BasysClosedConnectionPool. It represents a closed state of remote peer which prevents any interaction with the remote side. Any message to this pool throws a BasysRemotePeerClosed error.
 
 Public API and Key Messages
 
-- execute: aBlock 
-	retrieves free connection from pool and execute given block with it. It can wait free connection if all in use or it can establish new one. It depends on type of peer: passive or active.
+- connectToLocalPeerFor: connectionBlock. It retrieves a free connection from the pool and executes a given block with it. It can wait for a free connection if all are in use or it can establish a new one depending on the type of peer: passive or active.
 	
-- sendDataPacket:   dataObject
-	retrieves free connection from pool and send dataObject to it.
+- sendDataPacket: dataObject. It retrieves a free connection from the pool and sends dataObject to it.
 
-- close 
-	closes all connections in pool
+- closeConnections. It closes all connections in pool. Peer continue working after that.
+
+- close. It completely closes any interaction with the remote side. It closes all connections in the pool and replaces it with closed version (see above).
 
     Instance Variables
 	address:		<TCPAddress>
-	connectionPool:		<OPBasicPool>
+	connectionPool:		<BasysConnectionPool>
 "
 Class {
 	#name : #BasysRemotePeer,

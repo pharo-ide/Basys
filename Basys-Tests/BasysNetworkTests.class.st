@@ -29,30 +29,29 @@ BasysNetworkTests >> testAddingNewRemotePeer [
 { #category : #tests }
 BasysNetworkTests >> testClosing [
 
-	[:peer1 :peer2 |
-		network addRemotePeer: peer1; addRemotePeer: peer2.
+	| peer1 peer2 |
+	peer1 := Mock new.
+	peer2 := Mock new.
+	network addRemotePeer: peer1; addRemotePeer: peer2.
 		
-		network close.
+	network close.
 		
-		peer1 should receive close.
-		peer2 should receive close.
-		network remotePeers should be isEmpty	
-			
-	] runWithMocks 
+	peer1 should receive close.
+	peer2 should receive close.
 ]
 
 { #category : #tests }
 BasysNetworkTests >> testClosingConnections [
 
-	[:peer1 :peer2 |
-		network addRemotePeer: peer1; addRemotePeer: peer2.
+	| peer1 peer2 |
+	peer1 := Mock new.
+	peer2 := Mock new.
+	network addRemotePeer: peer1; addRemotePeer: peer2.
 		
-		network closeConnections.
+	network closeConnections.
 		
-		peer1 should receive closeConnections.
-		peer2 should receive closeConnections
-			
-	] runWithMocks 
+	peer1 should receive closeConnections.
+	peer2 should receive closeConnections.
 ]
 
 { #category : #tests }
@@ -96,7 +95,7 @@ BasysNetworkTests >> testCreatingNewRemotePeer [
 ]
 
 { #category : #tests }
-BasysNetworkTests >> testGettingExistedRemotePeerAtAddress [
+BasysNetworkTests >> testGettingExistingRemotePeerAtAddress [
 
 	| existedPeer remotePeer |
 	existedPeer := BasysRemotePeer inside: network at: #address.
@@ -120,28 +119,6 @@ BasysNetworkTests >> testGettingNewRemotePeerAtAddress [
 	remotePeer network should be: network.
 	remotePeer address should be: #newAddress.
 	network remotePeers should include: remotePeer
-]
-
-{ #category : #tests }
-BasysNetworkTests >> testGettingPeerWithIdWhenItExists [
-
-	| remotePeer actual |
-	remotePeer := network addNewRemotePeer.
-	remotePeer id: 1.
-	
-	actual := network remotePeerWithId: 1 ifAbsent: [  ].
-	
-	actual should be: remotePeer
-]
-
-{ #category : #tests }
-BasysNetworkTests >> testGettingPeerWithIdWhenItNotExists [
-
-	| actual |
-	
-	actual := network remotePeerWithId: 1 ifAbsent: [ #result ].
-	
-	actual should be: #result
 ]
 
 { #category : #tests }

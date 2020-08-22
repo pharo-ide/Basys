@@ -127,8 +127,9 @@ BasysConnectionPool >> allocateConnection [
 			self nextFreeConnectionOrNil ifNotNil: [:freeConnection | 
 				^freeConnection beBusy; yourself ]
 		].
-	   "there should be a timeout to handle case when all busy connections become invalid
-		Logicaly it can be a connection timeout"
+		"The timeout here is to handle a special case 	when all busy connections become invalid
+		but the user processes did not release them yet. 
+		This logic is to protect the pool from such cases to be more responsive"
 		stateChangeSemaphore wait: connectivityPollingRate
 	] repeat
 ]
@@ -300,7 +301,7 @@ BasysConnectionPool >> openSize [
 	^connections count: [ :each | each isOpened ]
 ]
 
-{ #category : #private }
+{ #category : #controlling }
 BasysConnectionPool >> releaseConnection: aBasysConnection [
 		
 	self changeStateBy: [ aBasysConnection beFree ]

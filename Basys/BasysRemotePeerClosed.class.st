@@ -1,8 +1,8 @@
 "
-I am error which signaled when somebody tryed to communicate with closed remote peer (BasysClosedRemotePeer)
+I am error which signaled when somebody tried to communicate with closed remote peer
 "
 Class {
 	#name : #BasysRemotePeerClosed,
 	#superclass : #Error,
-	#category : 'Basys'
+	#category : #Basys
 }
