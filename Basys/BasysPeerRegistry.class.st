@@ -71,6 +71,11 @@ BasysPeerRegistry >> initialize [
 	remotePeers := OrderedCollection new
 ]
 
+{ #category : #testing }
+BasysPeerRegistry >> isEmpty [ 
+	^remotePeers isEmpty "it is thread safe operation. No need for accessGuard"
+]
+
 { #category : #accessing }
 BasysPeerRegistry >> remotePeerAt: anAddress ifAbsentRegister: peerBlock [
 

@@ -1,9 +1,6 @@
 Class {
 	#name : #BasysRemotePeerTests,
 	#superclass : #BasysPeerTestCase,
-	#instVars : [
-		'peerAddress'
-	],
 	#category : #'Basys-Tests'
 }
 
@@ -48,15 +45,40 @@ BasysRemotePeerTests >> testCanBeConfiguredWithMaxConnectionsLimit [
 ]
 
 { #category : #tests }
-BasysRemotePeerTests >> testClose [
+BasysRemotePeerTests >> testClosingConnections [
+	
+	peer connectionPool stub.
+	
+	peer closeConnections.
+	
+	peer connectionPool should receive clear
+]
+
+{ #category : #tests }
+BasysRemotePeerTests >> testClosingShouldCloseConnectionPool [
 	
 	peer connectionPool stub.
 	
 	peer close.
 	
-	peer should be isClosed.
 	peer connectionPool should receive close.
-	network remotePeers should not include: peer. 
+	peer should be isClosed
+]
+
+{ #category : #tests }
+BasysRemotePeerTests >> testClosingShouldMakePeerClosed [
+	
+	peer close.
+	
+	peer should be isClosed
+]
+
+{ #category : #tests }
+BasysRemotePeerTests >> testClosingShouldRemovePeerFromNetwork [
+	
+	peer close.
+	
+	network should receive removeRemotePeer: peer
 ]
 
 { #category : #tests }
