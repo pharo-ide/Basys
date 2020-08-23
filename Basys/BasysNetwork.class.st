@@ -60,13 +60,13 @@ Described logic ensures that the server is represented on the client by a single
 
 Concrete network implementations should define four operations:
 
-- sendDataPacket: dataObject by: aSocket. How to send a data to the remote side: what a format and a protocol should be used.
+- sendDataPacket: dataObject by: aBasysConnection. How to send a data to the remote side: what a format and a protocol should be used.
 
-- receiveIncomingataPacketFrom: aRemotePeer by: aSocket. How to receive a data from the remote side: what a format and a protocol should be used.
+- receiveIncomingataPacketFrom: aRemotePeer by: aBasysConnection. How to receive a data from the remote side: what a format and a protocol should be used.
 
 - process: dataObject receivedFrom: aRemotePeer. 	What to do with incoming data. 
 	
-- identifyLocalPeerOn:  aConnection. How to identify new connections from the local to remote side.
+- identifyLocalPeerOn: aBasysConnection. How to identify new connections from the local to remote side.
  
 I am based on TCP/IP protocol but this knowledge is abstracted and actual communication layer can be substituted. I use communicationLibrary for this to produce primitive network objects like sockets and data streams. Now it is TCPPharoNetworkLibrary.
 This abstraction is probably too naive and needs to be improved to achieve this goal.

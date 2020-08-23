@@ -6,7 +6,7 @@ Class {
 
 { #category : #running }
 BasysRealCommunicationTests >> networkClass [
-	^BasysNetworkStub
+	^BasysNetworkExample
 ]
 
 { #category : #tests }
