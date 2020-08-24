@@ -26,5 +26,7 @@ BasysConnectionPoolTestCase >> setUp [
 	remotePeer stub maxConnections willReturn: 100.
 	Mock stub isValid willReturn: true. "To simulate valid connections by default"
 	Mock stub isBusy willReturn: false. "To simulate free connections by default"	
+	Mock stub close will: [ "To simulate connection close logic which removes it from peer"
+		connectionPool removeClosedConnection: thisContext sender sender arguments first receiver ].
 	connectionPool := self createConnectionPool
 ]

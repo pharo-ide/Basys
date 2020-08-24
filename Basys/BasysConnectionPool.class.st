@@ -190,10 +190,9 @@ BasysConnectionPool >> checkConnectivity [
 { #category : #private }
 BasysConnectionPool >> cleanInvalidConnections [
 	| invalidConnections |
+	
 	invalidConnections := connections reject: [ :each | each isValid ].
-	invalidConnections do: [ :each | 
-		each close.
-		connections remove: each ]
+	invalidConnections do: [ :each | each close ] "close will remove conneciton from the pool"
 ]
 
 { #category : #controlling }
@@ -320,7 +319,7 @@ BasysConnectionPool >> remotePeer: anObject [
 { #category : #controlling }
 BasysConnectionPool >> removeClosedConnection: aConnection [
 
-	self changeStateBy: [ connections remove: aConnection ]
+	self changeStateBy: [ connections remove: aConnection ifAbsent: []]
 ]
 
 { #category : #accessing }
