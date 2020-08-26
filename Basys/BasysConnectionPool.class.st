@@ -335,7 +335,7 @@ BasysConnectionPool >> waitOpenedConnection [
 		self allocateConnectionFor: [:connection | 
 			[ connection beOpened ] on: ConnectionTimedOut do: [:err | err retry ]. 
 			^self ]
-	] on: BasysConnectionDoesNotExist do: [ :err | 		
+	] on: BasysNoConnection do: [ :err | 		
 		stateChangeSemaphore wait.
 		err retry
 	]

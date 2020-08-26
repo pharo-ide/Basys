@@ -211,7 +211,7 @@ BasysRealCommunicationTests >> testRequestFromServerToClientWhenAllConnectionsWe
 	"The pause is needed to proceed close request from client socket by server socket"
 	100 milliSeconds wait. 
 	
-	[serverSidePeer connectToLocalPeerFor: [ :connection | ]] should raise: BasysConnectionDoesNotExist.
+	[serverSidePeer connectToLocalPeerFor: [ :connection | ]] should raise: BasysNoConnection.
 	serverSidePeer connectionCount should equal: 0
 ]
 

@@ -26,11 +26,11 @@ BasysPassiveConnectionPoolTests >> testAllowsToWaitConnectionWhenNothingExists [
 BasysPassiveConnectionPoolTests >> testDoesNotLockWhenFailsToAllocateConnection [
 	| process |
 
-	process := [ [connectionPool allocateConnection] on: BasysConnectionDoesNotExist do: [ :err | 
+	process := [ [connectionPool allocateConnection] on: BasysNoConnection do: [ :err | 
 						Processor activeProcess suspend ] ] forkAt: Processor activePriority + 1.
 	process should be isSuspended.
 	
-	[connectionPool allocateConnection] should raise: BasysConnectionDoesNotExist 
+	[connectionPool allocateConnection] should raise: BasysNoConnection 
 ]
 
 { #category : #tests }
@@ -41,7 +41,7 @@ BasysPassiveConnectionPoolTests >> testFailsAllocationWhenAllConnectionsAreInval
 	connectionPool addConnection: invalidConnection.
 	invalidConnection stub isValid willReturn: false.
 	
-	[connectionPool allocateConnection] should raise: BasysConnectionDoesNotExist
+	[connectionPool allocateConnection] should raise: BasysNoConnection
 ]
 
 { #category : #tests }
@@ -60,7 +60,7 @@ BasysPassiveConnectionPoolTests >> testFailsAllocationWhenClearHappensDuringWait
 	"In real scenario following call would be triggered from connection close"
 	connectionPool removeClosedConnection: busyConnection. 
 	process should be isTerminated.
-	error should beInstanceOf: BasysConnectionDoesNotExist 
+	error should beInstanceOf: BasysNoConnection 
 ]
 
 { #category : #tests }
@@ -77,13 +77,13 @@ BasysPassiveConnectionPoolTests >> testFailsAllocationWhenMigrationHappensDuring
 	
 	connectionPool migrateConnectionsInto: self createConnectionPool.
 	process should be isTerminated.
-	error should beInstanceOf: BasysConnectionDoesNotExist 
+	error should beInstanceOf: BasysNoConnection 
 ]
 
 { #category : #tests }
 BasysPassiveConnectionPoolTests >> testFailsAllocationWhenNoConnectionExists [
 
-	[connectionPool allocateConnection] should raise: BasysConnectionDoesNotExist
+	[connectionPool allocateConnection] should raise: BasysNoConnection
 ]
 
 { #category : #tests }
@@ -100,7 +100,7 @@ BasysPassiveConnectionPoolTests >> testFailsAllocationWhenWaitingCompletesByOnly
 	
 	connectionPool removeClosedConnection: busyConnection.
 	process should be isTerminated.
-	error should beInstanceOf: BasysConnectionDoesNotExist 
+	error should beInstanceOf: BasysNoConnection 
 ]
 
 { #category : #tests }
@@ -119,7 +119,7 @@ BasysPassiveConnectionPoolTests >> testFailsAllocationWhenWaitingCompletesWithIn
 	busyConnection stub isBusy willReturn: false.
 	connectionPool releaseConnection: busyConnection.
 	process should be isTerminated.
-	error should beInstanceOf: BasysConnectionDoesNotExist 
+	error should beInstanceOf: BasysNoConnection 
 ]
 
 { #category : #tests }
@@ -136,7 +136,7 @@ BasysPassiveConnectionPoolTests >> testFailsWhenAllBusyConnectionsBecomeInvalidD
 	
 	busyConnection stub isValid willReturn: false.
 	50 milliSecond wait.
-	error should beInstanceOf: BasysConnectionDoesNotExist
+	error should beInstanceOf: BasysNoConnection
 ]
 
 { #category : #tests }

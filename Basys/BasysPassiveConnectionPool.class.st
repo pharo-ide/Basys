@@ -13,7 +13,7 @@ Class {
 BasysPassiveConnectionPool >> checkConnectivity [
 	super checkConnectivity.
 	
-	connections ifEmpty: [ BasysConnectionDoesNotExist signal ]
+	connections ifEmpty: [ BasysNoConnection signal ]
 ]
 
 { #category : #testing }
