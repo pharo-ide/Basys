@@ -161,7 +161,7 @@ BasysRealCommunicationTests >> testRequestFromClientToServer [
 	| remotePeer |
 	remotePeer := self connectToServerPeer.
 	
-	remotePeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'test data packet' ].
+	remotePeer connectToLocalPeerFor: [ :connection | connection sendObject: 'test data packet' ].
 	
 	10 milliSeconds wait.
 	
@@ -178,7 +178,7 @@ BasysRealCommunicationTests >> testRequestFromClientToServerAfterConnectionClose
 	remotePeer connectToLocalPeerFor: [ :connection | connection open; close].	
 	5 milliSeconds wait.
 	
-	remotePeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'server to client'].	
+	remotePeer connectToLocalPeerFor: [ :connection | connection sendObject: 'server to client'].	
 	5 milliSeconds wait.
 	
 	serverSideNetwork lastDataPacket should equal: 'server to client'
@@ -192,7 +192,7 @@ BasysRealCommunicationTests >> testRequestFromServerToClient [
 	remotePeer openNewConnection.
 	
 	serverSidePeer := self waitServerSidePeer.
-	serverSidePeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'server to client' ].
+	serverSidePeer connectToLocalPeerFor: [ :connection | connection sendObject: 'server to client' ].
 	
 	10 milliSeconds wait.
 	
@@ -237,12 +237,12 @@ BasysRealCommunicationTests >> testRequestOnClosedPassivePeer [
 ]
 
 { #category : #tests }
-BasysRealCommunicationTests >> testSendingSingleDataPacketShortcut [
+BasysRealCommunicationTests >> testSendingSingleObject [
  
 	| remotePeer |
 	remotePeer := self connectToServerPeer.
 	
-	remotePeer sendDataPacket: 'test data packet'.
+	remotePeer sendObject: 'test data packet'.
 	
 	10 milliSeconds wait.
 	
@@ -251,13 +251,14 @@ BasysRealCommunicationTests >> testSendingSingleDataPacketShortcut [
 ]
 
 { #category : #tests }
-BasysRealCommunicationTests >> testSendingTwoDataPacketImmediately [
+BasysRealCommunicationTests >> testSendingTwoObjectsImmediately [
  
 	| remotePeer |
 	remotePeer := self connectToServerPeer.
 	
-	remotePeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'test data packet1'.
-		connection sendDataPacket: 'test data packet2'].
+	remotePeer connectToLocalPeerFor: [ :connection | 
+		connection sendObject: 'test data packet1'.
+		connection sendObject: 'test data packet2'].
 	
 	10 milliSeconds wait.
 	
@@ -265,14 +266,14 @@ BasysRealCommunicationTests >> testSendingTwoDataPacketImmediately [
 ]
 
 { #category : #tests }
-BasysRealCommunicationTests >> testTimeoutOnWaitingIncomingData [
+BasysRealCommunicationTests >> testTimeoutOnWaitingIncomingObject [
  
 	| remotePeer |
 	serverSideNetwork waitingDataTimeout: 5 milliSeconds.
 	remotePeer := self connectToServerPeer.
 			
 	remotePeer connectToLocalPeerFor: [ :connection | 10 milliSeconds wait.
-		connection sendDataPacket: 'test data packet' ].
+		connection sendObject: 'test data packet' ].
 	
 	5 milliSeconds wait.
 	
@@ -287,9 +288,9 @@ BasysRealCommunicationTests >> testTwoParallelRequestsFromClientToServer [
 	remotePeer := self connectToServerPeer.
 	
 	self fork: [	remotePeer connectToLocalPeerFor: [ :connection | 
-				10 milliSeconds wait. connection sendDataPacket: 'first' ]].
+				10 milliSeconds wait. connection sendObject: 'first' ]].
 	
-	remotePeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'second' ].
+	remotePeer connectToLocalPeerFor: [ :connection | connection sendObject: 'second' ].
 	
 	20 milliSeconds wait.
 
@@ -307,13 +308,13 @@ BasysRealCommunicationTests >> testTwoParallelRequestsFromServerToClient [
 	
 	self fork: [serverSidePeer connectToLocalPeerFor: [ :connection | 
 			10 milliSeconds wait. forkIsFirst ifNil: [forkIsFirst := true].
-			 connection sendDataPacket: 'server to client' ]].
+			 connection sendObject: 'server to client' ]].
 	
 	self passForkedProcesses.
 	
 	serverSidePeer connectToLocalPeerFor: [ :connection | 
 		forkIsFirst ifNil: [ forkIsFirst := false].
-			 connection sendDataPacket: 'server to client'].
+			 connection sendObject: 'server to client'].
 		
 	[ forkIsFirst ] should takeAWhile to be: true
 ]
@@ -324,9 +325,9 @@ BasysRealCommunicationTests >> testTwoSequentialRequestsFromClientToServer [
 	| remotePeer |
 	remotePeer := self connectToServerPeer.
 	
-	remotePeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'first' ].
+	remotePeer connectToLocalPeerFor: [ :connection | connection sendObject: 'first' ].
 	10 milliSeconds wait.
-	remotePeer connectToLocalPeerFor: [ :connection | connection sendDataPacket: 'second' ].
+	remotePeer connectToLocalPeerFor: [ :connection | connection sendObject: 'second' ].
 	
 	10 milliSeconds wait.
 

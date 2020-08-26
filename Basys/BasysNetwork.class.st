@@ -252,7 +252,7 @@ BasysNetwork >> openNewConnectionTo: anAddress [
 ]
 
 { #category : #operations }
-BasysNetwork >> process: dataObject receivedFrom: aRemotePeer [
+BasysNetwork >> process: anObject receivedFrom: aRemotePeer [
 
 	self subclassResponsibility 
 ]
@@ -268,7 +268,7 @@ BasysNetwork >> processingPriority: anObject [
 ]
 
 { #category : #operations }
-BasysNetwork >> receiveIncomingDataPacketFrom: aRemotePeer by: aBasysConnection [
+BasysNetwork >> receiveObjectBy: aBasysConnection [
 
 	self subclassResponsibility 
 ]
@@ -290,7 +290,7 @@ BasysNetwork >> removeRemotePeer: aRemotePeer [
 ]
 
 { #category : #operations }
-BasysNetwork >> sendDataPacket: dataObject by: aBasysConnection [
+BasysNetwork >> sendObject: anObject by: aBasysConnection [
 
 	self subclassResponsibility 
 ]

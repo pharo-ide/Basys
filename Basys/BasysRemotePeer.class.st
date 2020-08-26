@@ -220,9 +220,9 @@ BasysRemotePeer >> removeClosedConnection: aConnection [
 ]
 
 { #category : #operations }
-BasysRemotePeer >> sendDataPacket: dataObject [ 
+BasysRemotePeer >> sendObject: anObject [ 
 
-	self connectToLocalPeerFor: [:connection | 	connection sendDataPacket: dataObject ]
+	self connectToLocalPeerFor: [:connection | 	connection sendObject: anObject ]
 
 ]
 

@@ -165,47 +165,47 @@ BasysConnectionTests >> testOpeningShouldStartIncompingDataProcessBeforeIdentifi
 ]
 
 { #category : #tests }
-BasysConnectionTests >> testProcessingIncomingDataPacket [
+BasysConnectionTests >> testProcessingIncomingObject [
 	
-	(network stub receiveIncomingDataPacketFrom: remotePeer by: connection) willReturn: #dataPacket.
+	(network stub receiveObjectBy: connection) willReturn: #receivedObject.
 	
-	connection processIncomingDataPacket.
+	connection processIncomingObject.
 	
-	network should takeAWhile to receive process: #dataPacket receivedFrom: remotePeer
+	network should takeAWhile to receive process: #receivedObject receivedFrom: remotePeer
 ]
 
 { #category : #tests }
-BasysConnectionTests >> testProcessingIncomingDataPacketShouldBeAsync [
+BasysConnectionTests >> testProcessingIncomingObjectShouldBeAsync [
 	
-	connection processIncomingDataPacket.
+	connection processIncomingObject.
 	
 	(network should takeAWhile to receive process: Any receivedFrom: remotePeer)
 		inAnotherProcess
 ]
 
 { #category : #tests }
-BasysConnectionTests >> testProcessingIncomingDataPacketShouldDoneWithProcessingPriority [
+BasysConnectionTests >> testProcessingIncomingObjectShouldBeDoneWithProcessingPriority [
 	
-	connection processIncomingDataPacket.
+	connection processIncomingObject.
 	
 	(network should takeAWhile to receive process: Any receivedFrom: remotePeer) 
 		inProcessWhich 	priority should be: connection processingPriority
 ]
 
 { #category : #tests }
-BasysConnectionTests >> testSendingDataPacket [
+BasysConnectionTests >> testSendingObject [
 	
-	connection sendDataPacket: #dataPacket.
+	connection sendObject: #object.
 	
-	network should receive sendDataPacket: #dataPacket by: connection
+	network should receive sendObject: #object by: connection
 ]
 
 { #category : #tests }
-BasysConnectionTests >> testSendingDataPacketWhenConnectionIsNotOpened [
+BasysConnectionTests >> testSendingObjectWhenConnectionIsNotOpened [
 	
 	connection stub isOpened willReturn: false.
 	
-	connection sendDataPacket: #dataPacket.
+	connection sendObject: #object.
 	
 	connection should receive open
 ]

@@ -97,7 +97,7 @@ BasysConnection >> incomingDataLoop [
 
 	[
 		[
-			[self processIncomingDataPacket] on: ConnectionTimedOut, PrimitiveFailed do: [ :err | ]
+			[self processIncomingObject] on: ConnectionTimedOut, PrimitiveFailed do: [ :err | ]
 		] repeat
 	] on: ConnectionClosed do: [ :err |  ]
 ]
@@ -180,13 +180,13 @@ BasysConnection >> outputStream [
 ]
 
 { #category : #private }
-BasysConnection >> processIncomingDataPacket [
+BasysConnection >> processIncomingObject [
 
-	| dataPacket |
+	| receivedObject |
 	
-	dataPacket := network receiveIncomingDataPacketFrom: remotePeer by: self.
+	receivedObject := network receiveObjectBy: self.
 	
-	[ network process: dataPacket receivedFrom: remotePeer ] 
+	[ network process: receivedObject receivedFrom: remotePeer ] 
 		forkAt: self processingPriority named: network printString
 ]
 
@@ -211,10 +211,10 @@ BasysConnection >> remotePeer: anObject [
 ]
 
 { #category : #controlling }
-BasysConnection >> sendDataPacket: dataObject [
+BasysConnection >> sendObject: anObject [
 	self beOpened.
 	
-	network sendDataPacket: dataObject by: self
+	network sendObject: anObject by: self
 ]
 
 { #category : #accessing }

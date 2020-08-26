@@ -45,7 +45,7 @@ BasysNetworkExample >> identifyLocalPeerOn: aConnection [
 	"This example implementation identifies peers by a port number of server. 
 	On local and remote side all connections belong to peer with same server port.
 	In case of single host and server (in most of tests) it means the network with single remote peer"
-	self sendDataPacket:  'identity:' , aConnection remotePeer address port printString by: aConnection.
+	self sendObject:  'identity:' , aConnection remotePeer address port printString by: aConnection.
 	^aConnection remotePeer address port
 ]
 
@@ -71,7 +71,7 @@ BasysNetworkExample >> process: dataObject receivedFrom: aRemotePeer [
 ]
 
 { #category : #operations }
-BasysNetworkExample >> receiveIncomingDataPacketFrom: aRemotePeer by: aBasysConnection [
+BasysNetworkExample >> receiveObjectBy: aBasysConnection [
 	| stream |
 	
 	stream := aBasysConnection inputStream.
@@ -81,12 +81,12 @@ BasysNetworkExample >> receiveIncomingDataPacketFrom: aRemotePeer by: aBasysConn
 ]
 
 { #category : #operations }
-BasysNetworkExample >> sendDataPacket: dataObject by: aBasysConnection [
+BasysNetworkExample >> sendObject: anObject by: aBasysConnection [
 	| stream |
 	
 	stream := aBasysConnection outputStream.
 	
-	stream nextPutAll: dataObject asString; crlf; flush.
+	stream nextPutAll: anObject asString; crlf; flush.
 	
 "	Transcript show: 'new data sent: ', dataObject printString ; cr"
 ]
