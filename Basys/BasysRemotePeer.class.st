@@ -13,7 +13,7 @@ Public API and Key Messages
 
 - connectToLocalPeerFor: connectionBlock. It retrieves a free connection from the pool and executes a given block with it. It can wait for a free connection if all are in use or it can establish a new one depending on the type of peer: passive or active.
 	
-- sendDataPacket: dataObject. It retrieves a free connection from the pool and sends dataObject to it.
+- sendObject: anObject. It retrieves a free connection from the pool and sends anObject to it.
 
 - closeConnections. It closes all connections in pool. Peer continue working after that.
 

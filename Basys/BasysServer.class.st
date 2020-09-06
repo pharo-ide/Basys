@@ -4,9 +4,13 @@ I just pass incoming connections to the network instance.
 
 You can create me by:
 
-	BasysServer for: aBasysNetwork
+	server :=- BasysServer for: aBasysNetwork
 
-It will ask OS to assign free port for server. Or you can specify concrete port number:
+And start the server using: 
+
+	server start.
+	
+It will ask OS to assign free port for the server. Or you can specify concrete port number:
 
 	BasysServer for: aBasysNetwork on: portNumber
 
@@ -14,6 +18,10 @@ Alternatively you can ask a network to start the server:
 
 	network startServer.
 	network startServerOn: portNumber
+	
+To stop the server sende a message #stop. It will only close the listening socket and the incoming connection loop. 
+It will not affect existing network connections. Network will continue work and should be closed separately if needed. 
+The BasysServer only plays a role of network gateway allowing new connections to be added to the network. Stopping the server just closes this gateway.
 
 Internal Representation and Key Implementation Points.
 
@@ -43,15 +51,6 @@ BasysServer class >> for: aBasysNetwork on: portNumber [
 		network: aBasysNetwork
 ]
 
-{ #category : #controlling }
-BasysServer >> closeConnections [
-
-	super closeConnections.
-	
-	network closeConnections
-	
-]
-
 { #category : #accessing }
 BasysServer >> network [
 	^ network
@@ -71,13 +70,4 @@ BasysServer >> processNewConnection: clientSocket [
 	[newPeer addNewConnectionOpenedRemotelyUsing: clientSocket] on: BasysTooManyConnections do: [ :err |
 		clientSocket closeAndDestroy.
 		network removeRemotePeer: newPeer ]
-]
-
-{ #category : #controlling }
-BasysServer >> stop [
-
-	super stop.
-	
-	network close
-	
 ]

@@ -7,20 +7,20 @@ I supply infrastructure to manage connections and fork data processing . I model
 	- BasysLocalPeer represents current local peer. It supplies id for local peer identification.
 	- BasysRemotePeer represents remote peers. Each remote peer maintains a pool of connections to communicate with remote side:
 
-		remotePeer connectToLocalPeerFor: [ :connection |  connection sendDataPacket: dataObject ].
+		remotePeer connectToLocalPeerFor: [ :connection |  connection sendObject: dataObject ].
 
 or a simple version:
 
-		remotePeer sendDataPacket: dataObject.
+		remotePeer sendObject: dataObject.
 
-Connections are represented by BasysConnection instances. They hold socket for sending and receiving a data which can be performed simultaneously. 
-Each connection runs incoming data process which is waiting for new data from remote side. When data is received connection starts another process to handle it. So the receiving and the processing of the data are executed asynchronously. 
+Connections are represented by BasysConnection instances. They hold socket for sending and receiving objects simultaneously. 
+Each connection runs incoming data process which is waiting for new objects from the remote side. When object is received the connection starts another process to handle it. The receiving and the processing of objects are performed asynchronously. 
 
-Remote peers can be active or passive depending on their capabilities to open new connections with remote side:
-	- an active peer opens connections by demand when nothing exits or when all existins connections are busy. BasysActiveConnectionPool implements this logic.
-	- a passive peer only uses connection received from the outside (for example from the BasysServer). When nothing exists it simply throws an error.
+Remote peers can be active or passive depending on their capabilities to open new connections with a remote side:
+	- an active peer opens connections by demand when nothing exits or when all existing connections are busy. BasysActiveConnectionPool implements this logic.
+	- a passive peer only uses connections received from the outside (for example from the BasysServer). When nothing exists it simply throws an error.
 
-In classic client/server application an active peer represents a client side which establishes a connection with a server. And a passive peer is a server side instance representing the connected client. Obviously the server side peer can't instantiate more connections with the client.
+In classic client/server application an active peer represents a remote side on the client. It establishes connections with a remote server. And a passive peer is a server side instance representing the connected client. Obviously the server side peer can't open new connections with the client.
 	
 Remote peers are configured with maximum number of connections (#maxConnections):
 - an active peer never opens more connections than allowed number
@@ -31,10 +31,10 @@ If you know the address of remote peer (where there is a running BasysServer) yo
 
 	remotePeer := network remotePeerAt: aTCPAddress
 
-It will create new active peer instance if it is not exists or returns existing one. 
-With peer instance you can send a data objects to remote side: 	
+It will create new active peer instance if it is not exists yet or it will return existing one. 
+With peer instance you can send objects to the remote side: 	
 	
-	remotePeer sendDataPacket: aData. 
+	remotePeer sendObject: anObject. 
 
 When no connections exist or all connections are busy the new connection will be established automaticaly and added to the peer connection pool.
 
@@ -47,10 +47,11 @@ By default OS will assign the free port for the server. Or concrete port can be 
 	server := network startServerOn: portNumber
 
 For every new connection BasysServer asks network for new passive peer and sends incoming connection to it. Then connection starts incoming data process which drives the interaction with the client.
+
 When the physical connection is established the client should identify it: 
 	- all connections from the same client should be bound to the single peer instance on server and the other way.
 
-During the identification process the server can detect that new connection belongs to existed peer. In that case the connection will be migrated into it and an anonymous peer will be removed. Otherwise the anonymous peer becomes identified: 
+During the identification process the server can detect that new connection belongs to existed peer. In that case the connection will be migrated into it and an anonymous peer will be removed. Otherwise the anonymous peer will become identified: 
 	- it will have the same id as connected local peer from the remote side.	
 On the client side the identification will return the server local peer id. The client will assign it to the active peer which initiates this connection.
 
@@ -60,13 +61,13 @@ Described logic ensures that the server is represented on the client by a single
 
 Concrete network implementations should define four operations:
 
-- sendDataPacket: dataObject by: aBasysConnection. How to send a data to the remote side: what a format and a protocol should be used.
+- sendObject: anObject by: aBasysConnection. How to send anObject to the remote side: what a format and a protocol should be used.
 
-- receiveIncomingataPacketFrom: aRemotePeer by: aBasysConnection. How to receive a data from the remote side: what a format and a protocol should be used.
+- receiveObjectBy: aBasysConnection. How to receive an object from the remote side: what a format and a protocol should be used.
 
-- process: dataObject receivedFrom: aRemotePeer. 	What to do with incoming data. 
+- process: anObject receivedFrom: aRemotePeer. What to do with incoming object. 
 	
-- identifyLocalPeerOn: aBasysConnection. How to identify new connections from the local to remote side.
+- identifyLocalPeerOn: aBasysConnection. How to identify new connections from the local side to remote side.
  
 I am based on TCP/IP protocol but this knowledge is abstracted and actual communication layer can be substituted. I use communicationLibrary for this to produce primitive network objects like sockets and data streams. Now it is TCPPharoNetworkLibrary.
 This abstraction is probably too naive and needs to be improved to achieve this goal.

@@ -1,7 +1,7 @@
 "
 I am an example implementation of BasysNetwork suitable for acceptance testing of Basys system (see BasysRealCommunicationTests).
 
-I use simple string lines as transferred data and I keep last received string in my variable #lastDataPacked. It allows very simple tests to specify how network is working under various scenariuos.
+I use simple string lines as transferred objects and I keep #lastReceivedString in my variable. It allows very simple tests to specify how network is working under various scenariuos.
 
 The main trick is an implementation of identification logic. I identify peers by a port number of the server:
 - on local and remote side all connections belong to the peer with same server port.
@@ -9,16 +9,16 @@ In case of single host and server (in most of tests) it means the network with s
 
 So to achieve all of that I implement four required network functions:
 
-- sendDataPacket: dataObject by: aBasysConnection.
-I simply write #asString of given dataOobject into the output stream of the connection with terminating #crlf symbol.
+- sendObject: aString by: aBasysConnection.
+I simply write given aString into the output stream of the connection with terminating #crlf symbol.
 
-- receiveIncomingataPacketFrom: aRemotePeer by: aBasysConnection. 
+- receiveObjectBy: aBasysConnection. 
 I simply read the entire string line from the input stream of the connection.
 To allow a simulation of a timeout conditions I configure a given socket with my variable #waitingDataTimeout. 
 
-- process: dataObject receivedFrom: aRemotePeer.
+- process: aString receivedFrom: aRemotePeer.
 
-I simply store the received dataObject into the #lastDataPacket variable. 
+I simply store the received aString into the #lastReceivedString variable. 
 And in addition I handle here an identification query from the remove side when the received string has ""identity:"" prefix.
 
 - identifyLocalPeerOn:  aConnection. 
@@ -27,15 +27,15 @@ I simply send a connection port number with ""identity:"" prefix into given aRem
 Internal Representation and Key Implementation Points.
 
     Instance Variables
-	lastDataPacket:		<String>
+	lastReceivedString:		<String>
 	waitingDataTimeout:		<Duration>
 "
 Class {
 	#name : #BasysNetworkExample,
 	#superclass : #BasysNetwork,
 	#instVars : [
-		'lastDataPacket',
-		'waitingDataTimeout'
+		'waitingDataTimeout',
+		'lastReceivedString'
 	],
 	#category : #'Basys-Tests'
 }
@@ -57,16 +57,16 @@ BasysNetworkExample >> initialize [
 ]
 
 { #category : #accessing }
-BasysNetworkExample >> lastDataPacket [
-	^lastDataPacket
+BasysNetworkExample >> lastReceivedString [
+	^lastReceivedString
 ]
 
 { #category : #operations }
-BasysNetworkExample >> process: dataObject receivedFrom: aRemotePeer [ 
-	"	Transcript show: 'new data received: ', dataObject printString; cr." 
-	lastDataPacket := dataObject.
-	(lastDataPacket beginsWith: 'identity:') ifTrue: [ 
-		aRemotePeer ensureIdentity: (lastDataPacket allButFirst: 'identity:' size) asNumber
+BasysNetworkExample >> process: aString receivedFrom: aRemotePeer [ 
+	"Transcript show: 'new data received: ', anObject printString; cr." 
+	lastReceivedString := aString.
+	(lastReceivedString beginsWith: 'identity:') ifTrue: [ 
+		aRemotePeer ensureIdentity: (lastReceivedString allButFirst: 'identity:' size) asNumber
 	]
 ]
 
@@ -81,14 +81,14 @@ BasysNetworkExample >> receiveObjectBy: aBasysConnection [
 ]
 
 { #category : #operations }
-BasysNetworkExample >> sendObject: anObject by: aBasysConnection [
+BasysNetworkExample >> sendObject: aString by: aBasysConnection [
 	| stream |
 	
 	stream := aBasysConnection outputStream.
 	
-	stream nextPutAll: anObject asString; crlf; flush.
+	stream nextPutAll: aString; crlf; flush.
 	
-"	Transcript show: 'new data sent: ', dataObject printString ; cr"
+	"Transcript show: 'new data sent: ', aString printString ; cr"
 ]
 
 { #category : #accessing }

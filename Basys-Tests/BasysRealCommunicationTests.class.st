@@ -161,11 +161,11 @@ BasysRealCommunicationTests >> testRequestFromClientToServer [
 	| remotePeer |
 	remotePeer := self connectToServerPeer.
 	
-	remotePeer connectToLocalPeerFor: [ :connection | connection sendObject: 'test data packet' ].
+	remotePeer connectToLocalPeerFor: [ :connection | connection sendObject: 'test string' ].
 	
 	10 milliSeconds wait.
 	
-	serverSideNetwork lastDataPacket should equal: 'test data packet'
+	serverSideNetwork lastReceivedString should equal: 'test string'
 
 ]
 
@@ -181,7 +181,7 @@ BasysRealCommunicationTests >> testRequestFromClientToServerAfterConnectionClose
 	remotePeer connectToLocalPeerFor: [ :connection | connection sendObject: 'server to client'].	
 	5 milliSeconds wait.
 	
-	serverSideNetwork lastDataPacket should equal: 'server to client'
+	serverSideNetwork lastReceivedString should equal: 'server to client'
 ]
 
 { #category : #tests }
@@ -196,7 +196,7 @@ BasysRealCommunicationTests >> testRequestFromServerToClient [
 	
 	10 milliSeconds wait.
 	
-	clientSideNetwork lastDataPacket should equal: 'server to client'.
+	clientSideNetwork lastReceivedString should equal: 'server to client'.
 
 ]
 
@@ -242,11 +242,11 @@ BasysRealCommunicationTests >> testSendingSingleObject [
 	| remotePeer |
 	remotePeer := self connectToServerPeer.
 	
-	remotePeer sendObject: 'test data packet'.
+	remotePeer sendObject: 'test string'.
 	
 	10 milliSeconds wait.
 	
-	serverSideNetwork lastDataPacket should equal: 'test data packet'.
+	serverSideNetwork lastReceivedString should equal: 'test string'.
 
 ]
 
@@ -257,12 +257,12 @@ BasysRealCommunicationTests >> testSendingTwoObjectsImmediately [
 	remotePeer := self connectToServerPeer.
 	
 	remotePeer connectToLocalPeerFor: [ :connection | 
-		connection sendObject: 'test data packet1'.
-		connection sendObject: 'test data packet2'].
+		connection sendObject: 'test string1'.
+		connection sendObject: 'test string2'].
 	
 	10 milliSeconds wait.
 	
-	serverSideNetwork lastDataPacket should equal: 'test data packet2'
+	serverSideNetwork lastReceivedString should equal: 'test string2'
 ]
 
 { #category : #tests }
@@ -273,11 +273,11 @@ BasysRealCommunicationTests >> testTimeoutOnWaitingIncomingObject [
 	remotePeer := self connectToServerPeer.
 			
 	remotePeer connectToLocalPeerFor: [ :connection | 10 milliSeconds wait.
-		connection sendObject: 'test data packet' ].
+		connection sendObject: 'test string' ].
 	
 	5 milliSeconds wait.
 	
-	serverSideNetwork lastDataPacket should equal: 'test data packet'.
+	serverSideNetwork lastReceivedString should equal: 'test string'.
 
 ]
 
@@ -332,7 +332,7 @@ BasysRealCommunicationTests >> testTwoSequentialRequestsFromClientToServer [
 	10 milliSeconds wait.
 
 	remotePeer connectionCount should be: 1.
-	serverSideNetwork lastDataPacket should equal: 'second'.
+	serverSideNetwork lastReceivedString should equal: 'second'.
 ]
 
 { #category : #tests }
