@@ -253,6 +253,94 @@ BasysRemotePeerTests >> testRemoveClosedConnection [
 ]
 
 { #category : #tests }
+BasysRemotePeerTests >> testTryingObjectSendIgnoresClosedPeerError [
+	
+	| wasSent |
+	peer stub isConnected willReturn: true.
+	peer close.
+	
+	wasSent := peer trySendObjectIfConnected: #object.
+	
+	wasSent should be: false.
+	peer should receive sendObject: #object
+]
+
+{ #category : #tests }
+BasysRemotePeerTests >> testTryingObjectSendIgnoresConnectionTimeout [
+	
+	| wasSent |
+	peer stub isConnected willReturn: true.
+	(peer stub sendObject: #object) willRaise: ConnectionTimedOut new.
+	
+	wasSent := peer trySendObjectIfConnected: #object.
+	
+	wasSent should be: false.
+	peer should receive sendObject: #object
+]
+
+{ #category : #tests }
+BasysRemotePeerTests >> testTryingObjectSendIgnoresIdentificationError [
+	
+	| wasSent |
+	peer stub isConnected willReturn: true.
+	(peer stub sendObject: #object) willRaise: BasysIdentificationFailed new.
+	
+	wasSent := peer trySendObjectIfConnected: #object.
+	
+	wasSent should be: false.
+	peer should receive sendObject: #object
+]
+
+{ #category : #tests }
+BasysRemotePeerTests >> testTryingObjectSendIgnoresNoConnectionError [
+	
+	| wasSent |
+	peer stub isConnected willReturn: true.
+	(peer stub sendObject: #object) willRaise: BasysNoConnection new.
+	
+	wasSent := peer trySendObjectIfConnected: #object.
+	
+	wasSent should be: false.
+	peer should receive sendObject: #object
+]
+
+{ #category : #tests }
+BasysRemotePeerTests >> testTryingObjectSendShouldSignalUnexpectedProblems [
+	
+	| unexpectedProblem |
+	peer stub isConnected willReturn: true.
+	unexpectedProblem := Error new.
+	(peer stub sendObject: Any) willRaise: unexpectedProblem.
+		
+	[peer trySendObjectIfConnected: #object] should raise: unexpectedProblem
+]
+
+{ #category : #tests }
+BasysRemotePeerTests >> testTryingObjectSendWhenNoConnectionAvailable [
+	
+	| wasSent |
+	peer stub isConnected willReturn: false.
+	
+	wasSent := peer trySendObjectIfConnected: #object.
+	
+	wasSent should be: false.	
+	peer should not receive sendObject: Any
+]
+
+{ #category : #tests }
+BasysRemotePeerTests >> testTryingObjectSendWhenThereIsAvailableConnection [
+	
+	| wasSent |
+	peer stub isConnected willReturn: true.
+	(peer stub sendObject: #object) will: [ #done ].
+	
+	wasSent := peer trySendObjectIfConnected: #object.
+	
+	wasSent should be: true.	
+	peer should receive sendObject: #object
+]
+
+{ #category : #tests }
 BasysRemotePeerTests >> testWaitingConnection [
 
 	| pool |

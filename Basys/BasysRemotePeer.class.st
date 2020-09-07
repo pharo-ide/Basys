@@ -227,6 +227,17 @@ BasysRemotePeer >> sendObject: anObject [
 ]
 
 { #category : #operations }
+BasysRemotePeer >> trySendObjectIfConnected: anObject [ 
+
+	self isConnected ifFalse: [ ^false ].
+	
+	^[self sendObject: anObject. true]
+		on: ConnectionTimedOut, BasysIdentificationFailed , BasysNoConnection , BasysRemotePeerClosed
+		do: [ :err | false ]
+
+]
+
+{ #category : #operations }
 BasysRemotePeer >> waitConnection [
 	
 	connectionPool waitOpenedConnection 
