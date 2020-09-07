@@ -89,7 +89,8 @@ BasysRealCommunicationTestCase >> tearDown [
 
 	forkedProcesses do: #terminate.
 	clientSideNetwork close.
-
+	serverSideNetwork close.
+	
 	super tearDown.
 ]
 
