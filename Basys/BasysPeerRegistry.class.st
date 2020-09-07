@@ -82,7 +82,7 @@ BasysPeerRegistry >> printOn: aStream [
 	
 	aStream 
 		nextPut: $(;
-		nextPutAll: self size;
+		nextPutAll: self size asString;
 		nextPut: $)
 ]
 

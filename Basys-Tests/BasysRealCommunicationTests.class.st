@@ -16,7 +16,8 @@ BasysRealCommunicationTests >> testClosingConnectionImmediatelyAfterOpen [
 	clientSidePeer := self connectToServerPeer.		
 	clientSidePeer connectToLocalPeerFor: [ :connection | connection open; close ].
 
-	clientSidePeer connectionCount should be: 0
+	clientSidePeer connectionCount should be: 0.	
+	serverSideNetwork connectionCount should be: 0.
 ]
 
 { #category : #tests }
@@ -29,7 +30,8 @@ BasysRealCommunicationTests >> testClosingConnectionWhenRemoteSideWaitsIncomingD
 		10 milliSeconds wait.
 		connection close ].
 
-	clientSidePeer connectionCount should be: 0
+	clientSidePeer connectionCount should be: 0.
+	serverSideNetwork connectionCount should be: 0.
 ]
 
 { #category : #tests }
