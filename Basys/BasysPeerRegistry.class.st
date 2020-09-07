@@ -76,6 +76,16 @@ BasysPeerRegistry >> isEmpty [
 	^remotePeers isEmpty "it is thread safe operation. No need for accessGuard"
 ]
 
+{ #category : #printing }
+BasysPeerRegistry >> printOn: aStream [
+	super printOn: aStream.
+	
+	aStream 
+		nextPut: $(;
+		nextPutAll: self size;
+		nextPut: $)
+]
+
 { #category : #accessing }
 BasysPeerRegistry >> remotePeerAt: anAddress ifAbsentRegister: peerBlock [
 
@@ -99,4 +109,9 @@ BasysPeerRegistry >> removeRemotePeer: aRemotePeer [
 	accessGuard critical: [ 
 		remotePeers remove: aRemotePeer ifAbsent: [  ]
 	]
+]
+
+{ #category : #accessing }
+BasysPeerRegistry >> size [
+	^remotePeers size
 ]
