@@ -16,7 +16,7 @@ BaselineOfBasys >> baseline: spec [
 			project: 'TCPServerTests' copyFrom: 'TCPServer' with: [
 				spec loads: 'Tests'];
 			baseline: 'Mocketry' with: [
-				spec repository: 'github://dionisiydk/Mocketry:v6.0.2' ].
+				spec repository: 'github://dionisiydk/Mocketry:v6.0.3' ].
 		spec 
 			package: 'Basys' with: [ spec requires: #('TCPServerCore')];
 			package: 'Basys-Tests' with: [ spec requires: #('Basys' 'TCPServerTests' 'Mocketry')].
