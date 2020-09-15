@@ -294,9 +294,7 @@ BasysRealCommunicationTests >> testTwoParallelRequestsFromClientToServer [
 	
 	remotePeer connectToLocalPeerFor: [ :connection | connection sendObject: 'second' ].
 	
-	20 milliSeconds wait.
-
-	remotePeer connectionCount should be: 2
+	remotePeer where connectionCount should takeAWhile to be: 2
 ]
 
 { #category : #tests }
