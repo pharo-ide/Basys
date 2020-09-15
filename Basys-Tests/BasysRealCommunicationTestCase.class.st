@@ -63,6 +63,11 @@ BasysRealCommunicationTestCase >> serverClass [
 	^BasysServer
 ]
 
+{ #category : #helpers }
+BasysRealCommunicationTestCase >> serverSidePeer [
+	^serverSideNetwork remotePeers first
+]
+
 { #category : #running }
 BasysRealCommunicationTestCase >> setUp [
 	super setUp.
@@ -84,7 +89,8 @@ BasysRealCommunicationTestCase >> tearDown [
 
 	forkedProcesses do: #terminate.
 	clientSideNetwork close.
-
+	serverSideNetwork close.
+	
 	super tearDown.
 ]
 
@@ -103,12 +109,9 @@ BasysRealCommunicationTestCase >> waitLastProcessFinished [
 { #category : #running }
 BasysRealCommunicationTestCase >> waitServerSidePeer [
 	
-	self waitUntil: [ serverSideNetwork remotePeers notEmpty ].
-	^serverSideNetwork remotePeers anyOne
-]
-
-{ #category : #running }
-BasysRealCommunicationTestCase >> waitUntil: conditionBlock [
-	
-	conditionBlock whileFalse: [Processor yield]
+	| peer |
+	serverSideNetwork remotePeers should takeAWhile to not be isEmpty.
+	peer := self serverSidePeer.
+	peer where id should takeAWhile to not be: nil.
+	^peer
 ]

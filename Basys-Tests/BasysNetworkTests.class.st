@@ -15,13 +15,13 @@ BasysNetworkTests >> setUp [
 ]
 
 { #category : #tests }
-BasysNetworkTests >> testAddingNewPeerForAcceptingConnections [
+BasysNetworkTests >> testAddingNewRemotePeer [
 
 	| remotePeer |
 	
-	remotePeer := network addNewPeerForAcceptingConnections.
+	remotePeer := network addNewRemotePeer.
 	
-	remotePeer should beInstanceOf: BasysPassiveRemotePeer.
+	remotePeer should beInstanceOf: BasysRemotePeer.
 	remotePeer network should be: network.
 	network remotePeers should include: remotePeer
 ]
@@ -29,68 +29,76 @@ BasysNetworkTests >> testAddingNewPeerForAcceptingConnections [
 { #category : #tests }
 BasysNetworkTests >> testClosing [
 
-	[:peer1 :peer2 |
-		network addRemotePeer: peer1; addRemotePeer: peer2.
+	| peer1 peer2 |
+	peer1 := Mock new.
+	peer2 := Mock new.
+	network addRemotePeer: peer1; addRemotePeer: peer2.
 		
-		network close.
+	network close.
 		
-		peer1 should receive close.
-		peer2 should receive close.
-		network remotePeers should be isEmpty	
-			
-	] runWithMocks 
+	peer1 should receive close.
+	peer2 should receive close.
 ]
 
 { #category : #tests }
 BasysNetworkTests >> testClosingConnections [
 
-	[:peer1 :peer2 |
-		network addRemotePeer: peer1; addRemotePeer: peer2.
+	| peer1 peer2 |
+	peer1 := Mock new.
+	peer2 := Mock new.
+	network addRemotePeer: peer1; addRemotePeer: peer2.
 		
-		network closeConnections.
+	network closeConnections.
 		
-		peer1 should receive closeConnections.
-		peer2 should receive closeConnections
-			
-	] runWithMocks 
+	peer1 should receive closeConnections.
+	peer2 should receive closeConnections.
 ]
 
 { #category : #tests }
-BasysNetworkTests >> testConnectionsCount [
+BasysNetworkTests >> testConnectionCount [
 
 	| remotePeer1 remotePeer2 |
 	remotePeer1 := Mock new.
-	remotePeer1 stub connectionsCount willReturn: 2.
+	remotePeer1 stub connectionCount willReturn: 2.
 	remotePeer2 := Mock new.
-	remotePeer2 stub connectionsCount willReturn: 5.
+	remotePeer2 stub connectionCount willReturn: 5.
 	
 	network addRemotePeer: remotePeer1; addRemotePeer: remotePeer2.
 		
-	network connectionsCount should be: 7
+	network connectionCount should be: 7
 ]
 
 { #category : #tests }
-BasysNetworkTests >> testConnectionsCountWhenNoRemotePeers [
+BasysNetworkTests >> testConnectionCountWhenNoRemotePeers [
 
-	network connectionsCount should be: 0
+	network connectionCount should be: 0
 ]
 
 { #category : #tests }
-BasysNetworkTests >> testCreationNewConnection [
+BasysNetworkTests >> testCreatingNewLocalPeer [
+
+	| connection |
+	connection := network newLocalPeer.
 	
-	| actual |
-	actual := network createConnectionOn: #socket.
-	
-	actual should beInstanceOf: BasysConnection.
-	actual network should be: network.
-	actual socket should be: #socket
+	connection should beInstanceOf: BasysLocalPeer.
+	connection network should be: network
 ]
 
 { #category : #tests }
-BasysNetworkTests >> testGettingExistedRemotePeerAtAddress [
+BasysNetworkTests >> testCreatingNewRemotePeer [
+
+	| connection |
+	connection := network newRemotePeer.
+	
+	connection should beInstanceOf: BasysRemotePeer.
+	connection network should be: network
+]
+
+{ #category : #tests }
+BasysNetworkTests >> testGettingExistingRemotePeerAtAddress [
 
 	| existedPeer remotePeer |
-	existedPeer := BasysActiveRemotePeer inside: network at: #address.
+	existedPeer := BasysRemotePeer inside: network at: #address.
 	network addRemotePeer: existedPeer.
 
 	remotePeer := network remotePeerAt: #address.
@@ -101,45 +109,30 @@ BasysNetworkTests >> testGettingExistedRemotePeerAtAddress [
 { #category : #tests }
 BasysNetworkTests >> testGettingNewRemotePeerAtAddress [
 
-	| existedPeer remotePeer |
-	existedPeer := BasysActiveRemotePeer inside: network at: #address.
-	network addRemotePeer: existedPeer.
+	| existingPeer remotePeer |
+	existingPeer := BasysRemotePeer inside: network at: #address.
+	network addRemotePeer: existingPeer.
 
 	remotePeer := network remotePeerAt: #newAddress.
 	
-	remotePeer should beInstanceOf: BasysActiveRemotePeer.
+	remotePeer should beInstanceOf: BasysRemotePeer.
 	remotePeer network should be: network.
 	remotePeer address should be: #newAddress.
 	network remotePeers should include: remotePeer
 ]
 
 { #category : #tests }
-BasysNetworkTests >> testGettingPeerWithIdWhenItExists [
-
-	| remotePeer actual |
-	remotePeer := BasysPassiveRemotePeer new id: 1.
-	network addRemotePeer: remotePeer.
-	
-	actual := network remotePeerWithId: 1 ifAbsent: [  ].
-	
-	actual should be: remotePeer
-]
-
-{ #category : #tests }
-BasysNetworkTests >> testGettingPeerWithIdWhenItNotExists [
-
-	| actual |
-	
-	actual := network remotePeerWithId: 1 ifAbsent: [ #result ].
-	
-	actual should be: #result
-]
-
-{ #category : #tests }
 BasysNetworkTests >> testHasDefaultConnectionTimeoutByDefault [
 
-	network connectionTimeout should equal: BasysNetwork defaultConnectionTimeout.
-	BasysNetwork defaultConnectionTimeout should not be: nil
+	network connectionTimeout should equal: BasysNetwork connectionTimeout.
+	BasysNetwork connectionTimeout should not be: nil
+]
+
+{ #category : #tests }
+BasysNetworkTests >> testHasDefaultMaxConnectionsByDefault [
+
+	network maxConnectionsPerPeer should equal: BasysNetwork maxConnectionsPerPeer.
+	BasysNetwork maxConnectionsPerPeer should not be: nil
 ]
 
 { #category : #tests }
@@ -162,6 +155,110 @@ BasysNetworkTests >> testHasLocalPeerByDefault [
 ]
 
 { #category : #tests }
+BasysNetworkTests >> testIdentifyingActiveRemotePeerShouldConvertRegisteredPeerToBecomeActive [
+
+	| registeredPeer newActivePeer |
+	registeredPeer := BasysRemotePeer new.
+	registeredPeer id: #peerId.
+	network addRemotePeer: registeredPeer.
+	newActivePeer := BasysRemotePeer new.
+	newActivePeer beActiveWith: #address.	
+		
+	network identifyRemotePeer: newActivePeer as: #peerId.
+	
+	registeredPeer should be isActive.
+	registeredPeer address should be: #address
+]
+
+{ #category : #tests }
+BasysNetworkTests >> testIdentifyingPassiveRemotePeerShouldNotChangeRegisteredPeer [
+
+	| registeredPeer newPassivePeer |
+	registeredPeer := BasysRemotePeer new.
+	registeredPeer id: #peerId.
+	network addRemotePeer: registeredPeer.
+	newPassivePeer := BasysRemotePeer new.
+		
+	network identifyRemotePeer: newPassivePeer as: #peerId.
+	
+	registeredPeer should not be isActive
+]
+
+{ #category : #tests }
+BasysNetworkTests >> testIdentifyingRemotePeerShouldConvertItIntoRegisteredPeer [
+
+	| registeredPeer newPeer |
+	registeredPeer := BasysRemotePeer new.
+	registeredPeer id: #peerId.
+	network addRemotePeer: registeredPeer.
+	newPeer := BasysRemotePeer new.
+	network addRemotePeer: newPeer.
+		
+	network identifyRemotePeer: newPeer as: #peerId.
+	
+	newPeer should be: registeredPeer
+]
+
+{ #category : #tests }
+BasysNetworkTests >> testIdentifyingRemotePeerShouldMigrateAllConnectionsIntoRegisteredPeer [
+
+	| registeredPeer newPeer newPeerConnections |
+	registeredPeer := BasysRemotePeer new.
+	registeredPeer id: #peerId.
+	network addRemotePeer: registeredPeer.
+	newPeer := BasysRemotePeer new.
+	newPeerConnections := newPeer connectionPool.
+	newPeerConnections stub.
+		
+	network identifyRemotePeer: newPeer as: #peerId.
+	
+	newPeerConnections should receive migrateConnectionsInto: registeredPeer connectionPool
+]
+
+{ #category : #tests }
+BasysNetworkTests >> testIdentifyingRemotePeerWhenItWasAlreadyRegisteredShouldRemoveItFromNetwork [
+
+	| registeredPeer newPeer |
+	registeredPeer := BasysRemotePeer new.
+	registeredPeer id: #peerId.
+	network addRemotePeer: registeredPeer.
+	newPeer := BasysRemotePeer new.
+	network addRemotePeer: newPeer.
+		
+	network identifyRemotePeer: newPeer as: #peerId.
+	
+	network remotePeers should equal: { registeredPeer }
+]
+
+{ #category : #tests }
+BasysNetworkTests >> testIdentifyingRemotePeerWhenItWasNotYetRegistered [
+
+	| remotePeer |
+	remotePeer := BasysRemotePeer new.
+	
+	network identifyRemotePeer: remotePeer as: #peerId.
+	
+	remotePeer id should be: #peerId 
+]
+
+{ #category : #tests }
+BasysNetworkTests >> testIdentifyingRemotePeerWhenRegisteredPeerDoesNotAllowMoreConnections [
+
+	| registeredPeer newPeer newPeerConnections |
+	registeredPeer := BasysRemotePeer new.
+	registeredPeer id: #peerId.
+	network addRemotePeer: registeredPeer.
+	newPeer := BasysRemotePeer new.
+	newPeerConnections := newPeer connectionPool.
+	(newPeerConnections stub migrateConnectionsInto: Any) willRaise: BasysTooManyConnections new.
+		
+	network identifyRemotePeer: newPeer as: #peerId.
+	
+	newPeerConnections should receive clear.
+	newPeer should be: registeredPeer
+]
+
+{ #category : #tests }
 BasysNetworkTests >> testRemoveRemotePeer [
 
 	network addRemotePeer: #remotePeer.
@@ -175,10 +272,10 @@ BasysNetworkTests >> testRemoveRemotePeer [
 BasysNetworkTests >> testShouldFollowDefaultConnectionTimeoutChangesWhenInstanceIsNotConfigured [
 
 	| current |
-	network connectionTimeout should equal: BasysNetwork defaultConnectionTimeout.
-	current := BasysNetwork defaultConnectionTimeout.
+	network connectionTimeout should equal: BasysNetwork connectionTimeout.
+	current := BasysNetwork connectionTimeout.
 	[ 
-		BasysNetwork defaultConnectionTimeout: 1000 seconds.
-		network connectionTimeout should equal: BasysNetwork defaultConnectionTimeout.
-	] ensure: [ BasysNetwork defaultConnectionTimeout: current ]
+		BasysNetwork connectionTimeout: 1000 seconds.
+		network connectionTimeout should equal: BasysNetwork connectionTimeout.
+	] ensure: [ BasysNetwork connectionTimeout: current ]
 ]

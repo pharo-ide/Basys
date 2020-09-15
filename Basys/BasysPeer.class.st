@@ -1,5 +1,5 @@
 "
-I represent logical peer inside Basys network. See my subclasses.
+My subclasses represent logical peers inside a BasysNetwork. 
  
 Internal Representation and Key Implementation Points.
 
@@ -14,7 +14,7 @@ Class {
 		'network',
 		'id'
 	],
-	#category : 'Basys'
+	#category : #Basys
 }
 
 { #category : #'instance variables' }
