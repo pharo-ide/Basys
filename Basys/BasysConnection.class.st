@@ -136,6 +136,11 @@ BasysConnection >> isBusy: anObject [
 ]
 
 { #category : #testing }
+BasysConnection >> isIdentified [
+	^remotePeer isIdentified
+]
+
+{ #category : #testing }
 BasysConnection >> isOpened [
 	^socket notNil
 ]
@@ -143,6 +148,11 @@ BasysConnection >> isOpened [
 { #category : #testing }
 BasysConnection >> isValid [
 	^self isOpened not or: [socket isConnected]
+]
+
+{ #category : #accessing }
+BasysConnection >> localPeerId [
+	^network localPeerId
 ]
 
 { #category : #accessing }
@@ -208,6 +218,11 @@ BasysConnection >> remotePeer [
 { #category : #accessing }
 BasysConnection >> remotePeer: anObject [
 	remotePeer := anObject
+]
+
+{ #category : #accessing }
+BasysConnection >> remotePeerId [
+	^ remotePeer id
 ]
 
 { #category : #controlling }

@@ -71,11 +71,38 @@ BasysConnectionTests >> testClosingWhenItWasNotOpened [
 ]
 
 { #category : #tests }
+BasysConnectionTests >> testGettingLocalPeerId [
+	
+	| id |
+	id := connection localPeerId.
+	
+	id should beReturnedFrom: [network localPeerId]
+]
+
+{ #category : #tests }
+BasysConnectionTests >> testGettingRemotePeerId [
+	
+	| id |
+	id := connection remotePeerId.
+	
+	id should beReturnedFrom: [remotePeer id]
+]
+
+{ #category : #tests }
 BasysConnectionTests >> testHasProcessingPriorityFromNetworkByDefault [
 
 	connection processingPriority: nil.
 	
 	connection processingPriority should beReturnedFrom: [ network processingPriority ]
+]
+
+{ #category : #tests }
+BasysConnectionTests >> testIsIdentified [
+	
+	| result |
+	result := connection isIdentified.
+	
+	result should beReturnedFrom: [remotePeer isIdentified]
 ]
 
 { #category : #tests }
